@@ -1,0 +1,42 @@
+{
+  "rules": {
+    ".read": true,
+
+    "songs": { ".write": "auth != null && auth.uid === 'tNigpJD0iudxzcoP49DDmA4uDQK2'" },
+    "sectionUnlock": { ".write": "auth != null && auth.uid === 'tNigpJD0iudxzcoP49DDmA4uDQK2'" },
+    "rareLinks": { ".write": "auth != null && auth.uid === 'tNigpJD0iudxzcoP49DDmA4uDQK2'" },
+    "project-puzzles": { ".write": "auth != null && auth.uid === 'tNigpJD0iudxzcoP49DDmA4uDQK2'" },
+    "project-events": { ".write": "auth != null && auth.uid === 'tNigpJD0iudxzcoP49DDmA4uDQK2'" },
+    "project-texts": { ".write": "auth != null && auth.uid === 'tNigpJD0iudxzcoP49DDmA4uDQK2'" },
+
+    "turnOn": {
+      "steps": { ".write": "auth != null && auth.uid === 'tNigpJD0iudxzcoP49DDmA4uDQK2'" },
+      "sessions_data": { ".write": "auth != null" }
+    },
+
+    "config": {
+      "gallery": { ".write": "auth != null" },
+      "features": { ".write": "auth != null" },
+      ".write": "auth != null && auth.uid === 'tNigpJD0iudxzcoP49DDmA4uDQK2'"
+    },
+
+    "activity": { ".write": "auth != null" },
+    "interactions": { ".write": "auth != null" },
+    "wishes": { ".write": "auth != null" },
+    "songRequests": { ".write": "auth != null" },
+    "userSongs": { ".write": "auth != null" },
+    "reviews": { ".write": "auth != null" },
+    "sectionRequests": { ".write": "auth != null" },
+    "letters": { ".write": "auth != null" },
+    "quizHistory": { ".write": "auth != null" },
+    "memories": { ".write": "auth != null" },
+    "selfLetters": { ".write": "auth != null" },
+    "dreams": { ".write": "auth != null" },
+    "lanterns": { ".write": "auth != null" },
+    "ourStoryAnswers": { ".write": "auth != null" },
+    "stats": { ".write": "auth != null" },
+    "userData": { ".write": "auth != null" },
+
+    "$other": { ".write": false }
+  }
+}

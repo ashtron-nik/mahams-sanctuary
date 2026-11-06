@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="preload" href="girl-assets/atlas.png" as="image">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>lost — Dreambox</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%99%A1%3C/text%3E%3C/svg%3E">
+  <link rel="manifest" href="manifest.json">
+  <style>
+    :root {
+      --ink: #17130f;
+      --parchment: #ffebd2;
+      --parchment-dim: #c7b8a1;
+      --ash: #6b5f52;
+      --gold: #ffe680;
+      --ember: #e85d3a;
+      --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+      --font-body: "Lora", Georgia, "Times New Roman", serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      cursor: url('cursor images/kuromi idle.jpg'), auto;
+
+      margin: 0;
+      background-color: #181214;
+      color: var(--parchment);
+      font-family: var(--font-body);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      text-align: center;
+      padding: 2rem;
+    }
+    .container { max-width: 480px; }
+    h1 {
+      font-family: var(--font-display);
+      font-size: clamp(3rem, 12vw, 5rem);
+      margin: 0;
+      color: var(--ash);
+      text-shadow: 0 0 40px rgba(255, 230, 128, .15);
+    }
+    p {
+      color: var(--parchment-dim);
+      margin: 1rem 0 2rem;
+      line-height: 1.8;
+      font-size: 1.05rem;
+    }
+    a {
+      display: inline-block;
+      padding: 0.6rem 1.8rem;
+      border-radius: 6px;
+      background: rgba(255, 230, 128, 0.1);
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      font-family: var(--font-display);
+      text-decoration: none;
+      transition: background 0.3s, color 0.3s;
+    }
+    a:hover {
+      background: var(--gold);
+      color: var(--ink);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>404</h1>
+    <p>some pages were never meant to be found. this is one of them.</p>
+    <a href="index.html">&larr; go home</a>
+  </div>
+  <script src="feature-flags.js"></script>
+  <script src="companion-girl.js"></script>
+  <script src="companion-boy.js"></script>
+  <script src="firefly-jar.js"></script>
+  <script src="interactive.js"></script>
+  <script>
+if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  BoyCompanion.init({ container: document.body }).catch(function(e) { console.warn("Boy companion:", e); });
+}
+</script>
+  <script>if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){(window.whenLoaderDone ? window.whenLoaderDone() : Promise.resolve()).then(function(){GirlCompanion.init({container:document.body}).catch(function(e){console.warn('Girl companion:',e);})})}</script>
+  <script defer src="matrix-rain.js"></script>
+<script defer src="global-easter-eggs.js"></script>
+<script defer src="interactions.js"></script>
+
+  <script src="secret-letters.js"></script>
+  <script src="butterfly-collection.js"></script>
+  <script src="world-progress.js"></script>
+  <script src="random-constellations.js"></script>
+<script>document.addEventListener('mousedown',function(){document.body.style.cursor="url('cursor images/kuromi click.jpg'), auto"});document.addEventListener('mouseup',function(){document.body.style.cursor="url('cursor images/kuromi idle.jpg'), auto"});</script>
+</body>
+</html>

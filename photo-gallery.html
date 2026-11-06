@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Photo Gallery � Dreambox</title>
+  <meta name="description" content="Fragments of light, caught in silver and shadow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500;1,9..144,600&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%99%A1%3C/text%3E%3C/svg%3E">
+  <link rel="manifest" href="manifest.json">
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+  <script src="fb-db.js"></script>
+  <script src="section-lock.js"></script>
+  <script>sectionLock('photo-gallery');</script>
+  <style>
+    :root {
+      --ink: #17130f;
+      --ink-soft: #1e1811;
+      --ink-line: #33291e;
+      --parchment: #ffebd2;
+      --parchment-dim: #c7b8a1;
+      --ash: #6b5f52;
+      --gold: #ffe680;
+      --ember: #e85d3a;
+      --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+      --font-body: "Lora", Georgia, "Times New Roman", serif;
+      --pad-inline: clamp(1.25rem, 6vw, 2.25rem);
+      --glass: rgba(255, 220, 160, .08);
+      --glassBorder: rgba(255, 210, 150, .35);
+    }
+    * { box-sizing: border-box; }
+    body {
+      cursor: url('cursor images/imresizer-meme-pop-cat-pack.jpg'), auto;
+
+      margin: 0;
+      background-color: #181214;
+      color: var(--parchment);
+      font-family: var(--font-body);
+      font-size: 1.0625rem;
+      line-height: 1.8;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      background-image:
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(160, 110, 60, 0.1), transparent 60%),
+        radial-gradient(ellipse 60% 40% at 50% 100%, rgba(130, 50, 40, 0.06), transparent 60%);
+    }
+    .page-header {
+      padding: clamp(3rem, 10vh, 5rem) var(--pad-inline) clamp(1.5rem, 4vh, 2.5rem);
+      text-align: center;
+    }
+    .page-header h1 {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: clamp(2rem, 7vw, 3.5rem);
+      color: var(--parchment);
+      margin: 0 0 0.5rem;
+      text-shadow: 0 0 30px rgba(255, 230, 128, .3), 0 2px 4px rgba(0,0,0,.6);
+    }
+    .page-header p {
+      color: var(--parchment-dim);
+      font-size: clamp(0.9rem, 2vw, 1rem);
+      font-style: italic;
+      margin: 0;
+    }
+    .gallery {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--pad-inline) clamp(4rem, 10vh, 6rem);
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 12px;
+      content-visibility: auto;
+    }
+    .gallery-item {
+      position: relative;
+      border-radius: 10px;
+      overflow: hidden;
+      background: var(--glass);
+      border: 1px solid var(--glassBorder);
+      cursor: pointer;
+      transition: border-color 0.45s cubic-bezier(0.22,1,0.36,1), transform 0.45s cubic-bezier(0.22,1,0.36,1), box-shadow 0.45s cubic-bezier(0.22,1,0.36,1);
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .gallery-item:hover {
+      border-color: var(--gold);
+      transform: scale(1.03);
+      box-shadow: 0 16px 44px rgba(212,165,165,0.4), 0 0 0 1px rgba(212,165,165,0.2);
+      z-index: 2;
+    }
+    .gallery-item img,
+    .gallery-item video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: filter 0.5s cubic-bezier(0.22,1,0.36,1), opacity 0.4s ease;
+    }
+    .gallery-item img { background: rgba(255, 220, 160, .04); filter: brightness(0.78) saturate(0.7) sepia(0.1) contrast(1.04); }
+    .gallery-item:hover img { filter: brightness(1.06) saturate(1.1) sepia(0) contrast(1.06); }
+    .gallery-item img, .gallery-item video { opacity: 0; }
+    .gallery-item img.loaded, .gallery-item video.loaded { opacity: 1; }
+    .gallery-item .play-badge {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .gallery-item:hover .play-badge { opacity: 1; }
+    .gallery-item .play-badge svg {
+      width: 48px;
+      height: 48px;
+      filter: drop-shadow(0 2px 8px rgba(0,0,0,.5));
+    }
+    .gallery-item .item-label {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 1.2rem 0.75rem 0.6rem;
+      background: linear-gradient(transparent, rgba(0,0,0,.7));
+      font-family: var(--font-display);
+      font-size: 0.8rem;
+      color: var(--parchment);
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 3;
+    }
+    .gallery-item:hover .item-label { opacity: 1; }
+    .gallery-item .item-note {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      transform: translateY(-50%);
+      padding: 0.75rem 1rem;
+      font-family: var(--font-body);
+      font-size: 0.82rem;
+      font-style: italic;
+      color: var(--parchment);
+      opacity: 0;
+      transition: opacity 0.4s;
+      pointer-events: none;
+      text-align: center;
+      line-height: 1.5;
+      z-index: 3;
+      text-shadow: 0 1px 4px rgba(0,0,0,.6);
+    }
+    .gallery-item:hover .item-note { opacity: 1; }
+
+    /* Vignette overlay */
+    .gallery-item::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 10px;
+      background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.35) 100%);
+      pointer-events: none;
+      z-index: 1;
+      transition: opacity 0.4s;
+    }
+    .gallery-item:hover::before { opacity: 0.3; }
+
+    /* Film grain texture */
+    .gallery-item::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 10px;
+      opacity: 0.04;
+      pointer-events: none;
+      z-index: 2;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 128px 128px;
+      animation: grainShift 0.8s steps(4) infinite;
+    }
+    @keyframes grainShift { 0% { transform: translate(0,0); } 25% { transform: translate(-2px,1px); } 50% { transform: translate(1px,-1px); } 75% { transform: translate(-1px,2px); } 100% { transform: translate(0,0); } }
+
+    /* Per-photo random effects */
+    .eff-blur img { filter: brightness(0.7) saturate(0.6) blur(10px); }
+    .eff-blur:hover img { filter: brightness(1.06) saturate(1.1) blur(0); }
+    .eff-negative img { filter: brightness(0.8) saturate(0) invert(1) contrast(1.4); }
+    .eff-negative:hover img { filter: brightness(1.06) saturate(1.1) invert(0) contrast(1.06); }
+    .eff-negative::before { display: none; }
+    .eff-polaroid { background: #f5f0e8; border: 8px solid #f5f0e8; border-bottom: 32px solid #f5f0e8; transform: rotate(-2deg); }
+    .eff-polaroid:hover { transform: rotate(0deg) scale(1.03); }
+    .eff-polaroid img { filter: brightness(0.92) saturate(0.85) sepia(0.08); }
+    .eff-polaroid:hover img { filter: brightness(1) saturate(1) sepia(0); }
+    .eff-polaroid::before, .eff-polaroid::after { display: none; }
+    .eff-color-drain img { filter: brightness(0.85) saturate(0) contrast(1.1); }
+    .eff-color-drain:hover img { filter: brightness(1.06) saturate(1.15) contrast(1.06); }
+    .eff-sepia-deep img { filter: brightness(0.75) saturate(0.5) sepia(0.35) contrast(1.1); }
+    .eff-sepia-deep:hover img { filter: brightness(1.08) saturate(1.15) sepia(0) contrast(1.06); }
+    .eff-zoom img { transform: scale(1.35); filter: brightness(0.7) saturate(0.6); }
+    .eff-zoom:hover img { transform: scale(1); filter: brightness(1.06) saturate(1.1); }
+    .eff-rotate { transform: rotate(-1.5deg); }
+    .eff-rotate:hover { transform: rotate(0deg) scale(1.03); }
+    .eff-rotate img { filter: brightness(0.8) saturate(0.65); }
+    .eff-rotate:hover img { filter: brightness(1.06) saturate(1.1); }
+    .eff-shadow-lift { box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+    .eff-shadow-lift:hover { box-shadow: 0 20px 50px rgba(212,165,165,0.45), 0 0 0 1px rgba(212,165,165,0.2); }
+    .eff-glow:hover { box-shadow: 0 0 40px rgba(255,210,120,0.5), 0 0 80px rgba(255,180,80,0.2); }
+    .eff-glow img { filter: brightness(0.85) saturate(0.8); }
+    .eff-glow:hover img { filter: brightness(1.1) saturate(1.15); }
+    .eff-diamond .diamond-gem { position: absolute; top: 8px; right: 8px; font-size: 1.1rem; opacity: 0; transform: scale(0.6) rotate(-15deg); transition: all 0.35s cubic-bezier(0.22,1,0.36,1); z-index: 5; pointer-events: none; filter: drop-shadow(0 1px 3px rgba(0,0,0,0.4)); }
+    .eff-diamond:hover .diamond-gem { opacity: 1; transform: scale(1) rotate(0deg); }
+    .eff-tall { grid-row: span 2; aspect-ratio: auto; }
+    .eff-wide { grid-column: span 2; aspect-ratio: 2/1; }
+    .eff-big { grid-row: span 2; grid-column: span 2; aspect-ratio: auto; }
+
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: rgba(0,0,0,.92);
+      backdrop-filter: blur(12px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .lightbox.open { display: flex; opacity: 1; }
+    .lightbox-media {
+      max-width: 90vw;
+      max-height: 85vh;
+      border-radius: 8px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.6);
+      object-fit: contain;
+    }
+    .lightbox-media.video-el {
+      max-width: 90vw;
+      max-height: 85vh;
+      border-radius: 8px;
+    }
+    .lightbox-close {
+      position: absolute;
+      top: 1rem;
+      right: 1.25rem;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,210,150,.15);
+      background: rgba(0,0,0,.4);
+      color: var(--parchment);
+      font-size: 1.3rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.25s;
+      z-index: 10;
+    }
+    .lightbox-close:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+      background: rgba(255,230,128,.1);
+    }
+    .lightbox-prev, .lightbox-next {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,210,150,.1);
+      background: rgba(0,0,0,.3);
+      color: var(--parchment);
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.25s;
+      z-index: 10;
+    }
+    .lightbox-prev { left: 1rem; }
+    .lightbox-next { right: 1rem; }
+    .lightbox-prev:hover, .lightbox-next:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+      background: rgba(255,230,128,.1);
+    }
+    .lightbox-counter {
+      position: absolute;
+      bottom: 1.25rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: var(--font-display);
+      font-size: 0.8rem;
+      color: var(--ash);
+      z-index: 10;
+    }
+    .lightbox-note {
+      position: absolute;
+      bottom: 3.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      max-width: min(80vw, 500px);
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      font-style: italic;
+      color: var(--parchment-dim);
+      text-align: center;
+      line-height: 1.5;
+      z-index: 10;
+      padding: 0.75rem 1.25rem;
+      background: rgba(0,0,0,.4);
+      border-radius: 8px;
+      backdrop-filter: blur(4px);
+      pointer-events: none;
+    }
+    #skyOverlay { z-index: 0 !important; opacity: 1 !important; }
+    body {
+      cursor: url('cursor images/imresizer-meme-pop-cat-pack.jpg'), auto;
+ background: transparent !important; }
+    .page-header, .gallery, .footer { position: relative; z-index: 1; }
+    @media (max-width: 600px) {
+      .gallery { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+      .lightbox { padding: 0.75rem; }
+      .lightbox-prev, .lightbox-next { width: 36px; height: 36px; font-size: 1rem; }
+      .lightbox-prev { left: 0.5rem; }
+      .lightbox-next { right: 0.5rem; }
+    }
+    @media (max-width: 400px) { .gallery { grid-template-columns: 1fr 1fr; gap: 6px; } }
+  </style>
+</head>
+<body>
+
+  <main>
+    <div class="page-header">
+      <h1>&#x2B50; Photo Gallery</h1>
+      <p>Fragments of light, caught in silver and shadow</p>
+    </div>
+
+    <div class="gallery" id="galleryGrid"></div>
+
+    <div class="footer" style="text-align:center;padding:2rem var(--pad-inline);border-top:1px solid var(--ink-line);max-width:1200px;margin:0 auto;">
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap;justify-content:center;margin-bottom:1rem;">
+        <a href="index.html" style="background:rgba(255,220,160,.08);border:1px solid rgba(255,210,150,.15);color:#6b5f52;padding:.4rem .9rem;border-radius:6px;cursor:pointer;font-family:inherit;font-size:.8rem;text-decoration:none;transition:all .25s;" onmouseover="this.style.borderColor='#ffe680';this.style.color='#ffe680'" onmouseout="this.style.borderColor='rgba(255,210,150,.15)';this.style.color='#6b5f52'">&#x2190; Home</a>
+        <a href="admin.html" style="background:rgba(255,220,160,.08);border:1px solid rgba(255,210,150,.15);color:#6b5f52;padding:.4rem .9rem;border-radius:6px;cursor:pointer;font-family:inherit;font-size:.8rem;text-decoration:none;transition:all .25s;" onmouseover="this.style.borderColor='#ffe680';this.style.color='#ffe680'" onmouseout="this.style.borderColor='rgba(255,210,150,.15)';this.style.color='#6b5f52'">&#x2699; Admin</a>
+        <a href="sky-observatory.html" style="background:rgba(255,220,160,.08);border:1px solid rgba(255,210,150,.15);color:#6b5f52;padding:.4rem .9rem;border-radius:6px;cursor:pointer;font-family:inherit;font-size:.8rem;text-decoration:none;transition:all .25s;" onmouseover="this.style.borderColor='#ffe680';this.style.color='#ffe680'" onmouseout="this.style.borderColor='rgba(255,210,150,.15)';this.style.color='#6b5f52'">&#x1F52D; Sky Observatory</a>
+      </div>
+      <p style="color:var(--ash);font-size:0.85rem;margin:0;">for  &mdash; always</p>
+    </div>
+  </main>
+
+  <div class="lightbox" id="lightbox">
+    <button class="lightbox-close" id="lbClose">&times;</button>
+    <button class="lightbox-prev" id="lbPrev">&#x2039;</button>
+    <button class="lightbox-next" id="lbNext">&#x203A;</button>
+    <div class="lightbox-counter" id="lbCounter"></div>
+    <div class="lightbox-note" id="lbNote"></div>
+  </div>
+
+  <script src="feature-flags.js"></script>
+  <script src="skies.js"></script>
+  <script src="sky-living.js"></script>
+  <script src="landscape.js"></script>
+  <script src="interactive.js"></script>
+  <script src="quiz.js"></script>
+  <script>
+    (function() {
+      var c = document.createElement('div');
+      c.id = 'heartContainer';
+      c.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:9998;';
+      document.body.appendChild(c);
+      document.addEventListener('mousemove', function(e) {
+        if (Math.random() > 0.12) return;
+        var h = document.createElement('span');
+        h.textContent = '\u2661';
+        h.setAttribute('aria-hidden', 'true');
+        h.style.cssText = 'position:absolute;left:' + e.clientX + 'px;top:' + e.clientY + 'px;font-size:' + (8 + Math.random() * 14) + 'px;color:rgba(255,100,150,' + (0.25 + Math.random() * 0.4) + ');pointer-events:none;animation:hFloat ' + (1.5 + Math.random() * 2) + 's ease-out forwards;';
+        c.appendChild(h);
+        setTimeout(function() { h.remove(); }, 3500);
+      });
+      var s = document.createElement('style');
+      s.textContent = '@keyframes hFloat{0%{opacity:1;transform:translateY(0) scale(1) rotate(0deg)}100%{opacity:0;transform:translateY(-90px) scale(0.2) rotate(20deg)}}';
+      document.head.appendChild(s);
+      var b = document.createElement('div');
+      b.style.cssText = 'text-align:center;padding:2rem 1rem;position:relative;z-index:3;';
+      var l = document.createElement('a');
+      l.href = 'stats.html';
+      l.textContent = '\uD83D\uDCCA Stats';
+      l.style.cssText = 'background:rgba(255,220,160,.08);border:1px solid rgba(255,210,150,.15);color:#6b5f52;padding:.4rem .9rem;border-radius:6px;cursor:pointer;font-family:inherit;font-size:.8rem;text-decoration:none;transition:all .25s;display:inline-block;margin:0 .4rem;';
+      l.onmouseover = function() { this.style.borderColor = '#ffe680'; this.style.color = '#ffe680'; };
+      l.onmouseout = function() { this.style.borderColor = 'rgba(255,210,150,.15)'; this.style.color = '#6b5f52'; };
+      b.appendChild(l);
+      var sb = document.createElement('span');
+      sb.id = 'skyBtnContainer';
+      b.appendChild(sb);
+      document.body.appendChild(b);
+      if (window.Skies) Skies.createButton(document.getElementById('skyBtnContainer'));
+    })();
+  </script>
+
+  <script>
+    (function () {
+      var DEFAULT_MEDIA = [];
+      ];
+
+      var MEDIA = [];
+      var grid = document.getElementById('galleryGrid');
+      var lightbox = document.getElementById('lightbox');
+      var lbClose = document.getElementById('lbClose');
+      var lbPrev = document.getElementById('lbPrev');
+      var lbNext = document.getElementById('lbNext');
+      var lbCounter = document.getElementById('lbCounter');
+      var lbNote = document.getElementById('lbNote');
+      var currentIndex = -1;
+
+      function loadMedia() {
+        try {
+          FB.get('config', 'gallery').then(function (data) {
+            var existing = (data && data.items && data.items.length) ? data.items : [];
+            var fileSet = {};
+            for (var ei = 0; ei < existing.length; ei++) fileSet[existing[ei].file] = true;
+            var noteMap = {};
+            for (var di = 0; di < DEFAULT_MEDIA.length; di++) noteMap[DEFAULT_MEDIA[di].file] = DEFAULT_MEDIA[di].note;
+            var changed = false;
+            for (var si = 0; si < existing.length; si++) {
+              if (!existing[si].note && noteMap[existing[si].file]) {
+                existing[si].note = noteMap[existing[si].file];
+                changed = true;
+              }
+            }
+            for (var di = 0; di < DEFAULT_MEDIA.length; di++) {
+              if (!fileSet[DEFAULT_MEDIA[di].file]) {
+                existing.push(DEFAULT_MEDIA[di]);
+                changed = true;
+              }
+            }
+            MEDIA = existing;
+            if (changed) { FB.put('config', { id: 'gallery', items: MEDIA }); }
+            render();
+          }).catch(function () {
+            MEDIA = DEFAULT_MEDIA.slice();
+            render();
+          });
+        } catch (e) {
+          MEDIA = DEFAULT_MEDIA.slice();
+          render();
+        }
+      }
+
+      function getUrl(m) {
+        if (m.fileData) {
+          if (typeof m.fileData === 'string' && m.fileData.indexOf('data:') === 0) return m.fileData;
+          return URL.createObjectURL(new Blob([m.fileData], { type: m.fileType || 'image/jpeg' }));
+        }
+        return m.file;
+      }
+
+      function render() {
+        var EFFECTS = ['eff-blur','eff-negative','eff-polaroid','eff-color-drain','eff-sepia-deep','eff-zoom','eff-rotate','eff-shadow-lift','eff-glow','eff-diamond'];
+        var STAGGER = ['eff-tall','eff-wide','eff-big'];
+        var html = '';
+        for (var i = 0; i < MEDIA.length; i++) {
+          var m = MEDIA[i];
+          var isVideo = m.type === 'video';
+          var src = getUrl(m);
+          var rng = (function(s){return function(){s=(s*9301+49297)%233280;return s/233280;};})(i * 7919 + 1);
+          var eff = EFFECTS[Math.floor(rng() * EFFECTS.length)];
+          var stagger = '';
+          if (!isVideo && rng() > 0.6) stagger = ' ' + STAGGER[Math.floor(rng() * STAGGER.length)];
+          html += '<div class="gallery-item ' + eff + stagger + '" data-index="' + i + '">';
+          if (eff === 'eff-diamond') html += '<span class="diamond-gem">\uD83D\uDC8E</span>';
+          if (isVideo) {
+            html += '<video preload="metadata" muted playsinline>' +
+              '<source src="' + src + '" type="' + (m.fileType || 'video/mp4') + '">' +
+              '</video>';
+            html += '<div class="play-badge"><svg viewBox="0 0 24 24" fill="rgba(255,230,128,.9)"><path d="M8 5v14l11-7z"/></svg></div>';
+          } else {
+            html += '<img src="' + src + '" alt="' + m.label + '" loading="lazy">';
+          }
+          html += '<div class="item-label">' + esc(m.label) + '</div>';
+          if (m.note) {
+            html += '<div class="item-note">' + esc(m.note) + '</div>';
+          }
+          html += '</div>';
+        }
+        grid.innerHTML = html;
+
+        grid.querySelectorAll('img').forEach(function (img) {
+          if (img.complete) { img.classList.add('loaded'); }
+          else {
+            img.addEventListener('load', function () { this.classList.add('loaded'); });
+            img.addEventListener('error', function () { this.classList.add('loaded'); });
+          }
+        });
+        grid.querySelectorAll('video').forEach(function (v) {
+          if (v.readyState >= 2) { v.classList.add('loaded'); }
+          else {
+            v.addEventListener('loadeddata', function () { this.classList.add('loaded'); });
+            v.addEventListener('error', function () { this.classList.add('loaded'); });
+          }
+        });
+        setTimeout(function () {
+          grid.querySelectorAll('img:not(.loaded), video:not(.loaded)').forEach(function (el) { el.classList.add('loaded'); });
+        }, 3000);
+
+        grid.querySelectorAll('.gallery-item').forEach(function (item) {
+          item.addEventListener('click', function () {
+            var idx = parseInt(this.dataset.index);
+            openLightbox(idx);
+          });
+        });
+      }
+
+      function openLightbox(idx) {
+        currentIndex = idx;
+        var m = MEDIA[idx];
+        updateLightbox(m, idx);
+        lightbox.classList.add('open');
+        if (window.Interactions) window.Interactions.record('love', 'gallery_lightbox_open', m ? String(m.label || '').slice(0, 100) : '');
+      }
+
+      function updateLightbox(m, idx) {
+        var old = lightbox.querySelector('.lightbox-media, .lightbox-media.video-el');
+        if (old) old.remove();
+
+        var src = getUrl(m);
+        var el;
+        if (m.type === 'video') {
+          el = document.createElement('video');
+          el.className = 'lightbox-media video-el';
+          el.controls = true;
+          el.autoplay = true;
+          el.innerHTML = '<source src="' + src + '" type="' + (m.fileType || 'video/mp4') + '">';
+        } else {
+          el = document.createElement('img');
+          el.className = 'lightbox-media';
+          el.src = src;
+          el.alt = m.label;
+        }
+        lightbox.insertBefore(el, lightbox.querySelector('.lightbox-counter'));
+        lbCounter.textContent = (idx + 1) + ' / ' + MEDIA.length;
+        lbNote.textContent = m.note || '';
+      }
+
+      lbClose.addEventListener('click', function closeLightbox() {
+        lightbox.classList.remove('open');
+        var video = lightbox.querySelector('video.lightbox-media');
+        if (video) { video.pause(); video.src = ''; video.load(); }
+        currentIndex = -1;
+      });
+
+      lbPrev.addEventListener('click', function () {
+        if (currentIndex <= 0) return;
+        var video = lightbox.querySelector('video.lightbox-media');
+        if (video) { video.pause(); video.src = ''; video.load(); }
+        currentIndex--;
+        updateLightbox(MEDIA[currentIndex], currentIndex);
+      });
+
+      lbNext.addEventListener('click', function () {
+        if (currentIndex >= MEDIA.length - 1) return;
+        var video = lightbox.querySelector('video.lightbox-media');
+        if (video) { video.pause(); video.src = ''; video.load(); }
+        currentIndex++;
+        updateLightbox(MEDIA[currentIndex], currentIndex);
+      });
+
+      document.addEventListener('keydown', function (e) {
+        if (!lightbox.classList.contains('open')) return;
+        if (e.key === 'Escape') { lightbox.classList.remove('open'); var v = lightbox.querySelector('video.lightbox-media'); if (v) { v.pause(); v.src = ''; v.load(); } currentIndex = -1; }
+        if (e.key === 'ArrowLeft') lbPrev.click();
+        if (e.key === 'ArrowRight') lbNext.click();
+      });
+
+      lightbox.addEventListener('click', function (e) {
+        if (e.target === lightbox) { lightbox.classList.remove('open'); var v = lightbox.querySelector('video.lightbox-media'); if (v) { v.pause(); v.src = ''; v.load(); } currentIndex = -1; }
+      });
+
+      function esc(str) {
+        if (typeof str !== 'string') return '';
+        var d = document.createElement('div');
+        d.textContent = str;
+        return d.innerHTML;
+      }
+
+      loadMedia();
+
+      // ponytail: upload images to gallery (Firebase config/gallery, same store as admin)
+      // + parallax pool (localStorage ash-user-parallax, consumed by content-common.js)
+      var uploadBtn = document.createElement('button');
+      uploadBtn.textContent = '\uD83D\uDCC1 Add Photo';
+      uploadBtn.title = 'Upload your own photo � it joins the gallery and randomly appears in the 100 Organs parallax backgrounds';
+      uploadBtn.style.cssText = 'background:rgba(255,220,160,.08);border:1px solid rgba(255,210,150,.15);color:#6b5f52;padding:.4rem .9rem;border-radius:6px;cursor:pointer;font-family:inherit;font-size:.8rem;transition:all .25s;display:inline-block;margin:0 .4rem;';
+      var btnContainer = document.querySelector('div[style*="text-align:center"]') || document.body;
+      btnContainer.appendChild(uploadBtn);
+
+      var fileInput = document.createElement('input');
+      fileInput.type = 'file';
+      fileInput.accept = 'image/*';
+      fileInput.multiple = true;
+      fileInput.style.display = 'none';
+      document.body.appendChild(fileInput);
+
+      uploadBtn.addEventListener('click', function () { fileInput.click(); });
+      uploadBtn.addEventListener('mouseenter', function () { this.style.borderColor = 'rgba(255,230,128,.5)'; this.style.color = '#ffe680'; });
+      uploadBtn.addEventListener('mouseleave', function () { this.style.borderColor = 'rgba(255,210,150,.2)'; this.style.color = '#c8b89e'; });
+
+      fileInput.addEventListener('change', function () {
+        var files = this.files;
+        if (!files.length) return;
+        var existing = [];
+        try { existing = JSON.parse(localStorage.getItem('ash-user-parallax') || '[]'); } catch (e) {}
+        var loaded = 0;
+        var total = files.length;
+        var added = [];
+        // ponytail: one caption prompt for a single upload; multi-uploads skip captions
+        var caption = files.length === 1 ? (window.prompt('A memory for this photo? (optional)') || '').trim() : '';
+        for (var fi = 0; fi < files.length; fi++) {
+          (function (file) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+              var dataUrl = e.target.result;
+              existing.push(dataUrl);
+              added.push({ type: 'image', file: '', fileData: dataUrl, fileType: file.type, label: 'User Upload', note: caption });
+              loaded++;
+              if (loaded === total) {
+                for (var mi = 0; mi < added.length; mi++) MEDIA.push(added[mi]);
+                try {
+                  localStorage.setItem('ash-user-parallax', JSON.stringify(existing));
+                } catch (err) {}
+                // Persist to Firebase gallery so the photo shows everywhere (same store as admin)
+                try {
+                  FB.get('config', 'gallery').then(function (data) {
+                    var items = (data && data.items && data.items.length) ? data.items.slice() : [];
+                    for (var ai = 0; ai < added.length; ai++) items.push(added[ai]);
+                    FB.put('config', { id: 'gallery', items: items }).catch(function () {});
+                    MEDIA = items;
+                    render();
+                  }).catch(function () { render(); });
+                } catch (e) { render(); }
+                uploadBtn.textContent = '\u2705 ' + total + ' added (' + existing.length + ' total)';
+                setTimeout(function () { uploadBtn.textContent = '\uD83D\uDCC1 Add Photo'; }, 3000);
+                if (window.Interactions) window.Interactions.record('upload', 'photo_uploaded', total + ' photo(s)');
+              }
+            };
+            reader.readAsDataURL(file);
+          })(files[fi]);
+        }
+      });
+    })();
+  </script>
+  <script defer src="music.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function (rs) { rs.forEach(function (r) { r.unregister(); }); });
+      if (location.hostname !== '127.0.0.1' && location.hostname !== 'localhost') {
+        navigator.serviceWorker.register('./sw.js').catch(function () {});
+      }
+    }
+  </script>
+  <script src="butterfly-collection.js"></script>
+  <script src="world-progress.js"></script>
+  <script src="global-interactions.js"></script>
+<script>document.addEventListener('mousedown',function(){document.body.style.cursor="url('cursor images/imresizer-meme-pop-cat-pack click.jpg'), auto"});document.addEventListener('mouseup',function(){document.body.style.cursor="url('cursor images/imresizer-meme-pop-cat-pack.jpg'), auto"});</script>
+<script src="global-easter-eggs.js"></script>
+<script defer src="interactions.js"></script>
+<script src="activity-tracker.js"></script>
+<script src="events.js"></script>
+<script src="puzzle-hunt.js"></script>
+<script src="letters.js"></script>
+</body>
+</html>

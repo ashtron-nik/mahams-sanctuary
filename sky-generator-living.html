@@ -1,0 +1,2054 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sky Generator — Living Skies (full demo)</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    min-height: 200vh;
+    font-family: Georgia, serif;
+    color: #ffebd2;
+    background: #181214;
+    padding: 2rem;
+  }
+  h1 { font-size: 1.6rem; margin-bottom: .5rem; color: #ffe680; font-family: Fraunces, Georgia, serif; }
+  p { color: #a89a86; margin-bottom: 1.2rem; max-width: 40rem; line-height: 1.6; }
+  .content { max-width: 40rem; position: relative; z-index: 2; }
+  .demo-btn-area {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    text-align: center;
+    display: flex;
+    gap: .6rem;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 92vw;
+  }
+  #previewBtn, #skySelect, #moodTest {
+    background: rgba(255,220,160,.08);
+    border: 1px solid rgba(255,210,150,.15);
+    color: #c7b8a1;
+    padding: .5rem 1.1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: .85rem;
+    transition: all .25s;
+  }
+  #previewBtn:hover, #moodTest:hover { border-color: #ffe680; color: #ffe680; }
+  #skySelect { max-width: 40vw; }
+  #skyMsg {
+    position: fixed;
+    bottom: 6.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: Fraunces, Georgia, serif;
+    font-size: 1rem;
+    font-style: italic;
+    color: #ffe680;
+    text-shadow: 0 2px 12px rgba(0,0,0,.6);
+    text-align: center;
+    pointer-events: none;
+    z-index: 10000;
+    opacity: 1;
+    transition: opacity 2s ease;
+    max-width: 80vw;
+    white-space: nowrap;
+  }
+  #defaultSkyMsg {
+    position: fixed;
+    bottom: 6.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: Fraunces, Georgia, serif;
+    font-size: .85rem;
+    font-style: italic;
+    color: #6b5f52;
+    text-align: center;
+    pointer-events: none;
+    z-index: 10000;
+    opacity: .6;
+  }
+  code { color: #ffe680; }
+</style>
+</head>
+<body>
+
+<div class="content">
+  <h1>&#x2728; Sky Generator — Living Skies</h1>
+  <p>
+    Every sky from <code>skies.js</code> is here, unchanged, plus the full
+    <code>sky-living.js</code> layer on top: hover and click the stars, catch a
+    shooting star, click the moon, look for a faint constellation, and watch
+    the sky slowly evolve the longer you leave it open. Pick any sky by name
+    below to test it directly, or hit random. A journal button sits bottom-right.
+  </p>
+  <p>Scroll down to confirm the sky overlay stays fixed behind this text.</p>
+</div>
+
+<div class="demo-btn-area">
+  <select id="skySelect" aria-label="Choose a sky"></select>
+  <button id="previewBtn">&#x1F326;&#xFE0F; Random Sky</button>
+  <button id="moodTest">&#x1F4AC; Test mood: romantic</button>
+</div>
+
+<div id="defaultSkyMsg">&#x2661; Pick a sky above, or click "Random Sky" &#x2661;</div>
+
+<script>
+/* ===================================================================
+   SKIES.JS — verbatim, unmodified, embedded for a single-file demo
+   =================================================================== */
+/* ===================================================================
+   SKY ENGINE — atmospheric rendering system
+   small set of reusable, config-driven rendering engines running on
+   two crossfading <canvas> layers under a single shared rAF loop.
+
+   Engines:
+     NoiseGen        deterministic 2D value noise (wind, aurora waves, cloud breathing)
+     WindField        slowly drifting wind vector, shared by particle systems
+     ParticleSystem   generic pooled particle system (rain/snow/stars/meteor/petal/
+                       leaf/firefly/bubble/ember/butterfly/planet/dust)
+     CloudLayer       offscreen-rendered soft cloud/fog/haze puffs, periodically
+                       re-rendered ("evolve") and cheaply translated for drift
+     Aurora           noise-driven flowing ribbons, additive blend
+     Light            sun / moon / eclipse glow with optional god-rays
+     WaveField        aurora-style ribbon renderer reused horizontally for ocean shimmer
+     SkyInstance      wires a sky config to the engines above, owns update()/draw()
+     OverlayManager    owns the two canvases, crossfades between SkyInstances, disposes
+                       the outgoing one after the fade so nothing keeps animating
+     AnimationManager single rAF loop, delta-time based, pauses when tab hidden,
+                       falls back to one static frame under prefers-reduced-motion
+
+   Public surface kept IDENTICAL to the previous version:
+     window.Skies = { SKIES, apply, random, getCurrent, createButton }
+   =================================================================== */
+(function () {
+  'use strict';
+
+  var SKY_KEY = 'ash-jukebox-sky';
+  var msgEl = null;
+  var reducedMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+
+  function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+  function lerp(a, b, t) { return a + (b - a) * t; }
+  function randRange(a, b) { return a + Math.random() * (b - a); }
+
+  function hexToRgb(hex) {
+    var h = hex.replace('#', '');
+    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+    var n = parseInt(h, 16);
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  }
+  function rgba(hex, a) {
+    var c = hexToRgb(hex);
+    return 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + a + ')';
+  }
+
+  /* ================= NOISE ================= */
+  var NoiseGen = (function () {
+    var perm = new Uint8Array(512);
+    (function seed() {
+      var p = new Uint8Array(256);
+      var i;
+      for (i = 0; i < 256; i++) p[i] = i;
+      for (i = 255; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var t = p[i]; p[i] = p[j]; p[j] = t;
+      }
+      for (i = 0; i < 512; i++) perm[i] = p[i & 255];
+    })();
+    function fade(t) { return t * t * t * (t * (t * 6 - 15) + 10); }
+    function grad(hash, x, y) {
+      var h = hash & 7, u = h < 4 ? x : y, v = h < 4 ? y : x;
+      return ((h & 1) ? -u : u) + ((h & 2) ? -2 * v : 2 * v);
+    }
+    return {
+      noise2: function (x, y) {
+        var X = Math.floor(x) & 255, Y = Math.floor(y) & 255;
+        x -= Math.floor(x); y -= Math.floor(y);
+        var u = fade(x), v = fade(y);
+        var aa = perm[perm[X] + Y], ab = perm[perm[X] + Y + 1];
+        var ba = perm[perm[X + 1] + Y], bb = perm[perm[X + 1] + Y + 1];
+        var x1 = lerp(grad(aa, x, y), grad(ba, x - 1, y), u);
+        var x2 = lerp(grad(ab, x, y - 1), grad(bb, x - 1, y - 1), u);
+        return (lerp(x1, x2, v) + 1) / 2;
+      }
+    };
+  })();
+
+  /* ================= WIND ================= */
+  var WindField = {
+    angle: 100, strength: 0.4, t: Math.random() * 100,
+    update: function (dt) {
+      this.t += dt * 0.00006;
+      this.angle = 90 + (NoiseGen.noise2(this.t, 0) - 0.5) * 50;
+      this.strength = 0.2 + NoiseGen.noise2(this.t + 40, 0) * 0.6;
+    }
+  };
+
+  /* ================= PARTICLE SYSTEM (pooled) ================= */
+  function ParticleSystem(type, count, opts) {
+    this.type = type;
+    this.count = count;
+    this.opts = opts || {};
+    this.particles = new Array(count);
+    for (var i = 0; i < count; i++) this.particles[i] = this.spawn(null, true);
+  }
+  ParticleSystem.prototype.spawn = function (p, initial) {
+    var o = this.opts, w = 1, h = 1;
+    p = p || {};
+    switch (this.type) {
+      case 'rain':
+        p.x = Math.random() * 100; p.y = initial ? Math.random() * 100 : -5;
+        p.len = randRange(o.minLen || 10, o.maxLen || 26);
+        p.speed = randRange(o.minSpeed || 45, o.maxSpeed || 75);
+        p.alpha = randRange(0.2, 0.5); break;
+      case 'snow':
+        p.x = Math.random() * 100; p.y = initial ? Math.random() * 100 : -5;
+        p.r = randRange(o.minR || 1.5, o.maxR || 4);
+        p.speed = randRange(o.minSpeed || 4, o.maxSpeed || 10);
+        p.sway = Math.random() * 6.28; p.swaySpeed = randRange(0.4, 1.2);
+        p.alpha = randRange(0.5, 1); break;
+      case 'stars':
+        p.x = Math.random() * 100; p.y = Math.random() * (o.maxY || 90);
+        p.r = randRange(o.minR || 0.5, o.maxR || 2);
+        p.phase = Math.random() * 6.28; p.speed = randRange(0.15, 0.4);
+        p.drift = randRange(-0.15, 0.15); break;
+      case 'meteor':
+        p.active = false; p.timer = randRange(0.5, o.interval || 3); break;
+      case 'petal': case 'leaf': case 'feather':
+        p.x = Math.random() * 100; p.y = initial ? Math.random() * 100 : -8;
+        p.size = randRange(o.minSize || 6, o.maxSize || 14);
+        p.rot = Math.random() * 360; p.rotSpeed = randRange(-40, 40);
+        p.speed = randRange(o.minSpeed || 3, o.maxSpeed || 7);
+        p.swayPhase = Math.random() * 6.28;
+        p.color = o.colors ? o.colors[(Math.random() * o.colors.length) | 0] : '#ffffff';
+        p.alpha = randRange(0.6, 1); break;
+      case 'firefly': case 'butterfly':
+        p.x = Math.random() * 100; p.y = randRange(o.minY || 25, o.maxY || 90);
+        p.baseX = p.x; p.baseY = p.y;
+        p.phase = Math.random() * 6.28; p.speed = randRange(0.2, 0.5);
+        p.size = randRange(o.minSize || 2, o.maxSize || 4);
+        p.color = o.colors ? o.colors[(Math.random() * o.colors.length) | 0] : '#d8ff8c';
+        p.glowPhase = Math.random() * 6.28; break;
+      case 'bubble': case 'ember':
+        p.x = Math.random() * 100; p.y = initial ? Math.random() * 100 : 105;
+        p.r = randRange(o.minR || 6, o.maxR || 18);
+        p.speed = randRange(o.minSpeed || 3, o.maxSpeed || 8);
+        p.swayPhase = Math.random() * 6.28;
+        p.alpha = randRange(0.4, 0.9); break;
+      case 'planet':
+        p.x = randRange(10, 90); p.y = randRange(10, 80);
+        p.r = randRange(o.minR || 12, o.maxR || 30);
+        p.color = o.colors ? o.colors[(Math.random() * o.colors.length) | 0] : '#a7d8ff';
+        p.speed = randRange(0.4, 0.9); break;
+      case 'dust':
+        p.x = Math.random() * 100; p.y = Math.random() * 100;
+        p.r = randRange(0.5, 1.6); p.phase = Math.random() * 6.28;
+        p.speed = randRange(0.1, 0.3); break;
+    }
+    return p;
+  };
+  ParticleSystem.prototype.update = function (dt, wind, t) {
+    var o = this.opts, ps = this.particles, windX = Math.cos(wind.angle * Math.PI / 180) * wind.strength;
+    for (var i = 0; i < ps.length; i++) {
+      var p = ps[i];
+      switch (this.type) {
+        case 'rain':
+          p.y += p.speed * dt; p.x += windX * dt * 6;
+          if (p.y > 105) this.spawn(p, false);
+          break;
+        case 'snow':
+          p.sway += p.swaySpeed * dt;
+          p.y += p.speed * dt; p.x += (Math.sin(p.sway) * 0.4 + windX * 0.6) * dt * 4;
+          if (p.y > 105) this.spawn(p, false);
+          break;
+        case 'stars':
+          p.phase += dt * p.speed; p.x += p.drift * dt;
+          if (p.x > 102) p.x = -2; if (p.x < -2) p.x = 102;
+          break;
+        case 'meteor':
+          if (!p.active) {
+            p.timer -= dt;
+            if (p.timer <= 0) {
+              p.active = true; p.x = randRange(45, 95); p.y = randRange(0, 22);
+              p.vx = -randRange(18, 26); p.vy = randRange(12, 18); p.life = 0; p.maxLife = randRange(0.6, 1);
+            }
+          } else {
+            p.life += dt; p.x += p.vx * dt; p.y += p.vy * dt;
+            if (p.life > p.maxLife) { p.active = false; p.timer = randRange(1.5, o.interval || 4); }
+          }
+          break;
+        case 'petal': case 'leaf': case 'feather':
+          p.swayPhase += dt * 0.8; p.rot += p.rotSpeed * dt;
+          p.y += p.speed * dt; p.x += (Math.sin(p.swayPhase) * 1.4 + windX * 0.8) * dt * 4;
+          if (p.y > 108) this.spawn(p, false);
+          break;
+        case 'firefly': case 'butterfly':
+          p.phase += dt * p.speed; p.glowPhase += dt * 1.6;
+          p.x = p.baseX + Math.sin(p.phase) * 6 + Math.sin(p.phase * 0.4) * 3;
+          p.y = p.baseY + Math.cos(p.phase * 0.8) * 5;
+          break;
+        case 'bubble': case 'ember':
+          p.swayPhase += dt; p.y -= p.speed * dt; p.x += Math.sin(p.swayPhase) * 0.4 * dt * 4;
+          if (p.y < -8) this.spawn(p, false);
+          break;
+        case 'planet':
+          p.x += p.speed * dt * 0.3; if (p.x > 105) p.x = -10;
+          break;
+        case 'dust':
+          p.phase += dt * p.speed;
+          break;
+      }
+    }
+  };
+  ParticleSystem.prototype.draw = function (ctx, w, h) {
+    var o = this.opts, ps = this.particles;
+    ctx.save();
+    for (var i = 0; i < ps.length; i++) {
+      var p = ps[i];
+      switch (this.type) {
+        case 'rain':
+          ctx.strokeStyle = 'rgba(200,215,235,' + p.alpha + ')';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(p.x / 100 * w, p.y / 100 * h);
+          ctx.lineTo(p.x / 100 * w - 3, p.y / 100 * h + p.len);
+          ctx.stroke();
+          break;
+        case 'snow':
+          ctx.globalAlpha = p.alpha;
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath(); ctx.arc(p.x / 100 * w, p.y / 100 * h, p.r, 0, 6.28); ctx.fill();
+          break;
+        case 'stars': {
+          var tw = 0.25 + Math.abs(Math.sin(p.phase)) * 0.75;
+          ctx.globalAlpha = tw;
+          ctx.fillStyle = '#ffffff';
+          ctx.shadowColor = '#ffffff'; ctx.shadowBlur = p.r * 3;
+          ctx.beginPath(); ctx.arc(p.x / 100 * w, p.y / 100 * h, p.r, 0, 6.28); ctx.fill();
+          ctx.shadowBlur = 0;
+          break;
+        }
+        case 'meteor':
+          if (p.active) {
+            var x = p.x / 100 * w, y = p.y / 100 * h;
+            var fade = 1 - p.life / p.maxLife;
+            var grad = ctx.createLinearGradient(x, y, x - p.vx * 3, y - p.vy * 3);
+            grad.addColorStop(0, 'rgba(255,255,255,' + fade + ')');
+            grad.addColorStop(1, 'rgba(255,255,255,0)');
+            ctx.strokeStyle = grad; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x - p.vx * 3, y - p.vy * 3); ctx.stroke();
+          }
+          break;
+        case 'petal': case 'leaf': case 'feather':
+          ctx.globalAlpha = p.alpha;
+          ctx.fillStyle = p.color;
+          ctx.save();
+          ctx.translate(p.x / 100 * w, p.y / 100 * h);
+          ctx.rotate(p.rot * Math.PI / 180);
+          ctx.beginPath();
+          ctx.ellipse(0, 0, p.size / 2, p.size / 3, 0, 0, 6.28);
+          ctx.fill();
+          ctx.restore();
+          break;
+        case 'firefly':
+          var g = 0.3 + Math.abs(Math.sin(p.glowPhase)) * 0.7;
+          ctx.globalAlpha = g;
+          ctx.fillStyle = p.color; ctx.shadowColor = p.color; ctx.shadowBlur = p.size * 4;
+          ctx.beginPath(); ctx.arc(p.x / 100 * w, p.y / 100 * h, p.size, 0, 6.28); ctx.fill();
+          ctx.shadowBlur = 0;
+          break;
+        case 'butterfly':
+          ctx.globalAlpha = 0.85;
+          ctx.fillStyle = p.color;
+          var bx = p.x / 100 * w, by = p.y / 100 * h, wing = p.size * 1.6 + Math.sin(p.glowPhase * 4) * 1.5;
+          ctx.beginPath(); ctx.ellipse(bx - wing / 2, by, wing / 2, wing / 3, 0.3, 0, 6.28); ctx.fill();
+          ctx.beginPath(); ctx.ellipse(bx + wing / 2, by, wing / 2, wing / 3, -0.3, 0, 6.28); ctx.fill();
+          break;
+        case 'bubble':
+          ctx.globalAlpha = p.alpha * 0.6;
+          ctx.strokeStyle = 'rgba(255,255,255,.7)'; ctx.lineWidth = 1;
+          ctx.beginPath(); ctx.arc(p.x / 100 * w, p.y / 100 * h, p.r, 0, 6.28); ctx.stroke();
+          break;
+        case 'ember':
+          ctx.globalAlpha = p.alpha;
+          ctx.fillStyle = o.color || '#ffb35c';
+          ctx.shadowColor = o.color || '#ffb35c'; ctx.shadowBlur = p.r * 1.5;
+          ctx.beginPath(); ctx.arc(p.x / 100 * w, p.y / 100 * h, p.r * 0.35, 0, 6.28); ctx.fill();
+          ctx.fillRect(p.x / 100 * w - p.r * 0.3, p.y / 100 * h - p.r * 0.5, p.r * 0.6, p.r);
+          ctx.shadowBlur = 0;
+          break;
+        case 'planet': {
+          var px = p.x / 100 * w, py = p.y / 100 * h;
+          var pg = ctx.createRadialGradient(px - p.r * 0.3, py - p.r * 0.3, 0, px, py, p.r);
+          pg.addColorStop(0, '#ffffff'); pg.addColorStop(0.4, p.color); pg.addColorStop(1, 'rgba(0,0,0,.6)');
+          ctx.globalAlpha = 1; ctx.fillStyle = pg;
+          ctx.beginPath(); ctx.arc(px, py, p.r, 0, 6.28); ctx.fill();
+          break;
+        }
+        case 'dust':
+          ctx.globalAlpha = 0.15 + Math.abs(Math.sin(p.phase)) * 0.2;
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath(); ctx.arc(p.x / 100 * w, p.y / 100 * h, p.r, 0, 6.28); ctx.fill();
+          break;
+      }
+    }
+    ctx.restore();
+  };
+
+  /* ================= CLOUD / FOG / HAZE LAYER ================= */
+  function CloudLayer(w, h, opts) {
+    this.opts = opts;
+    this.canvas = document.createElement('canvas');
+    this.ctx = this.canvas.getContext('2d');
+    this.offset = 0;
+    this.lastRedraw = 0;
+    this.resize(w, h);
+  }
+  CloudLayer.prototype.resize = function (w, h) {
+    this.canvas.width = Math.max(1, Math.round(w));
+    this.canvas.height = Math.max(1, Math.round(h));
+    this.render();
+  };
+  CloudLayer.prototype.render = function () {
+    var o = this.opts, ctx = this.ctx, w = this.canvas.width, h = this.canvas.height;
+    ctx.clearRect(0, 0, w, h);
+    for (var i = 0; i < o.count; i++) {
+      var cx = Math.random() * w * 1.3 - w * 0.15;
+      var cy = h * (o.yMin + Math.random() * (o.yMax - o.yMin));
+      var puffs = 3 + Math.floor(Math.random() * (o.puffs || 4));
+      for (var j = 0; j < puffs; j++) {
+        var r = randRange(o.minR, o.maxR);
+        var px = cx + (j - puffs / 2) * r * 0.55;
+        var g = ctx.createRadialGradient(px, cy, 0, px, cy, r);
+        g.addColorStop(0, rgba(o.color, o.alpha));
+        g.addColorStop(1, rgba(o.color, 0));
+        ctx.fillStyle = g;
+        ctx.beginPath(); ctx.arc(px, cy, r, 0, 6.28); ctx.fill();
+      }
+    }
+  };
+  CloudLayer.prototype.update = function (dt, t) {
+    this.offset += dt * this.opts.speed;
+    if (t - this.lastRedraw > (this.opts.evolveMs || 7000)) { this.render(); this.lastRedraw = t; }
+  };
+  CloudLayer.prototype.draw = function (ctx, w, h, brightness) {
+    ctx.save();
+    ctx.globalAlpha = brightness == null ? 1 : brightness;
+    var x = (-this.offset) % w; if (x > 0) x -= w;
+    ctx.drawImage(this.canvas, x, 0, w, h);
+    ctx.drawImage(this.canvas, x + w, 0, w, h);
+    ctx.restore();
+  };
+
+  /* ================= AURORA (also reused horizontally for ocean shimmer) ================= */
+  function RibbonField(colors, opts) {
+    this.colors = colors; this.opts = opts || {}; this.t = Math.random() * 10;
+  }
+  RibbonField.prototype.update = function (dt) { this.t += dt * (this.opts.speed || 0.06); };
+  RibbonField.prototype.draw = function (ctx, w, h) {
+    var horizontal = this.opts.horizontal;
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    for (var b = 0; b < this.colors.length; b++) {
+      ctx.beginPath();
+      var base = horizontal ? h * (this.opts.baseMin + b * this.opts.gap) : h * (0.12 + b * 0.08);
+      var band = this.opts.band || 90;
+      var step = Math.max(12, w / 40);
+      var x;
+      for (x = 0; x <= w; x += step) {
+        var n = NoiseGen.noise2(x * 0.003 + this.t + b * 10, this.t * 0.5);
+        var y = base + (n - 0.5) * band;
+        if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      for (x = w; x >= 0; x -= step) {
+        var n2 = NoiseGen.noise2(x * 0.003 + this.t + b * 10, this.t * 0.5 + 2);
+        var y2 = base + (this.opts.thickness || 60) + (n2 - 0.5) * (band + 20);
+        ctx.lineTo(x, y2);
+      }
+      ctx.closePath();
+      var g = ctx.createLinearGradient(0, base - band / 2, 0, base + (this.opts.thickness || 60) + band / 2);
+      g.addColorStop(0, 'rgba(0,0,0,0)');
+      g.addColorStop(0.5, this.colors[b]);
+      g.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = g;
+      ctx.fill();
+    }
+    ctx.restore();
+  };
+
+  /* ================= LIGHT (sun / moon / eclipse) ================= */
+  function Light(opts) { this.opts = opts; this.t = Math.random() * 10; }
+  Light.prototype.update = function (dt) { this.t += dt * 0.05; };
+  Light.prototype.draw = function (ctx, w, h) {
+    var o = this.opts, cx = w * o.x, cy = h * o.y, r = o.r;
+    ctx.save();
+    if (o.rays) {
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.globalAlpha = 0.1;
+      for (var i = 0; i < 6; i++) {
+        var a = this.t + i * (Math.PI / 3);
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(a);
+        var grd = ctx.createLinearGradient(0, 0, r * 9, 0);
+        grd.addColorStop(0, o.glow); grd.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = grd;
+        ctx.beginPath();
+        ctx.moveTo(0, -r * 0.2); ctx.lineTo(r * 9, -r * 1.1); ctx.lineTo(r * 9, r * 1.1); ctx.lineTo(0, r * 0.2);
+        ctx.closePath(); ctx.fill();
+        ctx.restore();
+      }
+      ctx.globalAlpha = 1;
+    }
+    ctx.globalCompositeOperation = 'lighter';
+    var g = ctx.createRadialGradient(cx, cy, 0, cx, cy, r * 2.6);
+    g.addColorStop(0, o.core);
+    g.addColorStop(0.35, o.glow);
+    g.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(cx, cy, r * 2.6, 0, 6.28); ctx.fill();
+    ctx.globalCompositeOperation = 'source-over';
+    if (o.eclipse) {
+      ctx.fillStyle = '#050208';
+      ctx.beginPath(); ctx.arc(cx, cy, r, 0, 6.28); ctx.fill();
+    } else {
+      ctx.fillStyle = o.core;
+      ctx.beginPath(); ctx.arc(cx, cy, r, 0, 6.28); ctx.fill();
+    }
+    ctx.restore();
+  };
+
+  /* ================= RAINBOW ARC (single decorative pass) ================= */
+  function drawRainbow(ctx, w, h, alpha) {
+    var cx = w / 2, cy = h * 1.05, colors = ['#ff8a8a', '#ffbf8a', '#fff08a', '#8ae08a', '#8ab4ff', '#c08aff'];
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    var baseR = Math.min(w * 0.55, h * 1.4);
+    for (var i = 0; i < colors.length; i++) {
+      ctx.beginPath();
+      ctx.strokeStyle = colors[i];
+      ctx.lineWidth = Math.max(6, w * 0.012);
+      ctx.arc(cx, cy, baseR - i * (ctx.lineWidth + 2), Math.PI, 2 * Math.PI);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  /* ================= GRADIENT BACKGROUND ================= */
+  function drawGradient(ctx, w, h, stops) {
+    var g = ctx.createLinearGradient(0, 0, 0, h);
+    for (var i = 0; i < stops.length; i++) g.addColorStop(stops[i][0], stops[i][1]);
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, w, h);
+  }
+
+  /* ================= SKY INSTANCE ================= */
+  function SkyInstance(cfg, w, h) {
+    this.cfg = cfg;
+    this.clouds = (cfg.clouds || []).map(function (c) { return new CloudLayer(w, h, c); });
+    this.particles = (cfg.particles || []).map(function (p) { return new ParticleSystem(p.type, p.count, p); });
+    this.stars = cfg.stars ? new ParticleSystem('stars', cfg.stars.count, cfg.stars) : null;
+    this.aurora = cfg.aurora ? new RibbonField(cfg.aurora.colors, cfg.aurora) : null;
+    this.waves = cfg.waves ? new RibbonField(cfg.waves.colors, cfg.waves) : null;
+    this.lights = (cfg.lights || []).map(function (l) { return new Light(l); });
+    this.rainbowAlpha = 0;
+  }
+  SkyInstance.prototype.resize = function (w, h) {
+    this.clouds.forEach(function (c) { c.resize(w, h); });
+  };
+  SkyInstance.prototype.update = function (dt, t) {
+    var self = this;
+    this.clouds.forEach(function (c) { c.update(dt, t); });
+    this.particles.forEach(function (p) { p.update(dt, WindField, t); });
+    if (this.stars) this.stars.update(dt, WindField, t);
+    if (this.aurora) this.aurora.update(dt);
+    if (this.waves) this.waves.update(dt);
+    this.lights.forEach(function (l) { l.update(dt); });
+    if (this.cfg.rainbow) this.rainbowAlpha = Math.min(1, this.rainbowAlpha + dt * 0.4);
+  };
+  SkyInstance.prototype.draw = function (ctx, w, h) {
+    drawGradient(ctx, w, h, this.cfg.gradient);
+    if (this.stars) this.stars.draw(ctx, w, h);
+    var brightness = this.cfg.ambient && this.cfg.ambient.cloudBrightness;
+    this.lights.forEach(function (l) { l.draw(ctx, w, h); });
+    this.clouds.forEach(function (c) { c.draw(ctx, w, h, brightness); });
+    if (this.aurora) this.aurora.draw(ctx, w, h);
+    if (this.waves) this.waves.draw(ctx, w, h);
+    if (this.cfg.rainbow) drawRainbow(ctx, w, h, this.rainbowAlpha);
+    this.particles.forEach(function (p) { p.draw(ctx, w, h); });
+  };
+
+  /* ================= OVERLAY MANAGER (crossfade between two canvases) ================= */
+  var OverlayManager = (function () {
+    var host, canvasA, canvasB, ctxA, ctxB, active, incoming, activeCanvas, dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+    function makeCanvas() {
+      var c = document.createElement('canvas');
+      c.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;transition:opacity 1.5s ease;will-change:opacity;';
+      return c;
+    }
+    function ensureHost() {
+      host = document.getElementById('skyOverlay');
+      if (!host) {
+        host = document.createElement('div');
+        host.id = 'skyOverlay';
+        host.style.cssText = 'position:fixed;inset:0;z-index:1;pointer-events:none;opacity:0.35;';
+        document.body.insertBefore(host, document.body.firstChild);
+      }
+      if (!canvasA) {
+        canvasA = makeCanvas(); canvasB = makeCanvas();
+        canvasA.style.opacity = '0'; canvasB.style.opacity = '0';
+        host.appendChild(canvasA); host.appendChild(canvasB);
+        ctxA = canvasA.getContext('2d'); ctxB = canvasB.getContext('2d');
+        sizeCanvas(canvasA); sizeCanvas(canvasB);
+        window.addEventListener('resize', onResize, { passive: true });
+      }
+    }
+    function sizeCanvas(c) {
+      var w = window.innerWidth, h = window.innerHeight;
+      c.width = Math.round(w * dpr); c.height = Math.round(h * dpr);
+      c.style.width = w + 'px'; c.style.height = h + 'px';
+      var ctx = c.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    var resizeTimer = null;
+    function onResize() {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function () {
+        sizeCanvas(canvasA); sizeCanvas(canvasB);
+        if (active) active.instance.resize(window.innerWidth, window.innerHeight);
+        if (incoming) incoming.instance.resize(window.innerWidth, window.innerHeight);
+      }, 150);
+    }
+    function swapTo(cfg) {
+      ensureHost();
+      var targetCanvas = activeCanvas === canvasA ? canvasB : canvasA;
+      var targetCtx = targetCanvas === canvasA ? ctxA : ctxB;
+      var w = window.innerWidth, h = window.innerHeight;
+      var instance = new SkyInstance(cfg, w, h);
+      instance.update(0.001, performance.now());
+      instance.draw(targetCtx, w, h);
+      targetCanvas.style.opacity = '1';
+      var outgoing = activeCanvas;
+      if (outgoing) outgoing.style.opacity = '0';
+      activeCanvas = targetCanvas;
+      var prevActive = active;
+      active = { canvas: targetCanvas, ctx: targetCtx, instance: instance };
+      if (prevActive) {
+        setTimeout(function () { prevActive.instance = null; }, 1600); // drop reference after fade so it stops being ticked
+      }
+      return active;
+    }
+    return { swapTo: swapTo, get active() { return active; } };
+  })();
+
+  /* ================= ANIMATION MANAGER (single shared loop) ================= */
+  var AnimationManager = (function () {
+    var running = false, lastT = 0;
+    function frame(t) {
+      if (!running) return;
+      var dt = Math.min((t - lastT) / 1000, 0.05) || 0.016;
+      lastT = t;
+      var a = OverlayManager.active;
+      if (a && a.instance) {
+        a.instance.update(dt, t);
+        a.instance.draw(a.ctx, window.innerWidth, window.innerHeight);
+      }
+      requestAnimationFrame(frame);
+    }
+    function start() {
+      if (running || reducedMotion) return;
+      running = true; lastT = performance.now();
+      requestAnimationFrame(frame);
+    }
+    function stop() { running = false; }
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) stop(); else start();
+    });
+    return { start: start, stop: stop };
+  })();
+
+  var SKIES = [{"gradient": [[0, "#ff7e5f"], [0.35, "#feb47b"], [0.6, "#ffe29f"], [1, "#fff5e6"]], "lights": [{"x": 0.5, "y": 0.09, "r": 46, "core": "#fff8e0", "glow": "rgba(255,204,51,.55)", "rays": true}], "clouds": [{"count": 4, "yMin": 0.35, "yMax": 0.6, "minR": 60, "maxR": 130, "color": "#ffffff", "alpha": 0.35, "speed": 4, "puffs": 4, "evolveMs": 9000}], "name": "Sunrise", "message": "Like the first light you brought into my world ?"},
+{"gradient": [[0, "#1a0a2e"], [0.2, "#2d1b4e"], [0.5, "#e85d3a"], [0.7, "#ff9a56"], [1, "#ffd3a5"]], "lights": [{"x": 0.5, "y": 0.82, "r": 50, "core": "#ffe680", "glow": "rgba(232,93,58,.55)", "rays": true}], "stars": {"count": 30, "maxY": 45, "minR": 0.5, "maxR": 1.6}, "name": "Sunset", "message": "Even endings are beautiful when I think of you ?"},
+{"gradient": [[0, "#2c3e50"], [0.3, "#4a6274"], [0.6, "#6b8599"], [1, "#889aaa"]], "clouds": [{"count": 5, "yMin": 0.05, "yMax": 0.25, "minR": 90, "maxR": 200, "color": "#5b6f80", "alpha": 0.5, "speed": 6, "puffs": 5, "evolveMs": 8000}], "particles": [{"type": "rain", "count": 110, "minLen": 10, "maxLen": 26, "minSpeed": 45, "maxSpeed": 80}], "name": "Rain", "message": "Every drop carries a memory of you ?"},
+{"gradient": [[0, "#b8c6d4"], [0.4, "#d4e1ec"], [0.7, "#e8f0f6"], [1, "#f0f5f9"]], "clouds": [{"count": 6, "yMin": 0.08, "yMax": 0.4, "minR": 70, "maxR": 170, "color": "#ffffff", "alpha": 0.55, "speed": 7, "puffs": 4, "evolveMs": 8000}], "name": "Clouds", "message": "My thoughts of you drift like clouds, endless ?"},
+{"gradient": [[0, "#0a0a1a"], [0.3, "#12122e"], [0.6, "#1a1a3e"], [1, "#0d0d2b"]], "stars": {"count": 140, "maxY": 85, "minR": 0.5, "maxR": 2.4}, "lights": [{"x": 0.85, "y": 0.15, "r": 26, "core": "#fff8e0", "glow": "rgba(255,248,224,.35)", "rays": false}], "name": "Starry Night", "message": "You are every star that lights my darkest nights ?"},
+{"gradient": [[0, "#1a1a2e"], [0.3, "#2d2d44"], [0.6, "#3d3d5c"], [1, "#2a2a3e"]], "clouds": [{"count": 6, "yMin": 0.02, "yMax": 0.3, "minR": 100, "maxR": 220, "color": "#333349", "alpha": 0.6, "speed": 10, "puffs": 5, "evolveMs": 5000}], "particles": [{"type": "rain", "count": 140, "minLen": 14, "maxLen": 34, "minSpeed": 60, "maxSpeed": 100}], "storm": true, "name": "Storm", "message": "Even in chaos, you are my calm ?"},
+{"gradient": [[0, "#0a0a1a"], [0.3, "#0f1a2e"], [0.6, "#0a1a1a"], [1, "#0a0a1a"]], "stars": {"count": 60, "maxY": 85, "minR": 0.5, "maxR": 1.8}, "aurora": {"colors": ["rgba(0,255,128,.28)", "rgba(0,200,255,.22)", "rgba(120,60,220,.2)"], "speed": 0.05, "band": 90, "thickness": 70}, "name": "Aurora", "message": "You paint my sky with colours I never knew existed ?"},
+{"gradient": [[0, "#b0b8c0"], [0.3, "#c8ced4"], [0.6, "#d8dce0"], [1, "#e0e4e8"]], "clouds": [{"count": 4, "yMin": 0.2, "yMax": 0.8, "minR": 180, "maxR": 320, "color": "#ffffff", "alpha": 0.28, "speed": 2.5, "puffs": 3, "evolveMs": 10000}], "name": "Fog", "message": "I'd wander through a thousand mists just to find you ?"},
+{"gradient": [[0, "#4facfe"], [0.4, "#87cefa"], [0.7, "#b0d4f1"], [1, "#d4e8f7"]], "lights": [{"x": 0.78, "y": 0.1, "r": 40, "core": "#fff8e0", "glow": "rgba(255,220,50,.4)", "rays": true}], "clouds": [{"count": 3, "yMin": 0.45, "yMax": 0.65, "minR": 60, "maxR": 110, "color": "#ffffff", "alpha": 0.5, "speed": 5, "puffs": 4, "evolveMs": 9000}], "name": "Clear Day", "message": "With you, every day is clear and bright ?"},
+{"gradient": [[0, "#1a0a2e"], [0.25, "#2d1b4e"], [0.5, "#5b2c56"], [0.7, "#b85d6e"], [1, "#e8a87c"]], "lights": [{"x": 0.82, "y": 0.14, "r": 22, "core": "#fff8e0", "glow": "rgba(255,255,200,.3)", "rays": false}], "stars": {"count": 35, "maxY": 40, "minR": 0.5, "maxR": 1.5}, "name": "Twilight", "message": "Between day and night, you are my only thought ?"},
+{"gradient": [[0, "#05030f"], [0.35, "#0d0821"], [0.65, "#150a2e"], [1, "#1a0f38"]], "stars": {"count": 110, "maxY": 100, "minR": 0.5, "maxR": 2}, "aurora": {"colors": ["rgba(140,90,220,.18)", "rgba(90,60,180,.15)"], "speed": 0.02, "band": 160, "thickness": 140}, "name": "Midnight Galaxy", "message": "You are the whole galaxy folded into one heartbeat ?"},
+{"gradient": [[0, "#ffd9e8"], [0.35, "#ffc2d9"], [0.7, "#ffe0ec"], [1, "#fff2f7"]], "particles": [{"type": "petal", "count": 40, "minSize": 7, "maxSize": 15, "minSpeed": 3, "maxSpeed": 7, "colors": ["#ffeef5", "#ffb3d1", "#ff9ec4"]}], "name": "Sakura Petals", "message": "Like petals on the wind, my thoughts always drift to you ?"},
+{"gradient": [[0, "#7c93ad"], [0.35, "#a9bdd1"], [0.7, "#d6e2ee"], [1, "#eef4fa"]], "particles": [{"type": "snow", "count": 90, "minR": 1.5, "maxR": 4, "minSpeed": 4, "maxSpeed": 10}], "name": "Gentle Snowfall", "message": "Every snowflake is a quiet reminder that you are near ?"},
+{"gradient": [[0, "#04040f"], [0.4, "#0a0a1f"], [0.75, "#12122e"], [1, "#050510"]], "stars": {"count": 90, "maxY": 90, "minR": 0.5, "maxR": 1.8}, "particles": [{"type": "meteor", "count": 4, "interval": 3}], "name": "Meteor Shower", "message": "You fell into my life like a wish I never got to finish making ?"},
+{"gradient": [[0, "#10182c"], [0.35, "#1c2740"], [0.7, "#2a3550"], [1, "#384260"]], "lights": [{"x": 0.82, "y": 0.16, "r": 30, "core": "#fffaf0", "glow": "rgba(255,250,230,.4)", "rays": false}], "clouds": [{"count": 5, "yMin": 0.2, "yMax": 0.7, "minR": 90, "maxR": 190, "color": "#c8cde1", "alpha": 0.3, "speed": 4, "puffs": 4, "evolveMs": 9000}], "ambient": {"cloudBrightness": 0.9}, "name": "Moonlit Clouds", "message": "The moon shares its light with the clouds the way I share my heart with you ?"},
+{"gradient": [[0, "#1a1030"], [0.35, "#33163c"], [0.7, "#5c2a3e"], [1, "#7a3a2e"]], "particles": [{"type": "ember", "count": 22, "minR": 7, "maxR": 14, "minSpeed": 3, "maxSpeed": 8, "color": "#ffb35c"}], "name": "Floating Lanterns", "message": "I keep sending my wishes up to you, one lantern at a time ?"},
+{"gradient": [[0, "#0a1710"], [0.35, "#142a1c"], [0.7, "#1c3a26"], [1, "#0f2016"]], "particles": [{"type": "firefly", "count": 30, "minY": 30, "maxY": 92, "minSize": 2, "maxSize": 4, "colors": ["#d8ff8c", "#c8f27a"]}], "name": "Fireflies at Night", "message": "You flicker in my mind like a firefly I can never quite catch ?"},
+{"gradient": [[0, "#ffb3d9"], [0.35, "#d9b3ff"], [0.7, "#b3d9ff"], [1, "#fff0f7"]], "clouds": [{"count": 5, "yMin": 0.1, "yMax": 0.55, "minR": 90, "maxR": 200, "color": "#ffffff", "alpha": 0.4, "speed": 4, "puffs": 4, "evolveMs": 9000}], "stars": {"count": 20, "maxY": 40, "minR": 0.5, "maxR": 1.2}, "name": "Cotton Candy Sky", "message": "Loving you feels as light and sweet as a sky spun from cotton candy ?"},
+{"gradient": [[0, "#0a0518"], [0.3, "#1c0a30"], [0.6, "#3a1050"], [1, "#200a35"]], "stars": {"count": 70, "maxY": 100, "minR": 0.5, "maxR": 2}, "aurora": {"colors": ["rgba(255,80,150,.2)", "rgba(120,60,220,.22)", "rgba(60,180,220,.16)"], "speed": 0.03, "band": 180, "thickness": 160}, "name": "Fantasy Nebula", "message": "You are the color I never knew the universe was missing ?"},
+{"gradient": [[0, "#000005"], [0.4, "#04040c"], [0.75, "#0a0a18"], [1, "#030308"]], "stars": {"count": 150, "maxY": 100, "minR": 0.5, "maxR": 2}, "particles": [{"type": "planet", "count": 2, "minR": 12, "maxR": 30, "colors": ["#c05a2c", "#3d6ea5"]}], "name": "Cosmic Space", "message": "Out of an entire universe of stars, I only ever wanted to orbit you ?"},
+{"gradient": [[0, "#8fb8d8"], [0.35, "#b8d4e8"], [0.7, "#d8ecf0"], [1, "#f0f8ee"]], "particles": [{"type": "rain", "count": 30, "minLen": 8, "maxLen": 16, "minSpeed": 40, "maxSpeed": 60}], "rainbow": true, "name": "Rainbow After Rain", "message": "After every storm we weathered, I still find a rainbow waiting in you ?"},
+{"gradient": [[0, "#060615"], [0.3, "#0d0d28"], [0.65, "#16163e"], [1, "#0a0a20"]], "stars": {"count": 160, "maxY": 100, "minR": 0.5, "maxR": 2.4}, "particles": [{"type": "meteor", "count": 3, "interval": 4}], "name": "Magical Starfield", "message": "Somewhere among a million stars, I would still find my way back to you ?"},
+{"gradient": [[0, "#fef6e4"], [0.3, "#fde9d0"], [0.6, "#f9d9c8"], [1, "#f7e8e0"]], "lights": [{"x": 0.5, "y": 0.12, "r": 60, "core": "#fffaf0", "glow": "rgba(255,250,220,.5)", "rays": true}], "particles": [{"type": "feather", "count": 16, "minSize": 7, "maxSize": 13, "minSpeed": 2, "maxSpeed": 4, "colors": ["#ffffff", "#fff6e5"]}], "name": "Celestial Heaven", "message": "If heaven has a sky, I imagine it feels the way you make me feel ?"},
+{"gradient": [[0, "#0d3b52"], [0.35, "#14587a"], [0.65, "#2b8ba8"], [1, "#7ec4d4"]], "lights": [{"x": 0.5, "y": 0.72, "r": 40, "core": "#fff3d0", "glow": "rgba(255,210,140,.45)", "rays": false}], "waves": {"colors": ["rgba(255,255,255,.18)", "rgba(255,255,255,.12)", "rgba(255,255,255,.09)"], "horizontal": true, "baseMin": 0.78, "gap": 0.06, "band": 10, "thickness": 4, "speed": 0.15}, "name": "Ocean Horizon", "message": "My love for you stretches out as far and calm as the ocean horizon ?"},
+{"gradient": [[0, "#c9b8e8"], [0.35, "#d8c8ec"], [0.7, "#f0d8e8"], [1, "#fbeaf2"]], "clouds": [{"count": 5, "yMin": 0.1, "yMax": 0.55, "minR": 100, "maxR": 220, "color": "#ffffff", "alpha": 0.45, "speed": 3.5, "puffs": 4, "evolveMs": 9000}], "stars": {"count": 24, "maxY": 45, "minR": 0.5, "maxR": 1.3}, "name": "Dream Clouds", "message": "Time with you always feels like drifting through the softest dream ?"},
+{"gradient": [[0, "#2b1b3a"], [0.3, "#6b3350"], [0.6, "#c9583f"], [0.85, "#e8a45a"], [1, "#f5cf8a"]], "lights": [{"x": 0.5, "y": 0.72, "r": 46, "core": "#ffe0a0", "glow": "rgba(232,103,47,.5)", "rays": false}], "clouds": [{"count": 3, "yMin": 0.6, "yMax": 0.78, "minR": 160, "maxR": 260, "color": "#ffc896", "alpha": 0.15, "speed": 2, "puffs": 3, "evolveMs": 11000}], "name": "Desert Dusk", "message": "Even in the quiet desert dusk, my whole world still turns toward you ?"},
+{"gradient": [[0, "#6e4a2e"], [0.3, "#a8662f"], [0.6, "#d99a3d"], [1, "#f0c56b"]], "particles": [{"type": "leaf", "count": 34, "minSize": 8, "maxSize": 15, "minSpeed": 3, "maxSpeed": 7, "colors": ["#c9522c", "#e08a2e", "#d9b23d", "#a8422a"]}], "name": "Autumn Leaves", "message": "Falling for you was as natural and unstoppable as autumn leaves letting go ?"},
+{"gradient": [[0, "#a8d8b8"], [0.35, "#c8e8c0"], [0.7, "#eaf5d8"], [1, "#fdf8e8"]], "particles": [{"type": "butterfly", "count": 16, "minY": 25, "maxY": 85, "minSize": 4, "maxSize": 7, "colors": ["#ff9ec4", "#ffd27a", "#9ecbff", "#c9a0ff"]}], "name": "Butterfly Meadow", "message": "You make my heart feel light, like butterflies drifting through an open meadow ?"},
+{"gradient": [[0, "#8ec9e8"], [0.35, "#b8ddf0"], [0.7, "#dcf0f5"], [1, "#f2fbfc"]], "particles": [{"type": "bubble", "count": 26, "minR": 6, "maxR": 22, "minSpeed": 3, "maxSpeed": 10}], "name": "Bubble Dream", "message": "My favourite daydream is still just us, drifting somewhere weightless together ?"},
+{"gradient": [[0, "#060308"], [0.35, "#100814"], [0.7, "#1a0d1e"], [1, "#0a0510"]], "stars": {"count": 70, "maxY": 100, "minR": 0.5, "maxR": 1.8}, "lights": [{"x": 0.5, "y": 0.32, "r": 40, "core": "#040204", "glow": "rgba(255,120,50,.4)", "rays": false, "eclipse": true}], "name": "Eclipse Night", "message": "You are the light that finds a way through, even in my darkest eclipse ?"},
+{"gradient": [[0, "#4a5a70"], [0.35, "#6d7f95"], [0.7, "#9cb0c2"], [1, "#c9d8e4"]], "particles": [{"type": "snow", "count": 160, "minR": 2, "maxR": 5, "minSpeed": 10, "maxSpeed": 22}], "name": "Winter Blizzard", "message": "Whatever storm we face, I would still choose to walk through it beside you ?"},
+{"gradient": [[0, "#b85c3a"], [0.3, "#d98a4a"], [0.6, "#f0b869"], [0.85, "#fadb96"], [1, "#fff2cc"]], "lights": [{"x": 0.5, "y": 0.4, "r": 56, "core": "#fff3d0", "glow": "rgba(255,177,92,.5)", "rays": true}], "clouds": [{"count": 3, "yMin": 0.15, "yMax": 0.35, "minR": 160, "maxR": 260, "color": "#ffdcaa", "alpha": 0.12, "speed": 2, "puffs": 3, "evolveMs": 11000}], "name": "Golden Hour Haze", "message": "Being with you feels like living permanently inside golden hour ?"}
+,
+
+{"gradient":[[0,"#e8d5c4"],[0.3,"#f2e3d5"],[0.6,"#f7ebe0"],[1,"#fcf3ea"]],"clouds":[{"count":3,"yMin":0.5,"yMax":0.75,"minR":120,"maxR":220,"color":"#ffffff","alpha":0.25,"speed":2,"puffs":4,"evolveMs":10000}],"lights":[{"x":0.78,"y":0.12,"r":35,"core":"#fff8e0","glow":"rgba(255,220,160,.35)","rays":true}],"stars":{"count":8,"maxY":25,"minR":0.4,"maxR":1},"name":"Dawn Light","message":"You are the quiet light that wakes my heart every morning ?"},
+{"gradient":[[0,"#3a4a5a"],[0.3,"#5a7a8a"],[0.6,"#8aaaba"],[1,"#bcd4e0"]],"clouds":[{"count":5,"yMin":0.1,"yMax":0.35,"minR":80,"maxR":180,"color":"#c8d8e0","alpha":0.45,"speed":5,"puffs":5,"evolveMs":8000}],"waves":{"colors":["rgba(255,255,255,.12)","rgba(255,255,255,.08)"],"horizontal":true,"baseMin":0.75,"gap":0.05,"band":8,"thickness":3,"speed":0.12},"name":"Misty Coast","message":"My thoughts of you roll in like waves through the morning mist ?"},
+{"gradient":[[0,"#2a3a1a"],[0.3,"#4a6a2a"],[0.6,"#6a8a4a"],[1,"#8aaa6a"]],"particles":[{"type":"leaf","count":20,"minSize":6,"maxSize":12,"minSpeed":2,"maxSpeed":5,"colors":["#7a9a4a","#5a7a3a","#9aba5a"]}],"name":"Spring Meadow","message":"You make everything in me bloom like spring ?"},
+{"gradient":[[0,"#d4a878"],[0.35,"#e8c898"],[0.7,"#f0d8b0"],[1,"#f8e8c8"]],"lights":[{"x":0.5,"y":0.65,"r":45,"core":"#ffe0a0","glow":"rgba(255,200,100,.45)","rays":true}],"clouds":[{"count":3,"yMin":0.5,"yMax":0.7,"minR":140,"maxR":250,"color":"#ffdbb0","alpha":0.15,"speed":2,"puffs":3,"evolveMs":12000}],"name":"Harvest Sun","message":"You are the golden warmth that fills every season of my life ?"},
+{"gradient":[[0,"#1a2a3a"],[0.3,"#2a4a5a"],[0.6,"#3a5a6a"],[1,"#4a6a7a"]],"clouds":[{"count":6,"yMin":0.05,"yMax":0.3,"minR":70,"maxR":160,"color":"#5a7a8a","alpha":0.5,"speed":8,"puffs":5,"evolveMs":6000}],"particles":[{"type":"rain","count":130,"minLen":12,"maxLen":28,"minSpeed":50,"maxSpeed":90}],"storm":true,"name":"Heavy Rain","message":"Even in the heaviest downpour, I feel only the warmth of you ?"},
+{"gradient":[[0,"#4a6a3a"],[0.35,"#6a8a5a"],[0.7,"#8aaa7a"],[1,"#aacaaa"]],"particles":[{"type":"petal","count":25,"minSize":5,"maxSize":10,"minSpeed":3,"maxSpeed":6,"colors":["#ffffff","#ffeef5","#ffdde8"]}],"name":"Cherry Blossom Rain","message":"Petals fall like memories of every smile you gave me ?"},
+{"gradient":[[0,"#0a0a1a"],[0.25,"#1a1a3a"],[0.5,"#2a2a4a"],[0.75,"#1a1a2a"],[1,"#0a0a1a"]],"stars":{"count":120,"maxY":90,"minR":0.5,"maxR":2},"aurora":{"colors":["rgba(100,255,180,.15)","rgba(60,200,255,.12)","rgba(180,100,255,.1)"],"speed":0.04,"band":140,"thickness":120},"name":"Northern Lights","message":"The aurora dances across the sky, but nothing compares to the way you dance through my heart ?"},
+{"gradient":[[0,"#3a2a1a"],[0.3,"#5a3a2a"],[0.6,"#7a5a3a"],[1,"#9a7a5a"]],"particles":[{"type":"leaf","count":40,"minSize":8,"maxSize":14,"minSpeed":3,"maxSpeed":8,"colors":["#c85a2a","#d87a3a","#e09a4a","#b84a2a"]}],"name":"Autumn Sunset","message":"You are the warmest goodbye I never want to let go of ?"},
+{"gradient":[[0,"#d4e8f0"],[0.3,"#e8f4fa"],[0.6,"#f0f8fc"],[1,"#f8fcfe"]],"clouds":[{"count":4,"yMin":0.6,"yMax":0.85,"minR":150,"maxR":300,"color":"#ffffff","alpha":0.3,"speed":2,"puffs":3,"evolveMs":10000}],"waves":{"colors":["rgba(180,210,230,.15)","rgba(180,210,230,.1)","rgba(180,210,230,.07)"],"horizontal":true,"baseMin":0.82,"gap":0.04,"band":8,"thickness":3,"speed":0.1},"name":"White Sands","message":"Walking beside you feels like endless shores under endless skies ?"},
+{"gradient":[[0,"#2a1a3a"],[0.35,"#4a2a5a"],[0.7,"#6a3a7a"],[1,"#3a1a4a"]],"stars":{"count":90,"maxY":85,"minR":0.5,"maxR":1.8},"lights":[{"x":0.8,"y":0.18,"r":28,"core":"#e0d0ff","glow":"rgba(160,120,255,.35)","rays":false}],"name":"Purple Night","message":"In the velvet purple night, you are the only star I see ?"},
+{"gradient":[[0,"#0a1a1a"],[0.3,"#1a2a2a"],[0.6,"#2a3a3a"],[1,"#1a2a2a"]],"stars":{"count":80,"maxY":90,"minR":0.5,"maxR":1.5},"aurora":{"colors":["rgba(0,255,200,.2)","rgba(0,200,180,.15)","rgba(100,255,150,.12)"],"speed":0.03,"band":200,"thickness":180},"name":"Emerald Aurora","message":"You glow in my life like emerald fire across the arctic night ?"},
+{"gradient":[[0,"#f0e0d0"],[0.4,"#f8e8d8"],[0.7,"#fcf0e4"],[1,"#fef8f0"]],"lights":[{"x":0.5,"y":0.55,"r":55,"core":"#fffaf0","glow":"rgba(255,240,200,.4)","rays":true}],"clouds":[{"count":3,"yMin":0.1,"yMax":0.25,"minR":120,"maxR":200,"color":"#ffffff","alpha":0.35,"speed":3,"puffs":4,"evolveMs":9000}],"name":"Soft Dawn","message":"You arrive softly, like light spilling over the edge of night ?"},
+{"gradient":[[0,"#4a3a2a"],[0.3,"#6a5a3a"],[0.6,"#8a7a5a"],[1,"#aa9a7a"]],"clouds":[{"count":4,"yMin":0.3,"yMax":0.6,"minR":100,"maxR":200,"color":"#c8b898","alpha":0.3,"speed":3,"puffs":4,"evolveMs":9000}],"particles":[{"type":"ember","count":12,"minR":5,"maxR":10,"minSpeed":2,"maxSpeed":5,"color":"#ffb86c"}],"name":"Campfire Nights","message":"Your love warms me like a fire that never fades ?"},
+{"gradient":[[0,"#0a1520"],[0.3,"#152a40"],[0.6,"#1a3550"],[1,"#0f2030"]],"stars":{"count":130,"maxY":100,"minR":0.5,"maxR":2.2},"lights":[{"x":0.15,"y":0.12,"r":18,"core":"#fff8e0","glow":"rgba(255,248,224,.25)","rays":false}],"name":"Deep Space","message":"My love for you is as infinite as the space between stars ?"},
+{"gradient":[[0,"#1a2a4a"],[0.35,"#2a4a6a"],[0.7,"#3a5a8a"],[1,"#2a3a5a"]],"stars":{"count":100,"maxY":95,"minR":0.5,"maxR":1.8},"aurora":{"colors":["rgba(60,120,255,.18)","rgba(100,60,255,.15)"],"speed":0.02,"band":180,"thickness":160},"name":"Galactic Drift","message":"Across galaxies and lightyears, I would drift just to reach you ?"},
+{"gradient":[[0,"#0a0515"],[0.3,"#150a25"],[0.6,"#201040"],[1,"#150825"]],"stars":{"count":170,"maxY":100,"minR":0.5,"maxR":2.5},"particles":[{"type":"meteor","count":5,"interval":3}],"name":"Stardust","message":"You are the stardust I never stopped looking for ?"},
+{"gradient":[[0,"#1a0a3a"],[0.3,"#2a1550"],[0.6,"#3a2065"],[1,"#2a1050"]],"stars":{"count":140,"maxY":100,"minR":0.5,"maxR":2},"aurora":{"colors":["rgba(200,100,255,.18)","rgba(150,60,220,.15)","rgba(255,100,200,.12)"],"speed":0.025,"band":220,"thickness":200},"name":"Nebula Dream","message":"You are the most beautiful dream the universe ever dreamed ?"},
+{"gradient":[[0,"#050510"],[0.4,"#0a0a20"],[0.8,"#101030"],[1,"#080820"]],"stars":{"count":200,"maxY":100,"minR":0.4,"maxR":1.8},"lights":[{"x":0.5,"y":0.5,"r":15,"core":"#ffffff","glow":"rgba(255,255,255,.1)","rays":false}],"name":"Void","message":"Even in the empty void, I carry your light within me ?"},
+{"gradient":[[0,"#2a1030"],[0.35,"#4a1a50"],[0.7,"#6a2a70"],[1,"#3a1540"]],"stars":{"count":110,"maxY":100,"minR":0.5,"maxR":2},"particles":[{"type":"planet","count":3,"minR":8,"maxR":22,"colors":["#ff6b8a","#9b5de5","#00bbf9"]}],"name":"Cosmic Bloom","message":"You are the universe blooming inside my chest ?"},
+{"gradient":[[0,"#0a1020"],[0.3,"#102040"],[0.6,"#183060"],[1,"#0c1828"]],"stars":{"count":150,"maxY":100,"minR":0.5,"maxR":2},"particles":[{"type":"meteor","count":6,"interval":2.5}],"name":"Shooting Stars","message":"I made a wish on every shooting star, and every time it came true  you ?"},
+{"gradient":[[0,"#1a1a2a"],[0.3,"#2a2a4a"],[0.6,"#3a3a5a"],[1,"#2a2a3a"]],"stars":{"count":90,"maxY":85,"minR":0.5,"maxR":1.5},"aurora":{"colors":["rgba(255,150,100,.15)","rgba(255,100,60,.12)","rgba(200,80,40,.1)"],"speed":0.03,"band":160,"thickness":140},"name":"Solar Wind","message":"You blow through my universe like solar wind, rearranging all my stars ?"},
+{"gradient":[[0,"#d0e8f0"],[0.35,"#e0f0f8"],[0.7,"#f0f8fc"],[1,"#f8fcfe"]],"clouds":[{"count":5,"yMin":0.05,"yMax":0.35,"minR":70,"maxR":160,"color":"#ffffff","alpha":0.5,"speed":6,"puffs":4,"evolveMs":8000}],"particles":[{"type":"rain","count":40,"minLen":8,"maxLen":18,"minSpeed":35,"maxSpeed":60}],"rainbow":true,"name":"Sunshower","message":"Even when tears fall, your love paints colour across my sky ?"},
+{"gradient":[[0,"#2a3a4a"],[0.35,"#4a5a6a"],[0.7,"#6a7a8a"],[1,"#8a9aaa"]],"clouds":[{"count":7,"yMin":0.02,"yMax":0.25,"minR":80,"maxR":190,"color":"#4a5a6a","alpha":0.55,"speed":9,"puffs":5,"evolveMs":5000}],"particles":[{"type":"rain","count":180,"minLen":15,"maxLen":35,"minSpeed":65,"maxSpeed":110}],"storm":true,"name":"Thunderstorm","message":"Even thunder listens when I whisper your name ?"},
+{"gradient":[[0,"#6a7a8a"],[0.3,"#8a9aaa"],[0.6,"#aabaca"],[1,"#cadada"]],"clouds":[{"count":6,"yMin":0.08,"yMax":0.4,"minR":90,"maxR":200,"color":"#7a8a9a","alpha":0.5,"speed":7,"puffs":5,"evolveMs":7000}],"particles":[{"type":"snow","count":120,"minR":2,"maxR":4.5,"minSpeed":8,"maxSpeed":18}],"name":"Winter Sky","message":"You are the warmth that makes even the coldest winter bearable ?"},
+{"gradient":[[0,"#e0e8f0"],[0.4,"#f0f4f8"],[0.7,"#f8fafc"],[1,"#fcfefe"]],"clouds":[{"count":3,"yMin":0.4,"yMax":0.7,"minR":140,"maxR":280,"color":"#ffffff","alpha":0.2,"speed":2,"puffs":3,"evolveMs":12000}],"lights":[{"x":0.5,"y":0.08,"r":50,"core":"#fffce0","glow":"rgba(255,255,200,.35)","rays":true}],"name":"Pale Winter Sun","message":"Like the winter sun, you are gentle and you are enough ?"},
+{"gradient":[[0,"#7a8a7a"],[0.35,"#9aaa9a"],[0.7,"#bacaba"],[1,"#daeada"]],"clouds":[{"count":5,"yMin":0.1,"yMax":0.45,"minR":80,"maxR":180,"color":"#aacaaa","alpha":0.4,"speed":4,"puffs":4,"evolveMs":9000}],"particles":[{"type":"rain","count":60,"minLen":10,"maxLen":20,"minSpeed":40,"maxSpeed":70}],"name":"Spring Rain","message":"Your words fall over me like the gentlest April rain ?"},
+{"gradient":[[0,"#8a6a4a"],[0.35,"#aa8a5a"],[0.7,"#caaa7a"],[1,"#eaca9a"]],"clouds":[{"count":4,"yMin":0.2,"yMax":0.5,"minR":100,"maxR":220,"color":"#dab88a","alpha":0.3,"speed":3,"puffs":4,"evolveMs":10000}],"particles":[{"type":"leaf","count":30,"minSize":7,"maxSize":13,"minSpeed":2,"maxSpeed":6,"colors":["#c87a3a","#a86a2a","#d89a4a"]}],"name":"Golden Autumn","message":"You are the golden thread woven through every season of my heart ?"},
+{"gradient":[[0,"#b0c8d8"],[0.35,"#c8dce8"],[0.7,"#e0ecf0"],[1,"#f0f4f8"]],"clouds":[{"count":6,"yMin":0.05,"yMax":0.3,"minR":70,"maxR":160,"color":"#d0e0e8","alpha":0.5,"speed":6,"puffs":5,"evolveMs":7000}],"particles":[{"type":"snow","count":100,"minR":1.5,"maxR":3.5,"minSpeed":6,"maxSpeed":14}],"name":"Light Snowfall","message":"Each flake is a whispered promise I want to keep for you ?"},
+{"gradient":[[0,"#1a2a3a"],[0.3,"#2a4a5a"],[0.6,"#3a5a7a"],[1,"#2a3a4a"]],"clouds":[{"count":5,"yMin":0.05,"yMax":0.3,"minR":90,"maxR":200,"color":"#4a6a7a","alpha":0.45,"speed":7,"puffs":5,"evolveMs":6000}],"particles":[{"type":"rain","count":100,"minLen":12,"maxLen":24,"minSpeed":45,"maxSpeed":85}],"name":"Steady Rain","message":"Like steady rain on a quiet roof, my love for you never stops ?"},
+{"gradient":[[0,"#1a2a1a"],[0.3,"#2a4a2a"],[0.6,"#4a6a4a"],[1,"#6a8a6a"]],"clouds":[{"count":4,"yMin":0.1,"yMax":0.5,"minR":90,"maxR":200,"color":"#5a8a5a","alpha":0.35,"speed":4,"puffs":4,"evolveMs":9000}],"particles":[{"type":"leaf","count":15,"minSize":6,"maxSize":11,"minSpeed":2,"maxSpeed":5,"colors":["#8aba6a","#7aaa5a","#9aca7a"]}],"name":"Jungle Canopy","message":"You are my sky through the thickest jungle, the light I always find ?"},
+{"gradient":[[0,"#f5e6d0"],[0.35,"#faf0e0"],[0.7,"#fcf4e8"],[1,"#fefaf0"]],"lights":[{"x":0.5,"y":0.5,"r":65,"core":"#fffaf0","glow":"rgba(255,240,180,.5)","rays":true}],"clouds":[{"count":2,"yMin":0.15,"yMax":0.3,"minR":180,"maxR":320,"color":"#ffffff","alpha":0.2,"speed":1.5,"puffs":3,"evolveMs":14000}],"name":"Golden Glow","message":"Your presence fills every space like golden light, leaving no shadow untouched ?"},
+{"gradient":[[0,"#2a1040"],[0.3,"#4a2060"],[0.6,"#6a3080"],[1,"#3a1850"]],"stars":{"count":100,"maxY":95,"minR":0.5,"maxR":1.8},"aurora":{"colors":["rgba(255,60,200,.2)","rgba(200,60,255,.18)","rgba(140,60,255,.15)"],"speed":0.035,"band":240,"thickness":200},"name":"Purple Aurora","message":"You paint my world in colours no artist could ever capture ?"},
+{"gradient":[[0,"#0a1520"],[0.3,"#1a2a40"],[0.6,"#2a3a60"],[1,"#152030"]],"stars":{"count":90,"maxY":95,"minR":0.5,"maxR":1.5},"lights":[{"x":0.5,"y":0.22,"r":35,"core":"#c0d0ff","glow":"rgba(100,150,255,.3)","rays":false}],"name":"Blue Hour","message":"In the blue hour between day and night, I only ever think of you ?"},
+{"gradient":[[0,"#2a2a3a"],[0.35,"#3a3a5a"],[0.7,"#4a4a6a"],[1,"#3a3a4a"]],"stars":{"count":120,"maxY":90,"minR":0.5,"maxR":1.8},"lights":[{"x":0.9,"y":0.1,"r":20,"core":"#fff8e0","glow":"rgba(255,248,224,.25)","rays":false}],"name":"Night Fog","message":"Even through the fog of uncertainty, I always find my way to you ?"},
+{"gradient":[[0,"#8ab0c8"],[0.3,"#a8c8e0"],[0.6,"#c8e0f0"],[1,"#e8f0f8"]],"clouds":[{"count":4,"yMin":0.3,"yMax":0.6,"minR":100,"maxR":240,"color":"#ffffff","alpha":0.35,"speed":3.5,"puffs":4,"evolveMs":9000}],"waves":{"colors":["rgba(255,255,255,.15)","rgba(255,255,255,.1)","rgba(255,255,255,.07)"],"horizontal":true,"baseMin":0.75,"gap":0.05,"band":10,"thickness":3.5,"speed":0.12},"name":"Glacier Sky","message":"You are ancient and eternal, like ice that has watched a thousand years ?"},
+{"gradient":[[0,"#2a0a1a"],[0.3,"#4a1a2a"],[0.6,"#6a2a3a"],[1,"#3a1520"]],"stars":{"count":80,"maxY":85,"minR":0.5,"maxR":1.5},"aurora":{"colors":["rgba(255,100,150,.18)","rgba(200,60,100,.15)","rgba(255,60,80,.12)"],"speed":0.03,"band":200,"thickness":180},"name":"Crimson Sky","message":"You burn across my sky like a love that will never fade ?"},
+{"gradient":[[0,"#0a0a15"],[0.3,"#101028"],[0.6,"#15153a"],[1,"#0a0a1a"]],"stars":{"count":160,"maxY":100,"minR":0.4,"maxR":2},"lights":[{"x":0.5,"y":0.08,"r":12,"core":"#fff8e0","glow":"rgba(255,248,224,.2)","rays":false}],"name":"Tiny Star","message":"One tiny star is enough to light up an entire sky  you are my star ?"}
+,
+{"gradient":[[0,"#1a2a3a"],[0.35,"#3a4a5a"],[0.7,"#5a6a7a"],[1,"#4a5a6a"]],"clouds":[{"count":6,"yMin":0.05,"yMax":0.4,"minR":80,"maxR":190,"color":"#6a7a8a","alpha":0.45,"speed":8,"puffs":5,"evolveMs":6000}],"particles":[{"type":"snow","count":140,"minR":2,"maxR":4.5,"minSpeed":12,"maxSpeed":25}],"name":"Blizzard","message":"Through every storm, you are the shelter I run to ?"},
+{"gradient":[[0,"#0a3a2a"],[0.3,"#1a5a3a"],[0.6,"#2a7a4a"],[1,"#3a9a5a"]],"clouds":[{"count":4,"yMin":0.2,"yMax":0.5,"minR":90,"maxR":200,"color":"#7ab88a","alpha":0.3,"speed":3,"puffs":4,"evolveMs":10000}],"particles":[{"type":"leaf","count":10,"minSize":5,"maxSize":10,"minSpeed":2,"maxSpeed":4,"colors":["#9ad87a","#7ac85a","#bae89a"]}],"name":"Deep Forest","message":"You are the breath of fresh air I find in the deepest woods ?"},
+{"gradient":[[0,"#e0c8a0"],[0.35,"#f0d8b0"],[0.7,"#f8e4c8"],[1,"#fcf0e0"]],"lights":[{"x":0.5,"y":0.6,"r":48,"core":"#ffe0a0","glow":"rgba(255,200,120,.4)","rays":true}],"clouds":[{"count":3,"yMin":0.1,"yMax":0.3,"minR":140,"maxR":280,"color":"#ffffff","alpha":0.2,"speed":2,"puffs":3,"evolveMs":12000}],"name":"Honey Light","message":"You pour over my life like honey light, warm and endlessly sweet ?"},
+{"gradient":[[0,"#301020"],[0.35,"#502040"],[0.7,"#703060"],[1,"#401830"]],"stars":{"count":100,"maxY":95,"minR":0.5,"maxR":1.8},"lights":[{"x":0.7,"y":0.2,"r":30,"core":"#ffc0e0","glow":"rgba(255,100,200,.35)","rays":false}],"name":"Rose Nebula","message":"You are a nebula shaped like a rose, blooming in the dark of space ?"},
+{"gradient":[[0,"#d0e0f0"],[0.4,"#e0ecf4"],[0.7,"#f0f4f8"],[1,"#f8fafc"]],"clouds":[{"count":5,"yMin":0.05,"yMax":0.25,"minR":60,"maxR":140,"color":"#ffffff","alpha":0.55,"speed":7,"puffs":4,"evolveMs":8000}],"lights":[{"x":0.82,"y":0.08,"r":38,"core":"#fff8e0","glow":"rgba(255,220,80,.38)","rays":true}],"name":"Winter Morning","message":"Every morning with you feels like the first winter sunrise ?"},
+{"gradient":[[0,"#1a1a2a"],[0.3,"#2a2a4a"],[0.6,"#3a3a5a"],[1,"#2a2a3a"]],"stars":{"count":140,"maxY":90,"minR":0.5,"maxR":2},"lights":[{"x":0.5,"y":0.55,"r":8,"core":"#ffffff","glow":"rgba(255,255,255,.08)","rays":false,"eclipse":true}],"name":"Midnight Eclipse","message":"Even in total eclipse, I feel your light within me ?"},
+{"gradient":[[0,"#4a6a8a"],[0.35,"#6a8aaa"],[0.7,"#8aaaca"],[1,"#aacaea"]],"clouds":[{"count":4,"yMin":0.4,"yMax":0.7,"minR":100,"maxR":240,"color":"#ffffff","alpha":0.3,"speed":3,"puffs":4,"evolveMs":10000}],"waves":{"colors":["rgba(200,220,240,.15)","rgba(200,220,240,.1)","rgba(200,220,240,.07)"],"horizontal":true,"baseMin":0.75,"gap":0.04,"band":9,"thickness":3,"speed":0.1},"name":"Ocean Blue","message":"Endless as the ocean, my love for you runs deeper than any sea ?"},
+{"gradient":[[0,"#0a0a1a"],[0.25,"#1a1a3a"],[0.5,"#2a2a5a"],[0.75,"#3a3a6a"],[1,"#2a2a4a"]],"stars":{"count":180,"maxY":100,"minR":0.4,"maxR":2.2},"particles":[{"type":"meteor","count":4,"interval":3.5}],"name":"Starfall","message":"You are every star that ever fell, every wish I ever made ?"},
+{"gradient":[[0,"#3a1a1a"],[0.3,"#5a2a2a"],[0.6,"#7a3a3a"],[1,"#5a2a2a"]],"stars":{"count":70,"maxY":80,"minR":0.5,"maxR":1.5},"lights":[{"x":0.5,"y":0.35,"r":25,"core":"#ff6060","glow":"rgba(255,60,60,.3)","rays":false}],"name":"Mars Red","message":"You burn across the sky of my heart like a planet on fire ?"},
+{"gradient":[[0,"#2a4a6a"],[0.35,"#4a6a8a"],[0.7,"#6a8aaa"],[1,"#8aaaca"]],"clouds":[{"count":4,"yMin":0.1,"yMax":0.4,"minR":80,"maxR":200,"color":"#aacaea","alpha":0.35,"speed":4,"puffs":4,"evolveMs":9000}],"name":"Sky Blue","message":"You are the colour my world never knew it was missing ?"},
+{"gradient":[[0,"#f0d8c0"],[0.35,"#f8e4d0"],[0.7,"#fcf0e4"],[1,"#fef8f0"]],"lights":[{"x":0.5,"y":0.1,"r":52,"core":"#fffaf0","glow":"rgba(255,240,200,.45)","rays":true}],"clouds":[{"count":3,"yMin":0.35,"yMax":0.55,"minR":120,"maxR":220,"color":"#ffffff","alpha":0.3,"speed":3,"puffs":4,"evolveMs":10000}],"name":"Warm Morning","message":"Waking up to you is the only warmth I ever need ?"},
+{"gradient":[[0,"#2a1a10"],[0.3,"#4a2a1a"],[0.6,"#6a3a2a"],[1,"#3a2015"]],"stars":{"count":60,"maxY":80,"minR":0.5,"maxR":1.3},"lights":[{"x":0.5,"y":0.5,"r":20,"core":"#ff8844","glow":"rgba(255,100,40,.25)","rays":false}],"name":"Desert Night","message":"In the vast desert night, you are my only oasis ?"},
+{"gradient":[[0,"#e8d0f0"],[0.35,"#f0ddf5"],[0.7,"#f5e8fa"],[1,"#faf0fc"]],"clouds":[{"count":4,"yMin":0.3,"yMax":0.6,"minR":100,"maxR":200,"color":"#ffffff","alpha":0.35,"speed":3.5,"puffs":4,"evolveMs":9000}],"stars":{"count":30,"maxY":50,"minR":0.5,"maxR":1.2},"name":"Lavender Sky","message":"You calm my storms like lavender settling over the evening sky ?"},
+{"gradient":[[0,"#f0e8d0"],[0.4,"#f8f0e0"],[0.7,"#fcf4e8"],[1,"#fefaf0"]],"lights":[{"x":0.5,"y":0.08,"r":60,"core":"#fffaf0","glow":"rgba(255,250,220,.5)","rays":true}],"particles":[{"type":"feather","count":12,"minSize":6,"maxSize":12,"minSpeed":2,"maxSpeed":4,"colors":["#ffffff","#fff8f0"]}],"name":"Heavenly Light","message":"In your presence, I feel closer to heaven than I ever thought possible ?"},
+{"gradient":[[0,"#b0d0d8"],[0.35,"#c8e0e8"],[0.7,"#e0f0f0"],[1,"#f0f8f8"]],"clouds":[{"count":5,"yMin":0.1,"yMax":0.4,"minR":80,"maxR":180,"color":"#ffffff","alpha":0.45,"speed":5,"puffs":4,"evolveMs":8000}],"rainbow":true,"name":"Rainbow Sky","message":"You colour my world in a way no rainbow ever could ?"},
+{"gradient":[[0,"#1a0a20"],[0.35,"#2a1040"],[0.7,"#3a1860"],[1,"#2a1040"]],"stars":{"count":130,"maxY":100,"minR":0.5,"maxR":2},"aurora":{"colors":["rgba(180,100,255,.2)","rgba(120,60,220,.18)","rgba(80,40,200,.15)"],"speed":0.03,"band":240,"thickness":220},"name":"Violet Twilight","message":"You are the violet edge of twilight, the beautiful in-between of my heart ?"},
+{"gradient":[[0,"#2a3a2a"],[0.3,"#4a5a3a"],[0.6,"#6a7a5a"],[1,"#5a6a4a"]],"clouds":[{"count":4,"yMin":0.2,"yMax":0.55,"minR":100,"maxR":220,"color":"#aacaa8","alpha":0.3,"speed":3,"puffs":4,"evolveMs":10000}],"particles":[{"type":"firefly","count":20,"minY":35,"maxY":90,"minSize":2,"maxSize":3.5,"colors":["#c8ff8c","#b8f07a","#d8ff9a"]}],"name":"Forest Night","message":"In the dark of the forest, you are every light I need ?"},
+{"gradient":[[0,"#a0c8d0"],[0.35,"#c0dce4"],[0.7,"#e0ecf0"],[1,"#f0f4f8"]],"clouds":[{"count":4,"yMin":0.4,"yMax":0.7,"minR":120,"maxR":260,"color":"#ffffff","alpha":0.3,"speed":2.5,"puffs":3,"evolveMs":11000}],"waves":{"colors":["rgba(200,230,240,.12)","rgba(200,230,240,.08)","rgba(200,230,240,.05)"],"horizontal":true,"baseMin":0.78,"gap":0.04,"band":8,"thickness":3,"speed":0.08},"name":"Coastal Mist","message":"You linger in my thoughts like mist over the morning coast ?"},
+{"gradient":[[0,"#2a1a0a"],[0.3,"#4a2a1a"],[0.6,"#6a3a2a"],[1,"#3a2010"]],"stars":{"count":50,"maxY":75,"minR":0.5,"maxR":1.2},"lights":[{"x":0.8,"y":0.15,"r":22,"core":"#ffe8c0","glow":"rgba(255,200,100,.3)","rays":false}],"name":"Desert Star","message":"Under the desert stars, I found the courage to love you ?"},
+{"gradient":[[0,"#f0f0e8"],[0.35,"#f8f8f0"],[0.7,"#fcfcf8"],[1,"#fefefc"]],"clouds":[{"count":4,"yMin":0.1,"yMax":0.5,"minR":100,"maxR":250,"color":"#e8e8e0","alpha":0.25,"speed":3,"puffs":4,"evolveMs":10000}],"lights":[{"x":0.5,"y":0.12,"r":45,"core":"#fffce0","glow":"rgba(255,255,200,.3)","rays":true}],"name":"Snow White","message":"Your love is pure and quiet, like fresh snow on a silent morning ?"},
+{"gradient":[[0,"#d0a8d0"],[0.35,"#e0c0e0"],[0.7,"#f0d8f0"],[1,"#f8eaf8"]],"clouds":[{"count":4,"yMin":0.2,"yMax":0.5,"minR":90,"maxR":200,"color":"#ffffff","alpha":0.35,"speed":3,"puffs":4,"evolveMs":9000}],"stars":{"count":20,"maxY":45,"minR":0.5,"maxR":1.2},"name":"Wisteria Sky","message":"You hang in my heart like wisteria, soft and impossibly beautiful ?"},
+{"gradient":[[0,"#e8a0a0"],[0.35,"#f0c0c0"],[0.7,"#f8d8d8"],[1,"#fce8e8"]],"clouds":[{"count":4,"yMin":0.15,"yMax":0.45,"minR":100,"maxR":220,"color":"#ffffff","alpha":0.35,"speed":3.5,"puffs":4,"evolveMs":9000}],"stars":{"count":15,"maxY":40,"minR":0.5,"maxR":1},"name":"Rosy Dawn","message":"You paint my mornings pink with the light of your love ?"},
+{"gradient":[[0,"#0a1a2a"],[0.35,"#1a2a4a"],[0.7,"#2a3a6a"],[1,"#1a2a3a"]],"stars":{"count":110,"maxY":95,"minR":0.5,"maxR":1.8},"aurora":{"colors":["rgba(60,150,255,.2)","rgba(100,100,255,.18)","rgba(60,80,220,.15)"],"speed":0.025,"band":200,"thickness":180},"name":"Cyan Aurora","message":"You pulse through my veins like aurora light, electric and alive ?"},
+{"gradient":[[0,"#e8c8a0"],[0.35,"#f0d8b8"],[0.7,"#f8e4d0"],[1,"#fcf0e4"]],"lights":[{"x":0.5,"y":0.55,"r":50,"core":"#ffe0a0","glow":"rgba(255,200,120,.45)","rays":true}],"particles":[{"type":"ember","count":10,"minR":6,"maxR":12,"minSpeed":2,"maxSpeed":5,"color":"#ffc86a"}],"name":"Candlelight","message":"You are the candle that never stops burning in the window of my soul ?"},
+{"gradient":[[0,"#2a3050"],[0.35,"#4a5080"],[0.7,"#6a70a0"],[1,"#5a6080"]],"stars":{"count":100,"maxY":90,"minR":0.5,"maxR":1.8},"lights":[{"x":0.5,"y":0.4,"r":12,"core":"#ffffff","glow":"rgba(255,255,255,.1)","rays":false}],"name":"Navy Night","message":"In the deep navy of the night, your memory is my northern star ?"},
+{"gradient":[[0,"#f0e0d0"],[0.4,"#f8ece0"],[0.7,"#fcf2e8"],[1,"#fef8f0"]],"lights":[{"x":0.5,"y":0.08,"r":55,"core":"#fff8e0","glow":"rgba(255,240,180,.45)","rays":true}],"clouds":[{"count":3,"yMin":0.4,"yMax":0.6,"minR":140,"maxR":260,"color":"#ffffff","alpha":0.25,"speed":2.5,"puffs":3,"evolveMs":11000}],"name":"Morning Cream","message":"Every morning with you is like the first sip of warmth  perfect ?"},
+{"gradient":[[0,"#4a3a6a"],[0.35,"#6a5a8a"],[0.7,"#8a7aaa"],[1,"#7a6a9a"]],"stars":{"count":80,"maxY":85,"minR":0.5,"maxR":1.5},"clouds":[{"count":3,"yMin":0.1,"yMax":0.3,"minR":120,"maxR":240,"color":"#b8a8d8","alpha":0.2,"speed":2.5,"puffs":3,"evolveMs":11000}],"name":"Lilac Evening","message":"You wrap around me like lilac dusk, soft and unforgettable ?"},
+{"gradient":[[0,"#2a4a3a"],[0.35,"#4a6a5a"],[0.7,"#6a8a7a"],[1,"#8aaa9a"]],"clouds":[{"count":4,"yMin":0.15,"yMax":0.4,"minR":90,"maxR":200,"color":"#aacaba","alpha":0.3,"speed":4,"puffs":4,"evolveMs":9000}],"particles":[{"type":"leaf","count":18,"minSize":6,"maxSize":11,"minSpeed":2,"maxSpeed":5,"colors":["#8aba7a","#7aaa6a","#9aca8a"]}],"name":"Forest Canopy","message":"Through every layer of the forest, I would find my way back to you ?"},
+{"gradient":[[0,"#f0d8e8"],[0.35,"#f8e8f0"],[0.7,"#fcf0f5"],[1,"#fef6fa"]],"clouds":[{"count":4,"yMin":0.2,"yMax":0.5,"minR":90,"maxR":200,"color":"#ffffff","alpha":0.35,"speed":3,"puffs":4,"evolveMs":9000}],"stars":{"count":20,"maxY":45,"minR":0.5,"maxR":1.2},"name":"Cotton Candy Dream","message":"You are sweeter than a dream painted in cotton candy hues ?"},
+{"gradient":[[0,"#1a1a2a"],[0.3,"#2a2a4a"],[0.6,"#3a3a5a"],[1,"#2a2a3a"]],"stars":{"count":100,"maxY":90,"minR":0.5,"maxR":1.8},"lights":[{"x":0.3,"y":0.25,"r":20,"core":"#ffc0a0","glow":"rgba(255,150,100,.3)","rays":false},{"x":0.7,"y":0.2,"r":18,"core":"#a0c0ff","glow":"rgba(100,150,255,.25)","rays":false}],"name":"Binary Stars","message":"Like binary stars, we were always meant to orbit each other ?"}
+
+,
+
+{"gradient":[[0,"#0a0a1a"],[0.3,"#151530"],[0.6,"#1a1a3e"],[1,"#0d0d25"]],"stars":{"count":200,"maxY":100,"minR":0.4,"maxR":2},"lights":[{"x":0.5,"y":0.5,"r":6,"core":"#ffffff","glow":"rgba(255,255,255,.15)","rays":false}],"name":"Infinite Love","message":"My love for you is the only sky that has no end ?"}
+
+];
+
+  /* ================= MESSAGE (unchanged behaviour) ================= */
+  function showSkyMessage(sky) {
+    if (msgEl) { msgEl.remove(); msgEl = null; }
+    msgEl = document.createElement('div');
+    msgEl.id = 'skyMsg';
+    msgEl.textContent = sky.message;
+    document.body.appendChild(msgEl);
+    setTimeout(function () { if (msgEl) msgEl.style.opacity = '0'; }, 6000);
+    setTimeout(function () { if (msgEl) { msgEl.remove(); msgEl = null; } }, 8000);
+  }
+
+  /* ================= PUBLIC API ================= */
+  function applySky(index) {
+    var sky = SKIES[index];
+    if (!sky) return;
+    OverlayManager.swapTo(sky);
+    AnimationManager.start();
+    var defaultMsg = document.getElementById('defaultSkyMsg');
+    if (defaultMsg) defaultMsg.style.display = 'none';
+    showSkyMessage(sky);
+    try { localStorage.setItem(SKY_KEY, index); } catch (e) {}
+  }
+  function randomSky() { applySky(Math.floor(Math.random() * SKIES.length)); }
+  function getCurrentSkyIndex() {
+    try { var v = localStorage.getItem(SKY_KEY); return v !== null ? parseInt(v, 10) : -1; } catch (e) { return -1; }
+  }
+  function createSkyButton(container) {
+    var btn = document.createElement('button');
+    btn.textContent = '\uD83C\uDF26\uFE0F Change Sky';
+    btn.style.cssText = 'background:rgba(255,220,160,.08);border:1px solid rgba(255,210,150,.15);color:#6b5f52;padding:.5rem 1.2rem;border-radius:6px;cursor:pointer;font-family:inherit;font-size:.9rem;transition:all .25s;position:relative;z-index:2;';
+    btn.addEventListener('mouseenter', function () { this.style.borderColor = '#ffe680'; this.style.color = '#ffe680'; });
+    btn.addEventListener('mouseleave', function () { this.style.borderColor = 'rgba(255,210,150,.15)'; this.style.color = '#6b5f52'; });
+    btn.addEventListener('click', randomSky);
+    container.appendChild(btn);
+    return btn;
+  }
+
+
+  window.Skies = {
+    SKIES: SKIES,
+    apply: applySky,
+    random: randomSky,
+    getCurrent: getCurrentSkyIndex,
+    createButton: createSkyButton
+  };
+
+})();
+
+</script>
+
+<script>
+/* ===================================================================
+   SKY-LIVING.JS — verbatim, unmodified, embedded for a single-file demo
+   =================================================================== */
+/* ===================================================================
+   SKY LIVING — additive enhancement layer for skies.js
+   ---------------------------------------------------------------------
+   WHAT THIS FILE IS
+   skies.js owns two private <canvas> layers, its own SkyInstance /
+   OverlayManager / AnimationManager, and the SKIES config array. All of
+   that is closed over inside skies.js's IIFE and is NOT touched here —
+   nothing in this file edits skies.js, its canvases, its rAF loop, or
+   its data. This file adds a THIRD canvas on top (its own tiny rAF
+   loop, paused with the same discipline skies.js uses: prefers-
+   reduced-motion => static frame, tab hidden => stop) and hooks into
+   the sky lifecycle the only way an outside script safely can: by
+   wrapping the public window.Skies.apply() function.
+
+   LOAD ORDER: this file must load AFTER skies.js.
+     <script src="skies.js"><\/script>
+     <script src="sky-living.js"><\/script>
+     <script src="landscape.js"><\/script>
+     <script src="interactive.js"><\/script>
+
+   WHAT'S IMPLEMENTED
+     1. Dynamic Moon System        (phase per sky, drift, glow halo, rise)
+     2. Shooting Star System       (random spawn, click -> floating message)
+     3. Interactive Star Field     (hover glow/scale, click ripple+sparkle)
+     4. Constellation Generator    (heart / infinity / crescent / butterfly /
+                                     rose / random-walk, click -> message)
+     5. Floating Celestial Objects (per-sky weighted glyph drifters)
+     6. Living Sky Evolution       (stars grow in, fog eases in, moon rises,
+                                     slowly, for as long as a sky stays open)
+     7. Rare Sky Events            (low-probability burst on sky change:
+                                     meteor storm, aurora surge, comet,
+                                     double rainbow, moon flare, lantern
+                                     festival — visual only, self-clearing)
+     8. Sky Journey Journal        (localStorage log of skies seen + a
+                                     small toggleable panel to view it)
+     9. Hidden Easter Eggs         (click counters -> unlock message)
+    10. Ambient audio hook         (separate <audio> elements, own gain,
+                                     never touches music.js's Jukebox/
+                                     AudioContext — see SkyAmbience below.
+                                     YOU must supply real file URLs; there
+                                     are none built in.)
+    11. Paragraph-reactive hook    (SkyLiving.setMood(mood) — call this
+                                     from your own scroll/IntersectionObserver
+                                     code in 100-organs.html / fantasies.html;
+                                     this file can't discover your paragraph
+                                     markup on its own, so it exposes the
+                                     hook instead of guessing at it)
+
+   WHAT'S DELIBERATELY NOT ATTEMPTED HERE (would need engine-level
+   access this file doesn't have, or assets you haven't given me):
+     - true cloud-occlusion of the moon (skies.js's CloudLayer is
+       private canvas noise, not discrete sprites you can test moon-vs-
+       cloud collision against) — approximated instead with a soft
+       periodic dimming so the moon still visibly "breathes"
+     - HDR exposure / bloom shader passes — this is 2D canvas, no WebGL
+     - solar/lunar eclipse astronomy — "eclipse" rare event is a visual
+       flourish, not a real ephemeris
+   =================================================================== */
+(function () {
+  'use strict';
+
+  if (!window.Skies) {
+    console.warn('[SkyLiving] window.Skies not found — load skies.js before sky-living.js. Aborting.');
+    return;
+  }
+
+  var JOURNAL_KEY = 'ash-sky-journal';
+  var EGGS_KEY = 'ash-sky-eggs';
+  var reducedMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+
+  function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+  function lerp(a, b, t) { return a + (b - a) * t; }
+  function rand(a, b) { return a + Math.random() * (b - a); }
+  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+  function hashStr(s) {
+    var h = 0;
+    for (var i = 0; i < s.length; i++) { h = ((h << 5) - h + s.charCodeAt(i)) | 0; }
+    return Math.abs(h);
+  }
+
+  /* ===================== OVERLAY CANVAS ===================== */
+  // A single extra canvas, above skies.js's two canvases, below page
+  // content. pointer-events stays 'none' on the canvas itself so
+  // scrolling/reading is never blocked — interactivity is done via a
+  // document-level click/move listener that hit-tests our own object
+  // list and only acts when a hit lands on something of ours.
+  var canvas, ctx, W = 0, H = 0, DPR = 1;
+
+  function ensureCanvas() {
+    if (canvas) return;
+    var host = document.getElementById('skyOverlay') || document.body;
+    canvas = document.createElement('canvas');
+    canvas.id = 'skyLivingCanvas';
+    canvas.style.cssText = 'position:fixed;inset:0;z-index:1;pointer-events:none;';
+    // Sits after skies.js's own canvases in DOM order (painted on top),
+    // still below page content because content uses z-index:2 (see
+    // sky-generator.html's .content rule) — matches existing stacking.
+    host.appendChild(canvas);
+    ctx = canvas.getContext('2d');
+    resize();
+    window.addEventListener('resize', debounce(resize, 150));
+  }
+
+  function resize() {
+    if (!canvas) return;
+    DPR = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth;
+    H = window.innerHeight;
+    canvas.width = W * DPR;
+    canvas.height = H * DPR;
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  }
+
+  function debounce(fn, ms) {
+    var t;
+    return function () { clearTimeout(t); t = setTimeout(fn, ms); };
+  }
+
+  /* ===================== CURRENT SKY STATE ===================== */
+  var currentSky = null;
+  var currentIndex = -1;
+
+  var moon = null;          // { phase, x, y, r, brightness, riseT, clickCount }
+  var stars = [];           // interactive star field, independent of skies.js's own particle stars
+  var shootingStars = [];   // active streaks
+  var constellation = null; // { name, points:[{x,y}], lines:[[i,j]], message, revealed }
+  var floaters = [];        // celestial objects (lanterns, birds, etc.)
+  var rareEvent = null;     // { type, t, duration }
+  var evolution = { age: 0, fogAlpha: 0, extraStars: 0 };
+  var lastShootingStarSpawn = 0;
+  var nextShootingStarGap = rand(4, 11);
+
+  var floatingMsgs = []; // DOM nodes for click-revealed messages, tracked so we can cap concurrency
+
+  /* ===================== MOON SYSTEM ===================== */
+  var MOON_PHASES = [
+    { name: 'Crescent Moon', lit: 0.22, rarity: 1 },
+    { name: 'Half Moon', lit: 0.5, rarity: 1 },
+    { name: 'Full Moon', lit: 1.0, rarity: 1 },
+    { name: 'Super Moon', lit: 1.0, rarity: 0.12, sizeMul: 1.35 },
+    { name: 'Blue Moon', lit: 1.0, rarity: 0.08, tint: '#cfe0ff' },
+    { name: 'Blood Moon', lit: 1.0, rarity: 0.08, tint: '#ff6a4a' }
+  ];
+
+  // Only give a moon to skies that read as "night" — reuses the same
+  // signal skies.js already encodes (a stars config on the sky, or a
+  // dark first gradient stop) rather than a hardcoded name list, so
+  // it keeps working if you add more night skies later.
+  function skyIsNight(sky) {
+    if (sky.stars) return true;
+    var first = sky.gradient && sky.gradient[0] && sky.gradient[0][1];
+    if (!first) return false;
+    var n = parseInt(first.replace('#', ''), 16);
+    var r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+    return (r + g + b) / 3 < 60; // dark top-of-sky stop
+  }
+
+  function pickMoonPhase(sky) {
+    if (!skyIsNight(sky)) return null;
+    // Deterministic base phase per sky name (same sky -> same phase
+    // most of the time) with a small chance of rolling a rare phase,
+    // so returning to "Starry Night" doesn't feel randomly different
+    // every single time, but rare moons still surface occasionally.
+    var seed = hashStr(sky.name) % 100;
+    var roll = Math.random();
+    var phase;
+    if (roll < 0.08) phase = MOON_PHASES[3]; // Super Moon
+    else if (roll < 0.14) phase = MOON_PHASES[4]; // Blue Moon
+    else if (roll < 0.20) phase = MOON_PHASES[5]; // Blood Moon
+    else phase = MOON_PHASES[seed % 3];
+
+    var existingLight = (sky.lights && sky.lights[0]) || null;
+    return {
+      def: phase,
+      x: existingLight ? existingLight.x : rand(0.62, 0.88),
+      y0: existingLight ? existingLight.y : rand(0.1, 0.22),
+      y: existingLight ? existingLight.y : rand(0.1, 0.22),
+      r: (existingLight ? existingLight.r : 30) * (phase.sizeMul || 1),
+      driftPhase: Math.random() * Math.PI * 2,
+      breathePhase: Math.random() * Math.PI * 2,
+      clickCount: 0
+    };
+  }
+
+  function drawMoon(dt, t) {
+    if (!moon) return;
+    // slow horizontal drift + gentle vertical bob
+    var dx = Math.sin(t * 0.02 + moon.driftPhase) * 10;
+    var dy = Math.sin(t * 0.05 + moon.driftPhase) * 4;
+    // "Living Sky Evolution": moon rises slowly the longer this sky stays open
+    var riseAmt = clamp(evolution.age / 90, 0, 1) * 0.03; // rises up to 3% of viewport height over 90s
+    var cx = moon.x * W + dx;
+    var cy = (moon.y0 - riseAmt) * H + dy;
+    var r = moon.r;
+
+    // brightness breathing + a soft periodic dip standing in for "clouds passing in front"
+    var breathe = 0.85 + 0.15 * Math.sin(t * 0.15 + moon.breathePhase);
+    var passOver = 0.75 + 0.25 * Math.sin(t * 0.035 + moon.driftPhase * 3);
+    var brightness = breathe * passOver;
+
+    var tint = moon.def.tint || '#fff8e6';
+    ctx.save();
+    // halo
+    var haloR = r * 3.4;
+    var g = ctx.createRadialGradient(cx, cy, 0, cx, cy, haloR);
+    g.addColorStop(0, hexA(tint, 0.35 * brightness));
+    g.addColorStop(0.4, hexA(tint, 0.14 * brightness));
+    g.addColorStop(1, hexA(tint, 0));
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(cx, cy, haloR, 0, Math.PI * 2); ctx.fill();
+
+    // disc with terminator shading for lit fraction (crescent/half/full)
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.fillStyle = hexA('#2a2a38', 0.9); // dark base disc
+    ctx.fill();
+
+    ctx.save();
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.clip();
+    var lit = moon.def.lit;
+    var g2 = ctx.createRadialGradient(cx - r * (1 - lit), cy, r * 0.1, cx, cy, r * 1.05);
+    g2.addColorStop(0, hexA(tint, brightness));
+    g2.addColorStop(1, hexA(tint, brightness * 0.55));
+    ctx.fillStyle = g2;
+    ctx.fillRect(cx - r, cy - r, r * 2, r * 2);
+    ctx.restore();
+    ctx.restore();
+
+    moon._hit = { x: cx, y: cy, r: r * 1.4 };
+  }
+
+  function hexA(hex, a) {
+    var h = hex.replace('#', '');
+    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+    var n = parseInt(h, 16);
+    return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')';
+  }
+
+  /* ===================== INTERACTIVE STAR FIELD ===================== */
+  // Independent of skies.js's own background star particles (those stay
+  // untouched). These are a smaller, hoverable/clickable set drawn on
+  // top, sized down so they read as "extra sparkle" rather than doubling
+  // star density.
+  function buildStars(sky) {
+    stars = [];
+    if (!skyIsNight(sky)) return;
+    var base = sky.stars ? Math.min(sky.stars.count, 60) : 24; // cap: this layer is for interaction, not density
+    var count = Math.round(base * 0.35);
+    for (var i = 0; i < count; i++) {
+      stars.push({
+        x: rand(0.02, 0.98), y: rand(0.02, (sky.stars ? sky.stars.maxY : 70) / 100),
+        r: rand(0.8, 2.2),
+        twinklePhase: Math.random() * Math.PI * 2,
+        twinkleSpeed: rand(0.6, 2.2),
+        hoverT: 0, // eases toward 1 on hover, back to 0 otherwise
+        clickPulse: 0 // 0..1, decays after click
+      });
+    }
+  }
+
+  function drawStars(dt, t) {
+    for (var i = 0; i < stars.length; i++) {
+      var s = stars[i];
+      var px = s.x * W, py = s.y * H;
+      var twinkle = 0.4 + 0.6 * (0.5 + 0.5 * Math.sin(t * s.twinkleSpeed + s.twinklePhase));
+      s.hoverT = lerp(s.hoverT, s._hover ? 1 : 0, clamp(dt * 6, 0, 1));
+      s.clickPulse = Math.max(0, s.clickPulse - dt * 1.4);
+
+      var scale = 1 + s.hoverT * 0.9 + s.clickPulse * 1.6;
+      var op = twinkle * (1 + s.hoverT * 0.5);
+      var r = s.r * scale;
+
+      ctx.save();
+      ctx.globalAlpha = clamp(op, 0, 1);
+      ctx.fillStyle = '#ffffff';
+      ctx.shadowColor = '#fff';
+      ctx.shadowBlur = r * (3 + s.hoverT * 4 + s.clickPulse * 6);
+      ctx.beginPath(); ctx.arc(px, py, r, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+
+      // click ripple
+      if (s.clickPulse > 0) {
+        ctx.save();
+        ctx.globalAlpha = s.clickPulse * 0.6;
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(px, py, r + (1 - s.clickPulse) * 18, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      s._hit = { x: px, y: py, r: Math.max(8, r * 3) }; // generous hit radius, real star is tiny
+    }
+  }
+
+  /* ===================== SHOOTING STARS ===================== */
+  var WISH_MESSAGES = [
+    'I wished for you.',
+    'Every star reminds me of you.',
+    'You are my favorite constellation.',
+    'Some wishes come true slowly. You were worth the wait.',
+    'I keep making the same wish, just in case.'
+  ];
+
+  function maybeSpawnShootingStar(dt, t) {
+    if (!currentSky || !skyIsNight(currentSky)) return;
+    lastShootingStarSpawn += dt;
+    if (lastShootingStarSpawn < nextShootingStarGap) return;
+    lastShootingStarSpawn = 0;
+    nextShootingStarGap = rand(5, 14);
+    if (shootingStars.length > 3) return; // cap concurrency
+
+    var startX = rand(0.1, 0.85) * W;
+    var startY = rand(0.02, 0.35) * H;
+    var angle = rand(0.35, 0.75); // radians-ish downward-right sweep
+    var speed = rand(420, 900); // px/sec
+    shootingStars.push({
+      x: startX, y: startY,
+      vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
+      life: 0, maxLife: rand(0.7, 1.4),
+      brightness: rand(0.6, 1),
+      trail: [],
+      caught: false
+    });
+  }
+
+  function drawShootingStars(dt) {
+    for (var i = shootingStars.length - 1; i >= 0; i--) {
+      var s = shootingStars[i];
+      s.life += dt;
+      s.x += s.vx * dt;
+      s.y += s.vy * dt;
+      s.trail.push({ x: s.x, y: s.y });
+      if (s.trail.length > 14) s.trail.shift();
+
+      var fade = clamp(1 - s.life / s.maxLife, 0, 1);
+      if (fade <= 0 || s.x > W + 50 || s.y > H + 50) {
+        shootingStars.splice(i, 1);
+        continue;
+      }
+
+      ctx.save();
+      ctx.globalAlpha = fade * s.brightness;
+      var grad = ctx.createLinearGradient(
+        s.trail[0] ? s.trail[0].x : s.x, s.trail[0] ? s.trail[0].y : s.y, s.x, s.y
+      );
+      grad.addColorStop(0, 'rgba(255,255,255,0)');
+      grad.addColorStop(1, 'rgba(255,255,255,0.95)');
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = 2;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      if (s.trail.length) {
+        ctx.moveTo(s.trail[0].x, s.trail[0].y);
+        for (var j = 1; j < s.trail.length; j++) ctx.lineTo(s.trail[j].x, s.trail[j].y);
+      }
+      ctx.lineTo(s.x, s.y);
+      ctx.stroke();
+
+      ctx.shadowColor = '#fff';
+      ctx.shadowBlur = 12;
+      ctx.fillStyle = '#fff';
+      ctx.beginPath(); ctx.arc(s.x, s.y, 2.2, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+
+      s._hit = { x: s.x, y: s.y, r: 16 };
+    }
+  }
+
+  function catchShootingStar(s) {
+    if (s.caught) return;
+    s.caught = true;
+    showFloatingMessage(s.x, s.y, pick(WISH_MESSAGES));
+    var count = bumpEgg('shootingStarsCaught');
+    if (count === 5) unlockEgg('Five wishes caught — some things really do come true.');
+    var idx = shootingStars.indexOf(s);
+    if (idx >= 0) shootingStars.splice(idx, 1);
+  }
+
+  /* ===================== FLOATING MESSAGES (click-reveal) ===================== */
+  function showFloatingMessage(x, y, text) {
+    if (floatingMsgs.length > 4) {
+      var old = floatingMsgs.shift();
+      if (old && old.parentNode) old.parentNode.removeChild(old);
+    }
+    var el = document.createElement('div');
+    el.textContent = text;
+    el.style.cssText =
+      'position:fixed;left:' + x + 'px;top:' + y + 'px;transform:translate(-50%,-100%);' +
+      'font-family:Fraunces,Georgia,serif;font-style:italic;font-size:.95rem;color:#ffe680;' +
+      'text-shadow:0 2px 12px rgba(0,0,0,.7);pointer-events:none;z-index:10000;' +
+      'opacity:0;transition:opacity 1.4s ease, transform 3.5s ease;white-space:nowrap;max-width:80vw;';
+    document.body.appendChild(el);
+    floatingMsgs.push(el);
+    requestAnimationFrame(function () {
+      el.style.opacity = '1';
+      el.style.transform = 'translate(-50%,-160%)';
+    });
+    setTimeout(function () { el.style.opacity = '0'; }, 3200);
+    setTimeout(function () {
+      if (el.parentNode) el.parentNode.removeChild(el);
+      var idx = floatingMsgs.indexOf(el);
+      if (idx >= 0) floatingMsgs.splice(idx, 1);
+    }, 4600);
+  }
+
+  /* ===================== CONSTELLATIONS ===================== */
+  // Parametric point generators, normalized to a 0..1 box, then placed
+  // at a random spot in the sky per visit.
+  function heartPoints(n) {
+    var pts = [];
+    for (var i = 0; i < n; i++) {
+      var t = (i / n) * Math.PI * 2;
+      var x = 16 * Math.pow(Math.sin(t), 3);
+      var y = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
+      pts.push({ x: x / 34 + 0.5, y: y / 34 + 0.5 });
+    }
+    return pts;
+  }
+  function infinityPoints(n) {
+    var pts = [];
+    for (var i = 0; i < n; i++) {
+      var t = (i / n) * Math.PI * 2;
+      var denom = 1 + Math.sin(t) * Math.sin(t);
+      var x = Math.cos(t) / denom;
+      var y = (Math.sin(t) * Math.cos(t)) / denom;
+      pts.push({ x: x * 0.4 + 0.5, y: y * 0.6 + 0.5 });
+    }
+    return pts;
+  }
+  function crescentPoints(n) {
+    var pts = [];
+    for (var i = 0; i < n; i++) {
+      var t = Math.PI * 0.15 + (i / (n - 1)) * Math.PI * 1.5;
+      pts.push({ x: 0.5 + 0.35 * Math.cos(t), y: 0.5 + 0.35 * Math.sin(t) });
+    }
+    return pts;
+  }
+  function butterflyPoints(n) {
+    var pts = [];
+    for (var i = 0; i < n; i++) {
+      var t = (i / n) * Math.PI * 2 * 6; // classic butterfly curve needs several turns
+      var r = Math.exp(Math.sin(t)) - 2 * Math.cos(4 * t) + Math.pow(Math.sin((2 * t - Math.PI) / 24), 5);
+      pts.push({ x: (r * Math.sin(t)) / 6 + 0.5, y: -(r * Math.cos(t)) / 6 + 0.5 });
+    }
+    return pts;
+  }
+  function rosePoints(n, k) {
+    var pts = [];
+    for (var i = 0; i < n; i++) {
+      var t = (i / n) * Math.PI * 2;
+      var r = Math.cos((k || 4) * t);
+      pts.push({ x: r * Math.cos(t) * 0.4 + 0.5, y: r * Math.sin(t) * 0.4 + 0.5 });
+    }
+    return pts;
+  }
+  function randomWalkPoints(n) {
+    var pts = [{ x: 0.5, y: 0.5 }];
+    for (var i = 1; i < n; i++) {
+      var prev = pts[i - 1];
+      pts.push({
+        x: clamp(prev.x + rand(-0.18, 0.18), 0.05, 0.95),
+        y: clamp(prev.y + rand(-0.18, 0.18), 0.05, 0.95)
+      });
+    }
+    return pts;
+  }
+
+  var CONSTELLATION_SHAPES = {
+    heart: function () { return heartPoints(9); },
+    infinity: function () { return infinityPoints(10); },
+    crescent: function () { return crescentPoints(8); },
+    butterfly: function () { return butterflyPoints(11); },
+    rose: function () { return rosePoints(10, 4); },
+    random: function () { return randomWalkPoints(rand(6, 9) | 0); }
+  };
+  // Optional: window.SkyLiving.CONSTELLATION_SHAPES.initials = function(){...}
+  // to add a custom point set (e.g. shaped like two initials) later.
+
+  var CONSTELLATION_MESSAGES = {
+    heart: 'Even the stars couldn\u2019t help but draw your shape.',
+    infinity: 'This is how long I plan on loving you.',
+    crescent: 'A sliver of light, and it still outshines everything else up there.',
+    butterfly: 'Something in me still hasn\u2019t stopped fluttering since you.',
+    rose: 'I would have picked you a real one, but the stars insisted.',
+    random: 'I don\u2019t know what this constellation is either. I just know it made me think of you.'
+  };
+
+  function generateConstellation(sky) {
+    if (!skyIsNight(sky)) return null;
+    var keys = Object.keys(CONSTELLATION_SHAPES);
+    var name = pick(keys);
+    var raw = CONSTELLATION_SHAPES[name]();
+    var boxSize = rand(0.16, 0.28); // fraction of viewport the shape occupies
+    var originX = rand(0.08, 0.62);
+    var originY = rand(0.06, 0.55);
+    var points = raw.map(function (p) {
+      return { x: originX + p.x * boxSize, y: originY + p.y * boxSize, twinklePhase: Math.random() * Math.PI * 2 };
+    });
+    var lines = [];
+    for (var i = 0; i < points.length - 1; i++) lines.push([i, i + 1]);
+    return { name: name, points: points, lines: lines, message: CONSTELLATION_MESSAGES[name], revealed: false };
+  }
+
+  function drawConstellation(t) {
+    if (!constellation) return;
+    var pts = constellation.points.map(function (p) { return { x: p.x * W, y: p.y * H }; });
+
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255,230,180,0.28)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    constellation.lines.forEach(function (l) {
+      ctx.moveTo(pts[l[0]].x, pts[l[0]].y);
+      ctx.lineTo(pts[l[1]].x, pts[l[1]].y);
+    });
+    ctx.stroke();
+    ctx.restore();
+
+    constellation.points.forEach(function (p, i) {
+      var px = pts[i].x, py = pts[i].y;
+      var tw = 0.6 + 0.4 * Math.sin(t * 1.2 + p.twinklePhase);
+      ctx.save();
+      ctx.globalAlpha = tw;
+      ctx.fillStyle = '#fff6d8';
+      ctx.shadowColor = '#ffe680';
+      ctx.shadowBlur = 6;
+      ctx.beginPath(); ctx.arc(px, py, 2.1, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+    });
+
+    // single hit region: bounding box of the shape, generous, so any
+    // point near the constellation reveals it — precise per-star
+    // hit-testing would be frustrating on a shape this small.
+    var xs = pts.map(function (p) { return p.x; }), ys = pts.map(function (p) { return p.y; });
+    constellation._hit = {
+      x1: Math.min.apply(null, xs) - 14, y1: Math.min.apply(null, ys) - 14,
+      x2: Math.max.apply(null, xs) + 14, y2: Math.max.apply(null, ys) + 14
+    };
+  }
+
+  /* ===================== FLOATING CELESTIAL OBJECTS ===================== */
+  var OBJECT_GLYPHS = {
+    lantern: '\uD83C\uDFEE', balloon: '\uD83C\uDF88', paperplane: '\u2708\uFE0F',
+    butterfly: '\uD83E\uDD8B', bird: '\uD83D\uDC26', owl: '\uD83E\uDD89',
+    firefly: '\u2726', jellyfish: '\uD83E\uDEBC', whale: '\uD83D\uDC33',
+    dragon: '\uD83D\uDC09', island: '\uD83C\uDFDD\uFE0F', airship: '\uD83D\uDEF8',
+    kite: '\uD83E\uDEC1', crane: '\uD83E\uDDA2'
+  };
+
+  // Weighted per-sky-name-keyword tables. Falls back to a small
+  // generic set for skies that don't match a keyword, so every sky
+  // gets *something* rather than a hard dependency on exact names.
+  function objectsForSky(sky) {
+    var n = sky.name.toLowerCase();
+    if (/night|star|galaxy|cosmic|nebula|void|space/.test(n)) return ['firefly', 'firefly', 'owl', 'dragon', 'airship'];
+    if (/rain|storm|thunder/.test(n)) return ['bird'];
+    if (/snow|winter|blizzard/.test(n)) return ['crane', 'bird'];
+    if (/sunrise|dawn|morning/.test(n)) return ['bird', 'balloon', 'paperplane', 'kite'];
+    if (/sunset|dusk|twilight|lantern|golden/.test(n)) return ['lantern', 'lantern', 'balloon'];
+    if (/ocean|sea|coast|wave/.test(n)) return ['whale', 'jellyfish'];
+    if (/forest|jungle|meadow|spring|leaf|leaves/.test(n)) return ['butterfly', 'bird', 'firefly'];
+    if (/cloud|fog|mist/.test(n)) return ['island', 'balloon'];
+    return ['bird', 'butterfly', 'balloon'];
+  }
+
+  function spawnFloaters(sky) {
+    floaters = [];
+    var pool = objectsForSky(sky);
+    var count = Math.round(rand(2, 5));
+    for (var i = 0; i < count; i++) {
+      var type = pick(pool);
+      floaters.push({
+        type: type, glyph: OBJECT_GLYPHS[type] || '\u2726',
+        x: rand(-0.1, 1.1), y: rand(0.15, 0.85),
+        size: rand(14, 26),
+        speed: rand(0.004, 0.012) * (Math.random() < 0.5 ? 1 : -1),
+        bobPhase: Math.random() * Math.PI * 2,
+        opacity: rand(0.5, 0.85)
+      });
+    }
+  }
+
+  function drawFloaters(dt, t) {
+    floaters.forEach(function (f) {
+      f.x += f.speed * dt;
+      if (f.x < -0.15) f.x = 1.15;
+      if (f.x > 1.15) f.x = -0.15;
+      var px = f.x * W;
+      var py = f.y * H + Math.sin(t * 0.6 + f.bobPhase) * 10;
+      ctx.save();
+      ctx.globalAlpha = f.opacity;
+      ctx.font = f.size + 'px serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(f.glyph, px, py);
+      ctx.restore();
+    });
+  }
+
+  /* ===================== LIVING SKY EVOLUTION ===================== */
+  function updateEvolution(dt) {
+    evolution.age += dt;
+    // fog eases in softly over the first two minutes a sky is open,
+    // capped low so it never obscures the reading content
+    evolution.fogAlpha = clamp(evolution.age / 120, 0, 1) * 0.06;
+  }
+
+  function drawEvolutionFog() {
+    if (evolution.fogAlpha <= 0) return;
+    ctx.save();
+    ctx.globalAlpha = evolution.fogAlpha;
+    var g = ctx.createLinearGradient(0, H * 0.6, 0, H);
+    g.addColorStop(0, 'rgba(200,200,210,0)');
+    g.addColorStop(1, 'rgba(200,200,210,1)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, W, H);
+    ctx.restore();
+  }
+
+  /* ===================== RARE SKY EVENTS ===================== */
+  var RARE_EVENT_CHANCE = 0.035; // ~3.5% per sky change — deliberately rare, per the brief
+  var RARE_EVENTS = ['meteorStorm', 'auroraSurge', 'comet', 'doubleRainbow', 'moonFlare', 'lanternFestival'];
+
+  function maybeTriggerRareEvent(sky) {
+    rareEvent = null;
+    if (Math.random() > RARE_EVENT_CHANCE) return;
+    var candidates = RARE_EVENTS.filter(function (type) {
+      if ((type === 'moonFlare') && !moon) return false;
+      if ((type === 'meteorStorm' || type === 'auroraSurge' || type === 'moonFlare') && !skyIsNight(sky)) return false;
+      return true;
+    });
+    if (!candidates.length) return;
+    rareEvent = { type: pick(candidates), t: 0, duration: rand(6, 11), burstDone: false };
+  }
+
+  function drawRareEvent(dt, t) {
+    if (!rareEvent) return;
+    rareEvent.t += dt;
+    var progress = rareEvent.t / rareEvent.duration;
+    if (progress >= 1) { rareEvent = null; return; }
+    var fade = progress < 0.15 ? progress / 0.15 : (progress > 0.8 ? (1 - progress) / 0.2 : 1);
+
+    ctx.save();
+    ctx.globalAlpha = clamp(fade, 0, 1);
+    switch (rareEvent.type) {
+      case 'meteorStorm':
+        if (!rareEvent.burstDone) {
+          for (var i = 0; i < 3; i++) {
+            shootingStars.push({
+              x: rand(0.1, 0.9) * W, y: rand(0.02, 0.3) * H,
+              vx: rand(400, 800), vy: rand(250, 500),
+              life: 0, maxLife: rand(0.8, 1.3), brightness: 1, trail: [], caught: false
+            });
+          }
+        }
+        break;
+      case 'auroraSurge':
+        var grad = ctx.createLinearGradient(0, 0, 0, H * 0.6);
+        grad.addColorStop(0, 'rgba(80,255,180,' + (0.12 * fade) + ')');
+        grad.addColorStop(0.5, 'rgba(90,140,255,' + (0.10 * fade) + ')');
+        grad.addColorStop(1, 'rgba(90,140,255,0)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, W, H * 0.6);
+        break;
+      case 'comet':
+        var cx = lerp(-0.1, 1.1, progress) * W, cy = 0.2 * H;
+        ctx.strokeStyle = 'rgba(255,240,220,' + (0.9 * fade) + ')';
+        ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.moveTo(cx - 90, cy - 45); ctx.lineTo(cx, cy); ctx.stroke();
+        ctx.fillStyle = '#fff';
+        ctx.shadowColor = '#ffe680'; ctx.shadowBlur = 20;
+        ctx.beginPath(); ctx.arc(cx, cy, 4, 0, Math.PI * 2); ctx.fill();
+        break;
+      case 'doubleRainbow':
+        drawArc(0.55, 0.4 * fade);
+        drawArc(0.62, 0.25 * fade);
+        break;
+      case 'moonFlare':
+        if (moon && moon._hit) {
+          var g2 = ctx.createRadialGradient(moon._hit.x, moon._hit.y, 0, moon._hit.x, moon._hit.y, moon.r * 6);
+          g2.addColorStop(0, 'rgba(255,255,240,' + (0.5 * fade) + ')');
+          g2.addColorStop(1, 'rgba(255,255,240,0)');
+          ctx.fillStyle = g2;
+          ctx.beginPath(); ctx.arc(moon._hit.x, moon._hit.y, moon.r * 6, 0, Math.PI * 2); ctx.fill();
+        }
+        break;
+      case 'lanternFestival':
+        if (!rareEvent.burstDone) {
+          for (var j = 0; j < 8; j++) {
+            floaters.push({
+              type: 'lantern', glyph: OBJECT_GLYPHS.lantern,
+              x: rand(0, 1), y: 1.05, size: rand(16, 24),
+              speed: rand(-0.002, 0.002), bobPhase: Math.random() * Math.PI * 2, opacity: rand(0.6, 0.9),
+              rising: true
+            });
+          }
+        }
+        break;
+    }
+    rareEvent.burstDone = true;
+    ctx.restore();
+  }
+
+  function drawArc(topFrac, alpha) {
+    var cx = W / 2, cy = H * topFrac + H * 0.55, r = H * 0.55;
+    var colors = ['#ff5b5b', '#ffb35c', '#ffe680', '#7ed17e', '#5c9dff', '#a06cff'];
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    for (var i = 0; i < colors.length; i++) {
+      ctx.strokeStyle = colors[i];
+      ctx.lineWidth = 6;
+      ctx.beginPath();
+      ctx.arc(cx, cy, r - i * 6, Math.PI, Math.PI * 2);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  /* ===================== SKY JOURNEY JOURNAL ===================== */
+  function loadJournal() {
+    try { return JSON.parse(localStorage.getItem(JOURNAL_KEY)) || {}; } catch (e) { return {}; }
+  }
+  function saveJournal(j) {
+    try { localStorage.setItem(JOURNAL_KEY, JSON.stringify(j)); } catch (e) {}
+  }
+  function recordVisit(name) {
+    var j = loadJournal();
+    j[name] = (j[name] || 0) + 1;
+    saveJournal(j);
+    renderJournalPanel();
+  }
+
+  var journalPanel = null, journalToggle = null;
+  function ensureJournalUI() {
+    if (journalToggle) return;
+    journalToggle = document.createElement('button');
+    journalToggle.textContent = '\u2661 journal';
+    journalToggle.style.cssText =
+      'position:fixed;bottom:1.2rem;right:1.2rem;z-index:10001;background:rgba(255,220,160,.08);' +
+      'border:1px solid rgba(255,210,150,.15);color:#6b5f52;padding:.4rem .9rem;border-radius:6px;' +
+      'cursor:pointer;font-family:Georgia,serif;font-size:.8rem;transition:all .25s;';
+    journalToggle.addEventListener('mouseenter', function () { this.style.color = '#ffe680'; this.style.borderColor = '#ffe680'; });
+    journalToggle.addEventListener('mouseleave', function () { this.style.color = '#6b5f52'; this.style.borderColor = 'rgba(255,210,150,.15)'; });
+    journalToggle.addEventListener('click', function () {
+      journalPanel.style.display = journalPanel.style.display === 'none' ? 'block' : 'none';
+    });
+    document.body.appendChild(journalToggle);
+
+    journalPanel = document.createElement('div');
+    journalPanel.style.cssText =
+      'position:fixed;bottom:3.4rem;right:1.2rem;z-index:10001;max-width:min(90vw,280px);max-height:50vh;' +
+      'overflow:auto;background:rgba(24,18,20,.92);border:1px solid rgba(255,210,150,.2);border-radius:10px;' +
+      'padding:.8rem 1rem;font-family:Georgia,serif;font-size:.82rem;color:#c7b8a1;display:none;';
+    document.body.appendChild(journalPanel);
+  }
+  function renderJournalPanel() {
+    ensureJournalUI();
+    var j = loadJournal();
+    var names = Object.keys(j);
+    if (!names.length) { journalPanel.innerHTML = '<em>No skies visited yet.</em>'; return; }
+    journalPanel.innerHTML = '<div style="color:#ffe680;font-family:Fraunces,Georgia,serif;margin-bottom:.5rem;">Sky Journey</div>' +
+      names.sort().map(function (n) {
+        return '<div style="padding:.15rem 0;">' + n + ' <span style="opacity:.6;">\u2713 &times;' + j[n] + '</span></div>';
+      }).join('');
+  }
+
+  /* ===================== HIDDEN EASTER EGGS ===================== */
+  function loadEggs() { try { return JSON.parse(localStorage.getItem(EGGS_KEY)) || {}; } catch (e) { return {}; } }
+  function saveEggs(e) { try { localStorage.setItem(EGGS_KEY, JSON.stringify(e)); } catch (e) {} }
+  function bumpEgg(key) {
+    var e = loadEggs();
+    e[key] = (e[key] || 0) + 1;
+    saveEggs(e);
+    return e[key];
+  }
+  function unlockEgg(message) {
+    showFloatingMessage(W / 2, H * 0.4, message);
+  }
+
+  function onMoonClicked() {
+    var count = bumpEgg('moonClicks');
+    if (count === 10) unlockEgg('Ten moon-taps in. It\u2019s still watching over you.');
+  }
+  function onStarClicked() {
+    var count = bumpEgg('starClicks');
+    if (count === 100) unlockEgg('A hundred stars, one wish repeated a hundred times.');
+  }
+
+  /* ===================== AMBIENT AUDIO (procedural, no external files) ===================== */
+  // Generates all ambience sounds at runtime using the Web Audio API.
+  var ambienceCtx = null;
+  function getAC() {
+    if (!ambienceCtx) {
+      var C = window.AudioContext || window.webkitAudioContext;
+      if (C) ambienceCtx = new C();
+    }
+    return ambienceCtx;
+  }
+
+  function makeNoiseBuffer(ctx, dur) {
+    var len = Math.floor(ctx.sampleRate * dur);
+    var buf = ctx.createBuffer(1, len, ctx.sampleRate);
+    var d = buf.getChannelData(0);
+    for (var i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+    return buf;
+  }
+
+  var AMBIENCE_GENS = {
+    wind: function (ctx) {
+      var buf = makeNoiseBuffer(ctx, 3);
+      var src = ctx.createBufferSource();
+      src.buffer = buf; src.loop = true;
+      var lp = ctx.createBiquadFilter();
+      lp.type = 'lowpass'; lp.frequency.value = 500; lp.Q.value = 0.5;
+      src.connect(lp);
+      return { node: lp, start: function (g) { lp.connect(g); src.start(); }, stop: function () { try { src.stop(); } catch (e) {} } };
+    },
+    rain: function (ctx) {
+      var buf = makeNoiseBuffer(ctx, 3);
+      var src = ctx.createBufferSource();
+      src.buffer = buf; src.loop = true;
+      var bp = ctx.createBiquadFilter();
+      bp.type = 'bandpass'; bp.frequency.value = 3500; bp.Q.value = 0.4;
+      src.connect(bp);
+      return { node: bp, start: function (g) { bp.connect(g); src.start(); }, stop: function () { try { src.stop(); } catch (e) {} } };
+    },
+    ocean: function (ctx) {
+      var buf = makeNoiseBuffer(ctx, 5);
+      var src = ctx.createBufferSource();
+      src.buffer = buf; src.loop = true;
+      var bp = ctx.createBiquadFilter();
+      bp.type = 'bandpass'; bp.frequency.value = 400; bp.Q.value = 0.7;
+      var lfo = ctx.createOscillator();
+      lfo.frequency.value = 0.06;
+      var lfoG = ctx.createGain();
+      lfoG.gain.value = 300;
+      lfo.connect(lfoG); lfoG.connect(bp.frequency);
+      src.connect(bp);
+      lfo.start();
+      return { node: bp, start: function (g) { bp.connect(g); src.start(); }, stop: function () { try { src.stop(); lfo.stop(); } catch (e) {} } };
+    },
+    forest: function (ctx) {
+      var buf = makeNoiseBuffer(ctx, 3);
+      var src = ctx.createBufferSource();
+      src.buffer = buf; src.loop = true;
+      var lp = ctx.createBiquadFilter();
+      lp.type = 'lowpass'; lp.frequency.value = 1200; lp.Q.value = 0.4;
+      src.connect(lp);
+      return { node: lp, start: function (g) { lp.connect(g); src.start(); }, stop: function () { try { src.stop(); } catch (e) {} } };
+    },
+    nightInsects: function (ctx) {
+      var mix = ctx.createGain();
+      mix.gain.value = 0.3;
+      var oscs = [];
+      for (var i = 0; i < 4; i++) {
+        var o = ctx.createOscillator();
+        o.type = 'sine'; o.frequency.value = 3000 + i * 700 + Math.random() * 400;
+        var a = ctx.createGain(); a.gain.value = 0;
+        var l = ctx.createOscillator(); l.frequency.value = 3 + Math.random() * 4;
+        var lg = ctx.createGain(); lg.gain.value = 0.15;
+        l.connect(lg); lg.connect(a.gain);
+        o.connect(a); a.connect(mix);
+        o.start(); l.start();
+        oscs.push(o, l);
+      }
+      return { node: mix, start: function (g) { mix.connect(g); }, stop: function () { oscs.forEach(function (o) { try { o.stop(); } catch (e) {} }); } };
+    },
+    thunder: function (ctx) {
+      var buf = makeNoiseBuffer(ctx, 3);
+      var d = buf.getChannelData(0);
+      for (var i = 0; i < d.length; i++) d[i] *= Math.exp(-i / (ctx.sampleRate * 0.6));
+      var src = ctx.createBufferSource();
+      src.buffer = buf; src.loop = true;
+      var lp = ctx.createBiquadFilter();
+      lp.type = 'lowpass'; lp.frequency.value = 100;
+      src.connect(lp);
+      return { node: lp, start: function (g) { lp.connect(g); src.start(); }, stop: function () { try { src.stop(); } catch (e) {} } };
+    },
+    templeBells: function (ctx) {
+      var mix = ctx.createGain();
+      mix.gain.value = 0.35;
+      var now = ctx.currentTime;
+      var oscs = [];
+      [220, 330, 440].forEach(function (freq, i) {
+        var o = ctx.createOscillator();
+        o.type = 'sine'; o.frequency.value = freq;
+        var a = ctx.createGain();
+        a.gain.setValueAtTime(0, now + i * 0.6);
+        a.gain.linearRampToValueAtTime(0.15, now + i * 0.6 + 0.04);
+        a.gain.exponentialRampToValueAtTime(0.001, now + i * 0.6 + 2.5);
+        o.connect(a); a.connect(mix);
+        o.start(now + i * 0.6); o.stop(now + i * 0.6 + 3);
+        oscs.push(o);
+      });
+      return { node: mix, start: function (g) { mix.connect(g); }, stop: function () { oscs.forEach(function (o) { try { o.stop(); } catch (e) {} }); } };
+    },
+    fireCrackling: function (ctx) {
+      var mix = ctx.createGain();
+      mix.gain.value = 0.4;
+      var interval = setInterval(function () {
+        var buf = makeNoiseBuffer(ctx, 0.08);
+        var d = buf.getChannelData(0);
+        for (var i = 0; i < d.length; i++) d[i] *= Math.exp(-i / (ctx.sampleRate * 0.012));
+        var src = ctx.createBufferSource();
+        src.buffer = buf;
+        var hp = ctx.createBiquadFilter();
+        hp.type = 'highpass'; hp.frequency.value = 2000;
+        src.connect(hp); hp.connect(mix);
+        src.start();
+      }, 250);
+      return { node: mix, start: function (g) { mix.connect(g); }, stop: function () { clearInterval(interval); } };
+    }
+  };
+
+  var ambienceState = { current: null, gain: null, gen: null, volume: 0.35 };
+
+  function ambienceKeyForSky(sky) {
+    var n = sky.name.toLowerCase();
+    if (/thunder/.test(n)) return 'thunder';
+    if (/rain|shower/.test(n)) return 'rain';
+    if (/ocean|sea|coast|wave/.test(n)) return 'ocean';
+    if (/forest|jungle|canopy/.test(n)) return 'forest';
+    if (/night|star|galaxy|cosmic|nebula|void/.test(n)) return 'nightInsects';
+    if (/fire|ember|lantern|candle/.test(n)) return 'fireCrackling';
+    if (/temple|heaven|angel|celestial/.test(n)) return 'templeBells';
+    if (/cloud|fog|mist|wind|breeze/.test(n)) return 'wind';
+    return null;
+  }
+
+  function setAmbienceForSky(sky) {
+    var key = ambienceKeyForSky(sky);
+    if (key === ambienceState.current) return;
+    var ctx = getAC();
+    if (!ctx) return;
+    if (ambienceState.gain) {
+      var oldGain = ambienceState.gain;
+      fadeGain(ambienceState.gain, 0, 1200, function () {
+        try { oldGain.disconnect(); } catch (e) {}
+        if (ambienceState.gen) ambienceState.gen.stop();
+      });
+    }
+    ambienceState.current = key;
+    ambienceState.gain = null;
+    ambienceState.gen = null;
+    if (!key || !AMBIENCE_GENS[key]) return;
+    var gen = AMBIENCE_GENS[key](ctx);
+    var g = ctx.createGain();
+    g.gain.value = 0;
+    gen.start(g);
+    ambienceState.gain = g;
+    ambienceState.gen = gen;
+    fadeGain(g, ambienceState.volume, 1500);
+  }
+  function fadeGain(gain, target, ms, done) {
+    var start = gain.gain.value, t0 = performance.now();
+    function step(now) {
+      var p = clamp((now - t0) / ms, 0, 1);
+      gain.gain.value = lerp(start, target, p);
+      if (p < 1) requestAnimationFrame(step); else if (done) done();
+    }
+    requestAnimationFrame(step);
+  }
+
+  /* ===================== PARAGRAPH-REACTIVE HOOK ===================== */
+  // This file can't discover your paragraph markup — call this from
+  // your own scroll / IntersectionObserver logic in 100-organs.html /
+  // fantasies.html, e.g.:
+  //   SkyLiving.setMood('romantic')   // more fireflies
+  //   SkyLiving.setMood('happy')      // more stars
+  //   SkyLiving.setMood('emotional')  // gentle mist
+  //   SkyLiving.setMood('hopeful')    // warm light pulse
+  //   SkyLiving.setMood('ending')     // floating lanterns
+  //   SkyLiving.setMood(null)         // clear back to baseline
+  var currentMood = null;
+  var moodFogBoost = 0, moodWarmBoost = 0;
+  function setMood(mood) {
+    currentMood = mood;
+    if (mood === 'romantic') spawnMoodFloaters('firefly', 6);
+    if (mood === 'happy') stars.forEach(function (s) { s._moodBoost = true; });
+    if (mood === 'ending') spawnMoodFloaters('lantern', 5);
+  }
+  function spawnMoodFloaters(type, count) {
+    for (var i = 0; i < count; i++) {
+      floaters.push({
+        type: type, glyph: OBJECT_GLYPHS[type] || '\u2726',
+        x: rand(0, 1), y: rand(0.3, 0.9), size: rand(10, 18),
+        speed: rand(-0.003, 0.003), bobPhase: Math.random() * Math.PI * 2, opacity: rand(0.5, 0.8)
+      });
+    }
+    if (floaters.length > 40) floaters.splice(0, floaters.length - 40); // cap
+  }
+  function drawMoodOverlay(dt, t) {
+    if (currentMood === 'emotional') {
+      moodFogBoost = lerp(moodFogBoost, 0.05, dt * 0.5);
+    } else {
+      moodFogBoost = lerp(moodFogBoost, 0, dt * 0.5);
+    }
+    if (currentMood === 'hopeful') {
+      moodWarmBoost = lerp(moodWarmBoost, 0.06, dt * 0.5);
+    } else {
+      moodWarmBoost = lerp(moodWarmBoost, 0, dt * 0.5);
+    }
+    if (moodFogBoost > 0.002) {
+      ctx.save();
+      ctx.globalAlpha = moodFogBoost;
+      ctx.fillStyle = '#cfd6e0';
+      ctx.fillRect(0, H * 0.5, W, H * 0.5);
+      ctx.restore();
+    }
+    if (moodWarmBoost > 0.002) {
+      ctx.save();
+      ctx.globalAlpha = moodWarmBoost;
+      var g = ctx.createRadialGradient(W / 2, H * 0.3, 0, W / 2, H * 0.3, H * 0.6);
+      g.addColorStop(0, 'rgba(255,210,140,1)');
+      g.addColorStop(1, 'rgba(255,210,140,0)');
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, W, H);
+      ctx.restore();
+    }
+  }
+
+  /* ===================== POINTER INTERACTION ===================== */
+  // No pointer-events on the canvas — we hit-test manually so the page
+  // underneath keeps scrolling and existing buttons/links keep working.
+  function withinCircle(px, py, hit) { return hit && Math.hypot(px - hit.x, py - hit.y) <= hit.r; }
+  function withinBox(px, py, hit) { return hit && px >= hit.x1 && px <= hit.x2 && py >= hit.y1 && py <= hit.y2; }
+
+  function onDocMove(e) {
+    var px = e.clientX, py = e.clientY;
+    var any = false;
+    stars.forEach(function (s) {
+      s._hover = withinCircle(px, py, s._hit);
+      if (s._hover) any = true;
+    });
+    document.body.style.cursor = any ? 'pointer' : '';
+  }
+
+  function onDocClick(e) {
+    var px = e.clientX, py = e.clientY;
+
+    if (moon && withinCircle(px, py, moon._hit)) { onMoonClicked(); return; }
+
+    for (var i = 0; i < shootingStars.length; i++) {
+      if (withinCircle(px, py, shootingStars[i]._hit)) { catchShootingStar(shootingStars[i]); return; }
+    }
+
+    for (var j = 0; j < stars.length; j++) {
+      if (withinCircle(px, py, stars[j]._hit)) {
+        stars[j].clickPulse = 1;
+        onStarClicked();
+        return;
+      }
+    }
+
+    if (constellation && !constellation.revealed && withinBox(px, py, constellation._hit)) {
+      constellation.revealed = true;
+      showFloatingMessage(px, py, constellation.message);
+      return;
+    }
+  }
+
+  document.addEventListener('mousemove', throttle(onDocMove, 60));
+  document.addEventListener('click', onDocClick);
+
+  function throttle(fn, ms) {
+    var last = 0;
+    return function () {
+      var now = Date.now();
+      if (now - last > ms) { last = now; fn.apply(null, arguments); }
+    };
+  }
+
+  /* ===================== MAIN LOOP ===================== */
+  var running = false, lastT = 0;
+  function frame(now) {
+    if (!running) return;
+    var dt = Math.min((now - lastT) / 1000, 0.05);
+    lastT = now;
+    var t = now / 1000;
+
+    ctx.clearRect(0, 0, W, H);
+
+    if (!reducedMotion) {
+      updateEvolution(dt);
+      maybeSpawnShootingStar(dt, t);
+    }
+
+    drawMoon(dt, t);
+    drawStars(dt, t);
+    drawShootingStars(dt);
+    if (constellation) drawConstellation(t);
+    drawFloaters(dt, t);
+    drawEvolutionFog();
+    drawMoodOverlay(dt, t);
+    drawRareEvent(dt, t);
+
+    if (!reducedMotion) requestAnimationFrame(frame);
+    else running = false; // one static frame under reduced-motion, matches skies.js's own behavior
+  }
+
+  function start() {
+    ensureCanvas();
+    if (running) return;
+    running = true;
+    lastT = performance.now();
+    requestAnimationFrame(frame);
+  }
+  function stop() { running = false; }
+
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) stop(); else if (currentSky) start();
+  });
+
+  /* ===================== SKY CHANGE HOOK ===================== */
+  function onSkyChanged(index) {
+    var sky = window.Skies.SKIES[index];
+    if (!sky) return;
+    currentSky = sky;
+    currentIndex = index;
+
+    ensureCanvas();
+    moon = pickMoonPhase(sky);
+    buildStars(sky);
+    constellation = generateConstellation(sky);
+    spawnFloaters(sky);
+    shootingStars = [];
+    evolution = { age: 0, fogAlpha: 0, extraStars: 0 };
+    lastShootingStarSpawn = 0;
+
+    recordVisit(sky.name);
+    maybeTriggerRareEvent(sky);
+    setAmbienceForSky(sky);
+
+    if (reducedMotion) { running = true; lastT = performance.now(); frame(lastT); running = false; }
+    else start();
+  }
+
+  // Wrap the public API instead of touching skies.js's private internals.
+  var originalApply = window.Skies.apply;
+  window.Skies.apply = function (index) {
+    originalApply.call(window.Skies, index);
+    onSkyChanged(index);
+  };
+
+  /* ===================== PUBLIC API ===================== */
+  window.SkyLiving = {
+    setMood: setMood,
+    getJournal: loadJournal,
+    CONSTELLATION_SHAPES: CONSTELLATION_SHAPES,
+    AMBIENCE_SOURCES: (function () { var o = {}; for (var k in AMBIENCE_GENS) o[k] = '(procedural)'; return o; })(),
+    setAmbienceVolume: function (v) {
+      ambienceState.volume = clamp(v, 0, 1);
+      if (ambienceState.gain) ambienceState.gain.gain.value = ambienceState.volume;
+    }
+  };
+
+  /* ===================== INIT ===================== */
+  var savedIndex = window.Skies.getCurrent ? window.Skies.getCurrent() : -1;
+  if (savedIndex >= 0 && window.Skies.SKIES[savedIndex]) {
+    onSkyChanged(savedIndex);
+  }
+})();
+
+</script>
+
+<script>
+/* ===================================================================
+   DEMO WIRING ONLY — mirrors how fantasies.html / 100-organs.html
+   wire the button (Skies.createButton), plus a sky picker and a mood
+   test button so every sky and the paragraph-reactive hook are both
+   directly testable in this one file.
+   =================================================================== */
+(function () {
+  var sel = document.getElementById('skySelect');
+  window.Skies.SKIES.forEach(function (sky, i) {
+    var opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = (i + 1) + '. ' + sky.name;
+    sel.appendChild(opt);
+  });
+
+  sel.addEventListener('change', function () {
+    window.Skies.apply(parseInt(sel.value, 10));
+  });
+
+  document.getElementById('previewBtn').addEventListener('click', function () {
+    window.Skies.random();
+    sel.value = window.Skies.getCurrent();
+  });
+
+  var moods = ['romantic', 'happy', 'emotional', 'hopeful', 'ending', null];
+  var moodIdx = 0;
+  document.getElementById('moodTest').addEventListener('click', function () {
+    moodIdx = (moodIdx + 1) % moods.length;
+    var m = moods[moodIdx];
+    window.SkyLiving.setMood(m);
+    this.textContent = '\uD83D\uDCAC Test mood: ' + (m || 'none (baseline)');
+  });
+
+  var saved = window.Skies.getCurrent();
+  var start = (saved >= 0 && saved < window.Skies.SKIES.length) ? saved : 0;
+  sel.value = start;
+  window.Skies.apply(start);
+})();
+</script>
+<script src="global-interactions.js"></script>
+
+<script src="global-easter-eggs.js"></script>
+<script defer src="interactions.js"></script>
+</body>
+</html>

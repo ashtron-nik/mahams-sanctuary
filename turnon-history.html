@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>turn on history &mdash; Dreambox</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%99%A1%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500;1,9..144,600&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="fb-db.js"></script>
+<script src="global-easter-eggs.js"></script>
+<script defer src="interactions.js"></script>
+<script src="activity-tracker.js"></script>
+<style>
+:root {
+  --ink: #17130f; --ink-soft: #1e1811; --ink-line: #33291e;
+  --parchment: #ffebd2; --parchment-dim: #c7b8a1; --ash: #6b5f52;
+  --gold: #ffe680; --ember: #e85d3a;
+  --font-display: "Fraunces", Georgia, serif; --font-body: "Lora", Georgia, serif;
+  --measure: 860px; --pad: clamp(1.25rem, 6vw, 2.25rem);
+  --glass: rgba(255, 220, 160, .08); --glassBorder: rgba(255, 210, 150, .35);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { margin: 0; min-height: 100vh; }
+body {
+  background: var(--ink); color: var(--parchment);
+  font-family: var(--font-body); font-size: 15px; line-height: 1.6;
+  padding: var(--pad);
+}
+h1, h2, h3 { font-family: var(--font-display); font-weight: 500; }
+a { color: var(--gold); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.wrap { max-width: var(--measure); margin: 0 auto; }
+h1 { font-size: 1.75rem; margin: 2rem 0 .5rem; color: var(--gold); }
+.sub { color: var(--ash); font-size: .85rem; font-style: italic; margin-bottom: 2rem; }
+.loading { text-align: center; padding: 3rem 0; color: var(--ash); }
+
+.session-card {
+  background: var(--glass); border: 1px solid var(--glassBorder);
+  border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem;
+}
+.session-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: .5rem; cursor: pointer;
+}
+.session-header h3 { font-size: .95rem; color: var(--gold); }
+.session-meta { color: var(--ash); font-size: .75rem; }
+.session-path { display: none; }
+.session-path.open { display: block; }
+.path-item {
+  padding: .35rem 0; border-bottom: 1px solid rgba(255,210,150,.05);
+  font-size: .85rem; display: flex; gap: .5rem;
+}
+.path-num { color: var(--ash); font-size: .75rem; min-width: 1.5rem; text-align: right; }
+.path-choice { color: var(--parchment); flex: 1; }
+.path-step { color: var(--ash); font-size: .7rem; white-space: nowrap; }
+.expand-icon { color: var(--ash); font-size: .7rem; transition: transform .2s; }
+.expand-icon.open { transform: rotate(90deg); }
+.empty { text-align: center; padding: 3rem 0; color: var(--ash); }
+.empty .icon { font-size: 2rem; margin-bottom: .5rem; }
+.nav { margin: 1rem 0; }
+.nav a { color: var(--parchment-dim); font-size: .85rem; }
+.nav a:hover { color: var(--gold); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav"><a href="index.html">&larr; Home</a></div>
+  <h1>&#x2661; Turn On History</h1>
+  <p class="sub">Every session  has played through</p>
+  <div id="sessionList" class="loading">Loading sessions...</div>
+</div>
+<script>
+(function () {
+  try { if (localStorage.getItem('ash-admin-passkey')) { document.getElementById('sessionList').innerHTML = '<div class="empty"><div class="icon">&#x2661;</div><p>History hidden while admin is signed in.</p></div>'; return; } } catch(e) {}
+
+  var LEVEL_NAMES = ['Awakening','Teasing','Touching','Yearning','Surrender','Pleasure','Ecstasy','Intimacy','Vulnerability','Union'];
+
+  function load() {
+    if (typeof FB === 'undefined' || typeof FB.get !== 'function') {
+      document.getElementById('sessionList').innerHTML = '<div class="empty"><div class="icon">&#x26A0;</div><p>Could not connect.</p></div>';
+      return;
+    }
+    FB.get('turnOn', 'sessions_data').then(function (d) {
+      var items = (d && d.sessions) ? JSON.parse(JSON.stringify(d.sessions)) : [];
+      items.sort(function (a, b) { return (b.timestamp || 0) - (a.timestamp || 0); });
+      render(items);
+    }).catch(function () {
+      document.getElementById('sessionList').innerHTML = '<div class="empty"><div class="icon">&#x26A0;</div><p>Could not load sessions.</p></div>';
+    });
+  }
+
+  function render(items) {
+    var container = document.getElementById('sessionList');
+    if (!items.length) {
+      container.innerHTML = '<div class="empty"><div class="icon">&#x2661;</div><p>No sessions yet.</p></div>';
+      return;
+    }
+    var html = '';
+    items.forEach(function (s) {
+      var choices = s.history ? s.history.length : 0;
+      var label = s.label || 'Session';
+      html += '<div class="session-card">';
+      html += '<div class="session-header" onclick="this.nextElementSibling.classList.toggle(\'open\');this.querySelector(\'.expand-icon\').classList.toggle(\'open\');">';
+      html += '<h3>' + esc(label) + '</h3>';
+      html += '<div><span class="session-meta">' + choices + ' choices</span> <span class="expand-icon">&#x25B8;</span></div>';
+      html += '</div>';
+      html += '<div class="session-path">';
+      if (s.history) {
+        s.history.forEach(function (h, hi) {
+          html += '<div class="path-item">';
+          html += '<span class="path-num">' + (hi + 1) + '.</span>';
+          html += '<span class="path-choice">' + esc(h.choice || '') + '</span>';
+          html += '<span class="path-step">step ' + h.stepId + '</span>';
+          html += '</div>';
+        });
+      }
+      html += '</div></div>';
+    });
+    container.innerHTML = html;
+  }
+
+  function esc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+  }
+
+  load();
+})();
+</script>
+</body>
+</html>

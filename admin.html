@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%99%A1%3C/text%3E%3C/svg%3E">
+  <link rel="manifest" href="manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+  <script src="fb-db.js"></script>
+  <script src="feature-flags.js"></script>
+  <script src="secret-letters.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      cursor: url('cursor images/imresizer-meme-pop-cat-pack.jpg'), auto;
+
+      background: #181214; color: #ffebd2;
+      font-family: 'Lora', Georgia, serif; font-size: 15px; line-height: 1.6;
+      min-height: 100vh;
+    }
+    h1, h2, h3, h4 { font-family: 'Fraunces', Georgia, serif; font-weight: 500; }
+    a { color: #ffe680; }
+
+    /* ---- Login ---- */
+    #loginGate {
+      position: fixed; inset: 0; z-index: 9999;
+      display: flex; align-items: center; justify-content: center;
+      background: #181214;
+    }
+    #loginGate.hidden { display: none; }
+    .login-box {
+      background: rgba(255,220,160,.06); border: 1px solid rgba(255,210,150,.15);
+      border-radius: 16px; padding: 2.5rem; width: 340px; max-width: 90vw;
+      text-align: center;
+    }
+    .login-box h1 { font-size: 1.5rem; color: #ffe680; margin-bottom: .25rem; }
+    .login-box p { color: #6b5f52; font-size: .85rem; margin-bottom: 1.5rem; }
+    .login-box input {
+      width: 100%; padding: .7rem 1rem; border-radius: 8px;
+      background: rgba(255,220,160,.06); border: 1px solid rgba(255,210,150,.15);
+      color: #ffebd2; font-family: inherit; font-size: 1rem; outline: none;
+      transition: border-color .25s;
+    }
+    .login-box input:focus { border-color: #ffe680; }
+    .login-box .err { color: #e85d3a; font-size: .8rem; margin-top: .5rem; display: none; }
+    .login-box .err.show { display: block; }
+    .login-box button {
+      margin-top: 1rem; padding: .6rem 2rem; border-radius: 8px;
+      background: rgba(255,230,128,.1); border: 1px solid #ffe680;
+      color: #ffe680; font-family: 'Fraunces', Georgia, serif; font-size: .95rem;
+      cursor: pointer; transition: all .25s;
+    }
+    .login-box button:hover { background: #ffe680; color: #181214; }
+
+    /* ---- App ---- */
+    #app { display: none; max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+    #app.show { display: block; }
+
+    header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;
+    }
+    header h1 { font-size: 1.6rem; color: #ffe680; }
+    header .sub { color: #6b5f52; font-size: .8rem; font-style: italic; }
+    header .header-actions { display: flex; gap: .5rem; }
+    header .header-actions button {
+      background: none; border: 1px solid rgba(255,210,150,.15);
+      color: #6b5f52; padding: .4rem 1rem; border-radius: 6px;
+      cursor: pointer; font-family: inherit; font-size: .8rem; transition: all .25s;
+    }
+    header .header-actions button:hover { border-color: #ffe680; color: #ffe680; }
+    header .header-actions .logout-btn:hover { border-color: #e85d3a; color: #e85d3a; }
+
+    /* ---- Tabs ---- */
+    .tabs { display: flex; gap: 0; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(255,210,150,.08); }
+    .tabs .tab {
+      padding: .6rem 1.5rem; cursor: pointer;
+      font-family: 'Fraunces', Georgia, serif; font-size: .85rem;
+      color: #6b5f52; border-bottom: 2px solid transparent;
+      transition: all .25s; background: none; border-top: none;
+      border-left: none; border-right: none;
+    }
+    .tabs .tab:hover { color: #ffebd2; }
+    .tabs .tab.active { color: #ffe680; border-bottom-color: #ffe680; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* ---- Section Dates ---- */
+    .section-dates { display: flex; flex-direction: column; gap: .75rem; margin-bottom: 2rem; }
+    .section-card {
+      background: rgba(255,220,160,.04); border: 1px solid rgba(255,210,150,.1);
+      border-radius: 12px; padding: 1rem 1.25rem;
+      display: flex; align-items: center; gap: 1rem;
+    }
+    .section-card .icon { font-size: 1.5rem; width: 40px; text-align: center; }
+    .section-card .info { flex: 1; }
+    .section-card .info .name { font-family: 'Fraunces', Georgia, serif; font-size: .9rem; }
+    .section-card .info .file { font-size: .75rem; color: #6b5f52; }
+    .section-card .info .status { font-size: .75rem; margin-top: 2px; }
+    .section-card .info .status.locked { color: #e85d3a; }
+    .section-card .info .status.unlocked { color: #6fcf97; }
+
+    /* ---- Song List ---- */
+    .song-list { display: flex; flex-direction: column; gap: .5rem; margin-bottom: 1.5rem; }
+    .song-card {
+      background: rgba(255,220,160,.04); border: 1px solid rgba(255,210,150,.1);
+      border-radius: 10px; padding: .8rem 1rem;
+      display: flex; align-items: center; gap: .75rem;
+      transition: all .25s;
+    }
+    .song-card:hover { border-color: rgba(255,210,150,.2); }
+    .song-card .thumb {
+      width: 36px; height: 36px; border-radius: 6px; overflow: hidden; flex-shrink: 0;
+      background: rgba(255,220,160,.06);
+    }
+    .song-card .thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .song-card .info { flex: 1; min-width: 0; }
+    .song-card .info .stitle { font-family: 'Fraunces', Georgia, serif; font-size: .85rem; color: #ffebd2; }
+    .song-card .info .sartist { font-size: .72rem; color: #6b5f52; }
+    .song-card .info .smeta { font-size: .65rem; color: #6b5f52; margin-top: 1px; display: flex; gap: .75rem; }
+    .song-card .info .review-text { font-size: .78rem; color: #d4c5a9; margin-top: 6px; padding: 6px 8px; background: rgba(255,255,255,0.04); border-radius: 4px; border-left: 2px solid rgba(232,93,58,0.3); }
+    .song-card .info .smeta .locked { color: #e85d3a; }
+    .song-card .info .smeta .has-file { color: #6fcf97; }
+    .song-card .actions { display: flex; gap: 4px; flex-shrink: 0; }
+    .song-card .actions button {
+      width: 28px; height: 28px; border-radius: 6px; border: 1px solid rgba(255,210,150,.08);
+      background: transparent; color: #6b5f52; cursor: pointer; font-size: .75rem;
+      transition: all .2s; display: flex; align-items: center; justify-content: center;
+    }
+    .song-card .actions .edit-btn:hover { border-color: #ffe680; color: #ffe680; }
+    .song-card .actions .del-btn:hover { border-color: #e85d3a; color: #e85d3a; background: rgba(232,93,58,.1); }
+
+    .add-btn {
+      width: 100%; padding: .7rem; border-radius: 8px;
+      border: 1px dashed rgba(255,210,150,.12); background: transparent;
+      color: #6b5f52; font-family: 'Fraunces', Georgia, serif; font-size: .85rem;
+      cursor: pointer; transition: all .25s;
+    }
+    .add-btn:hover { border-color: #ffe680; color: #ffe680; background: rgba(255,230,128,.04); }
+
+    .empty-state { text-align: center; padding: 2.5rem 2rem; color: #6b5f52; }
+    .empty-state .icon { font-size: 2rem; margin-bottom: .5rem; }
+    .empty-state p { font-style: italic; font-size: .85rem; }
+
+    /* ---- Modal ---- */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 1000;
+      background: rgba(0,0,0,.6); backdrop-filter: blur(6px);
+      display: none; align-items: center; justify-content: center;
+      padding: 1.5rem;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: rgba(22,20,18,.95); backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,210,150,.12); border-radius: 16px;
+      width: 520px; max-width: 100%; max-height: 90vh; overflow-y: auto;
+      padding: 1.75rem; box-shadow: 0 20px 60px rgba(0,0,0,.6);
+    }
+    .modal h2 { font-size: 1.2rem; color: #ffe680; margin-bottom: 1rem; }
+    .modal .field { margin-bottom: .85rem; }
+    .modal .field label { display: block; font-size: .7rem; color: #6b5f52; margin-bottom: 3px; text-transform: uppercase; letter-spacing: .05em; }
+    .modal .field input {
+      width: 100%; padding: .55rem .75rem; border-radius: 6px;
+      background: rgba(255,220,160,.04); border: 1px solid rgba(255,210,150,.1);
+      color: #ffebd2; font-family: inherit; font-size: .85rem; outline: none;
+      transition: border-color .25s;
+    }
+    .modal .field input:focus { border-color: #ffe680; }
+    .modal .field input[type="file"] { padding: .35rem; }
+    .modal .field input[type="file"]::file-selector-button {
+      background: rgba(255,230,128,.1); border: 1px solid rgba(255,210,150,.2);
+      border-radius: 4px; color: #ffe680; padding: .25rem .6rem; cursor: pointer;
+      font-family: inherit; margin-right: .5rem; font-size: .75rem;
+    }
+    .modal .field .file-info { font-size: .75rem; color: #6b5f52; margin-top: 3px; }
+    .modal .field-row { display: flex; gap: .75rem; }
+    .modal .field-row .field { flex: 1; }
+    .modal .field .cb-label {
+      display: flex; align-items: center; gap: .5rem; cursor: pointer;
+      font-size: .8rem; color: #ffebd2; text-transform: none; letter-spacing: 0;
+    }
+    .modal .field .cb-label input { width: auto; }
+    .modal .modal-actions { display: flex; gap: .75rem; margin-top: 1.25rem; justify-content: flex-end; }
+    .modal .modal-actions button {
+      padding: .45rem 1.25rem; border-radius: 6px; cursor: pointer;
+      font-family: 'Fraunces', Georgia, serif; font-size: .8rem; transition: all .25s;
+    }
+    .modal .modal-actions .btn-cancel {
+      background: transparent; border: 1px solid rgba(255,210,150,.1); color: #6b5f52;
+    }
+    .modal .modal-actions .btn-cancel:hover { border-color: rgba(255,210,150,.25); color: #ffebd2; }
+    .modal .modal-actions .btn-save {
+      background: rgba(255,230,128,.1); border: 1px solid #ffe680; color: #ffe680;
+    }
+    .modal .modal-actions .btn-save:hover { background: #ffe680; color: #181214; }
+
+    .toast {
+      position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(20px);
+      background: rgba(22,20,18,.92); backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,210,150,.12); border-radius: 10px;
+      padding: .7rem 1.5rem; color: #ffebd2; font-size: .85rem;
+      opacity: 0; transition: all .35s ease; z-index: 9999; pointer-events: none;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ---- Access Control ---- */
+    .access-card {
+      background: rgba(255,220,160,.04); border: 1px solid rgba(255,210,150,.1);
+      border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: .75rem;
+    }
+    .access-header {
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    }
+    .access-header .info { flex: 1; }
+    .access-header .info .name { font-family: 'Fraunces', Georgia, serif; font-size: .9rem; }
+    .access-header .info .file { font-size: .75rem; color: #6b5f52; }
+    .toggle-wrap {
+      display: flex; align-items: center; gap: .5rem; flex-shrink: 0;
+    }
+    .toggle-wrap label { font-size: .75rem; color: #6b5f52; cursor: pointer; }
+    .toggle {
+      position: relative; width: 40px; height: 22px; flex-shrink: 0;
+      background: rgba(255,220,160,.08); border-radius: 11px; cursor: pointer;
+      transition: background .25s; border: 1px solid rgba(255,210,150,.1);
+    }
+    .toggle.active { background: rgba(111,207,151,.3); border-color: #6fcf97; }
+    .toggle::after {
+      content: ''; position: absolute; top: 2px; left: 2px;
+      width: 16px; height: 16px; border-radius: 50%; background: #6b5f52;
+      transition: all .25s;
+    }
+    .toggle.active::after { left: 20px; background: #6fcf97; }
+    .date-label { font-family:'Fraunces',Georgia,serif; font-size:.85rem; color:#ffebd2; }
+    .date-meta { font-size:.75rem; color:#6b5f52; margin-top:1px; }
+    .quiz-section {
+      margin-top: .75rem; padding-top: .75rem;
+      border-top: 1px solid rgba(255,210,150,.08); display: none;
+    }
+    .quiz-section.open { display: block; }
+    .quiz-section .q-field { margin-bottom: .6rem; }
+    .quiz-section .q-field label { display: block; font-size: .7rem; color: #6b5f52; margin-bottom: 2px; }
+    .quiz-section .q-field input {
+      width: 100%; padding: .4rem .6rem; border-radius: 5px;
+      background: rgba(255,220,160,.03); border: 1px solid rgba(255,210,150,.08);
+      color: #ffebd2; font-family: inherit; font-size: .8rem; outline: none;
+    }
+    .quiz-section .q-field input:focus { border-color: #ffe680; }
+    .quiz-section .quiz-note { font-size: .72rem; color: #6b5f52; font-style: italic; margin-bottom: .5rem; }
+
+    .feature-group { margin-bottom: 1.5rem; }
+    .feature-group-title { font-family:'Fraunces',Georgia,serif; font-size:.85rem; color:#ffe680; margin-bottom:.5rem; padding-bottom:.25rem; border-bottom:1px solid rgba(255,230,128,.1); }
+    .feature-card {
+      background:rgba(255,220,160,.03); border:1px solid rgba(255,210,150,.08);
+      border-radius:8px; padding:.6rem .8rem; margin-bottom:.35rem;
+      display:flex; align-items:center; gap:.6rem;
+      transition:all .25s;
+      border-left:3px solid #e85d3a;
+    }
+    .feature-card.ready { border-left-color:#6fcf97; }
+    .feature-card.disabled { opacity:.65; background:rgba(232,93,58,.04); border-color:rgba(232,93,58,.12); }
+    .feature-card .f-label { flex:1; min-width:0; }
+    .feature-card .f-label .f-name { font-size:.8rem; color:#ffebd2; font-weight:500; }
+    .feature-card.disabled .f-label .f-name { color:#6b5f52; text-decoration:line-through; }
+    .feature-card .f-label .f-name::after { content:' (' attr(data-state) ')'; font-size:.6rem; font-weight:400; margin-left:4px; }
+    .feature-card:not(.disabled) .f-label .f-name::after { color:#6fcf97; }
+    .feature-card.disabled .f-label .f-name::after { color:#e85d3a; }
+    .feature-card .f-label .f-desc { font-size:.65rem; color:#6b5f52; margin-top:1px; }
+    .feature-card .f-label .f-auto { font-size:.62rem; color:#b8a898; font-style:italic; margin-top:2px; padding:2px 6px; background:rgba(255,220,160,.06); border-radius:4px; display:inline-block; }
+    .feature-card .f-status { display:none; }
+    .ftoggle {
+      width:34px; height:19px; flex-shrink:0;
+      background:rgba(255,220,160,.08); border-radius:10px; cursor:pointer;
+      transition:background .25s; border:1px solid rgba(255,210,150,.1); position:relative;
+    }
+    .ftoggle.on { background:rgba(111,207,151,.3); border-color:#6fcf97; }
+    .ftoggle::after {
+      content:''; position:absolute; top:1.5px; left:1.5px;
+      width:13px; height:13px; border-radius:50%; background:#6b5f52;
+      transition:all .25s;
+    }
+    .ftoggle.on::after { left:17.5px; background:#6fcf97; }
+
+    .section-req-card { background:rgba(255,220,160,.04); border:1px solid rgba(255,210,150,.1); border-radius:8px; padding:1rem; margin-bottom:.75rem; display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+    .section-req-card .info { flex:1; min-width:150px; }
+    .section-req-card .page { font-size:.85rem; color:#ffebd2; font-weight:600; }
+    .section-req-card .group { font-size:.8rem; color:#6b5f52; margin-top:2px; }
+    .section-req-card .actions { display:flex; gap:8px; }
+    .section-req-card .approve-btn { background:rgba(111,207,147,.1); border:1px solid rgba(111,207,147,.3); color:#6fcf93; padding:.35rem .75rem; border-radius:6px; cursor:pointer; font-size:.8rem; }
+    .section-req-card .reject-btn { background:rgba(232,93,58,.1); border:1px solid rgba(232,93,58,.3); color:#e85d3a; padding:.35rem .75rem; border-radius:6px; cursor:pointer; font-size:.8rem; }
+
+    .admin-layout { display:flex; gap:1.5rem; align-items:flex-start; }
+    .admin-sidebar { flex:0 0 180px; position:sticky; top:1rem; display:flex; flex-direction:column; gap:2px; }
+    .admin-sidebar .tab { display:block; width:100%; text-align:left; background:none; border:none; color:#6b5f52; padding:.45rem .7rem; border-radius:6px; cursor:pointer; font-family:'Fraunces',Georgia,serif; font-size:.8rem; transition:all .2s; }
+    .admin-sidebar .tab:hover { background:rgba(255,220,160,.06); color:#ffebd2; }
+    .admin-sidebar .tab.active { background:rgba(255,230,128,.1); color:#ffe680; }
+    .admin-content { flex:1; min-width:0; }
+
+    @media (max-width: 768px) {
+      .admin-layout { flex-direction:column; }
+      .admin-sidebar { flex:none; position:static; flex-direction:row; flex-wrap:wrap; gap:2px; }
+      .admin-sidebar .tab { width:auto; font-size:.7rem; padding:.35rem .5rem; }
+    }
+      #app { padding: 1rem; }
+      .modal { padding: 1.25rem; }
+      .modal .field-row { flex-direction: column; gap: 0; }
+      .tabs .tab { padding: .5rem 1rem; font-size: .8rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="loginGate">
+  <div class="login-box">
+    <h1>&#x1F3B5; Admin Dashboard</h1>
+    <p>Manage the website</p>
+    <input type="email" id="loginEmail" placeholder="Email" autofocus>
+    <input type="password" id="loginPass" placeholder="Password">
+    <div class="err" id="loginErr">Login failed</div>
+    <button id="loginBtn">Unlock</button>
+  </div>
+</div>
+
+<div id="app">
+  <header>
+    <div>
+      <h1>&#x1F3B5; Admin Dashboard <span id="errorBadge" style="display:none;font-size:.55rem;background:var(--ember);color:#fff;padding:2px 7px;border-radius:10px;vertical-align:middle;cursor:pointer;" onclick="showErrors()">0</span></h1>
+      <div class="sub" id="statusText">Loading...</div>
+    </div>
+    <div class="header-actions">
+      <button id="resetBtn">&#x21BB; Reset to defaults</button>
+      <button class="logout-btn" id="logoutBtn">Logout</button>
+    </div>
+  </header>
+
+  <div class="admin-layout">
+    <div class="admin-sidebar">
+      <button class="tab active" data-tab="sections">&#x1F4C5; Dates</button>
+      <button class="tab" data-tab="songs">&#x1F3B5; Songs</button>
+      <button class="tab" data-tab="secret">&#x2728; Secret</button>
+      <button class="tab" data-tab="gallery">&#x1F5BC; Gallery</button>
+      <button class="tab" data-tab="wishes">&#x2728; Wishes</button>
+      <button class="tab" data-tab="requests">&#x1F3B6; Requests</button>
+      <button class="tab" data-tab="reviews">&#x1F3A7; Reviews</button>
+      <button class="tab" data-tab="activity">&#x1F4C8; Activity</button>
+      <button class="tab" data-tab="quiz">&#x1F4DD; Quiz</button>
+      <button class="tab" data-tab="events">&#x1F3C4; Events</button>
+      <button class="tab" data-tab="letters" id="lettersTabBtn">&#x1F4DD; Letters</button>
+      <button class="tab" data-tab="dynamic">&#x2728; Dynamic</button>
+      <button class="tab" data-tab="timeline">&#x1F4C5; Timeline</button>
+      <button class="tab" data-tab="sectionRequests">&#x1F4CB; Sections</button>
+      <button class="tab" data-tab="settings">&#x2699; Settings</button>
+      <button class="tab" data-tab="dreams">&#x1F30C; Dreams</button>
+      <button class="tab" data-tab="turnon">&#x2665; Turn On</button>
+      <button class="tab" data-tab="project">&#x1F48E; Project</button>
+      <button class="tab" data-tab="access">&#x1F510; Access</button>
+      <button class="tab" data-tab="memories">&#x1F338; Remember</button>
+      <button class="tab" data-tab="selfletters">&#x270D; Self Letters</button>
+      <button class="tab" data-tab="rare">&#x1F48E; Rare Links</button>
+      <button class="tab" data-tab="achievements">&#x1F3C6; Achievements</button>
+      <button class="tab" data-tab="interactions">&#x1F496; Interactions</button>
+    </div>
+    <div class="admin-content">
+
+  <!-- Tab: Sections -->
+  <div class="tab-content active" id="tabSections">
+    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
+      Set when each section of the website becomes readable.
+    </p>
+    <div class="section-dates" id="sectionList"></div>
+  </div>
+
+  <!-- Tab: Songs -->
+  <div class="tab-content" id="tabSongs">
+    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
+      Upload songs, set titles, and control when they unlock.
+    </p>
+    <div class="song-list" id="songList"></div>
+    <button class="add-btn" id="addBtn">+ Add New Song</button>
+  </div>
+
+  <!-- Tab: Secret -->
+  <div class="tab-content" id="tabSecret">
+    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
+      This song appears when <strong>all five sections</strong> are unlocked. A little reward for making it through everything.
+    </p>
+    <div id="secretForm">
+      <div class="field" style="margin-bottom:.85rem;">
+        <label style="display:block;font-size:.7rem;color:#6b5f52;margin-bottom:3px;text-transform:uppercase;letter-spacing:.05em;">Song Title</label>
+        <input type="text" id="secTitle" placeholder="e.g. Our Song" style="width:100%;padding:.55rem .75rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:inherit;font-size:.85rem;outline:none;">
+      </div>
+      <div class="field" style="margin-bottom:.85rem;">
+        <label style="display:block;font-size:.7rem;color:#6b5f52;margin-bottom:3px;text-transform:uppercase;letter-spacing:.05em;">Artist</label>
+        <input type="text" id="secArtist" placeholder="e.g. " style="width:100%;padding:.55rem .75rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:inherit;font-size:.85rem;outline:none;">
+      </div>
+      <div style="display:flex;gap:.75rem;margin-bottom:.85rem;">
+        <div class="field" style="flex:1;">
+          <label style="display:block;font-size:.7rem;color:#6b5f52;margin-bottom:3px;text-transform:uppercase;letter-spacing:.05em;">Duration (sec)</label>
+          <input type="number" id="secDuration" placeholder="200" min="1" style="width:100%;padding:.55rem .75rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:inherit;font-size:.85rem;outline:none;">
+        </div>
+        <div class="field" style="flex:1;">
+          <label style="display:block;font-size:.7rem;color:#6b5f52;margin-bottom:3px;text-transform:uppercase;letter-spacing:.05em;">Cover URL</label>
+          <input type="text" id="secCover" placeholder="https://..." style="width:100%;padding:.55rem .75rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:inherit;font-size:.85rem;outline:none;">
+        </div>
+      </div>
+      <div class="field" style="margin-bottom:.85rem;">
+        <label style="display:block;font-size:.7rem;color:#6b5f52;margin-bottom:3px;text-transform:uppercase;letter-spacing:.05em;">Audio File (MP3)</label>
+        <input type="file" id="secAudioFile" accept="audio/*" style="width:100%;padding:.35rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:inherit;font-size:.85rem;outline:none;">
+        <div id="secFileInfo" style="font-size:.75rem;color:#6b5f52;margin-top:3px;"></div>
+      </div>
+      <div style="display:flex;gap:.75rem;margin-top:1rem;">
+        <button id="secClearBtn" style="padding:.45rem 1.25rem;border-radius:6px;cursor:pointer;font-family:'Fraunces',Georgia,serif;font-size:.8rem;background:rgba(232,93,58,.1);border:1px solid #e85d3a;color:#e85d3a;">Clear Secret</button>
+        <button id="secSaveBtn" style="padding:.45rem 1.25rem;border-radius:6px;cursor:pointer;font-family:'Fraunces',Georgia,serif;font-size:.8rem;background:rgba(255,230,128,.1);border:1px solid #ffe680;color:#ffe680;">Save Secret Song</button>
+      </div>
+    </div>
+
+    <hr style="border:none;border-top:1px solid rgba(255,210,150,.1);margin:2rem 0;">
+
+    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
+      A personal note that typewrites itself on the Fantasies page when she arrives.
+    </p>
+    <div class="field" style="margin-bottom:.85rem;">
+      <label style="display:block;font-size:.7rem;color:#6b5f52;margin-bottom:3px;text-transform:uppercase;letter-spacing:.05em;">Personal Note</label>
+      <textarea id="secNoteText" rows="4" placeholder="Write something only she will see..." style="width:100%;padding:.55rem .75rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:'Lora',Georgia,serif;font-size:.85rem;outline:none;resize:vertical;"></textarea>
+    </div>
+    <div style="display:flex;gap:.75rem;">
+      <button id="secNoteClearBtn" style="padding:.45rem 1.25rem;border-radius:6px;cursor:pointer;font-family:'Fraunces',Georgia,serif;font-size:.8rem;background:rgba(232,93,58,.1);border:1px solid #e85d3a;color:#e85d3a;">Clear Note</button>
+      <button id="secNoteSaveBtn" style="padding:.45rem 1.25rem;border-radius:6px;cursor:pointer;font-family:'Fraunces',Georgia,serif;font-size:.8rem;background:rgba(255,230,128,.1);border:1px solid #ffe680;color:#ffe680;">Save Note</button>
+    </div>
+  </div>
+
+  <!-- Tab: Gallery -->
+  <div class="tab-content" id="tabGallery">
+    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
+      Manage gallery images and videos. Add notes to each item.
+    </p>
+    <div class="song-list" id="galleryList"></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="add-btn" id="galleryAddBtn">+ Add Gallery Item</button>
+      <button class="add-btn" id="galleryUploadBtn" style="background:rgba(255,230,128,.08);border:1px solid rgba(255,230,128,.2);color:#ffe680;">\uD83D\uDCC1 Upload Gallery Images</button>
+    </div>
+    <input type="file" id="galleryUploadInput" accept="image/*" multiple style="display:none;">
+  </div>
+
+  <!-- Tab: Wishes -->
+  <div class="tab-content" id="tabWishes">
+    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
+      Wishes submitted from the Sky Observatory and other interactions. Search, sort, filter, and manage.
+    </p>
+    <div style="display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap;align-items:center;">
+      <input type="text" id="wishSearch" placeholder="Search wishes..." style="flex:1;min-width:120px;padding:.5rem .7rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:inherit;font-size:.85rem;outline:none;">
+      <select id="wishSort" style="padding:.5rem .7rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:inherit;font-size:.85rem;outline:none;">
+        <option value="newest">Newest</option>
+        <option value="oldest">Oldest</option>
+        <option value="text">Text A-Z</option>
+        <option value="source">Source</option>
+      </select>
+      <select id="wishFilter" style="padding:.5rem .7rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:inherit;font-size:.85rem;outline:none;">
+        <option value="all">All</option>
+        <option value="pending">Pending</option>
+        <option value="granted">Granted</option>
+        <option value="released">Released</option>
+        <option value="favourite">Favourited</option>
+      </select>
+      <button id="wishExportBtn" style="padding:.5rem .9rem;border-radius:6px;background:rgba(255,230,128,.08);border:1px solid rgba(255,230,128,.2);color:#ffe680;cursor:pointer;font-family:inherit;font-size:.8rem;">Export</button>
+      <button id="wishExportCsvBtn" style="padding:.5rem .9rem;border-radius:6px;background:rgba(255,230,128,.08);border:1px solid rgba(255,230,128,.2);color:#ffe680;cursor:pointer;font-family:inherit;font-size:.8rem;">CSV</button>
+    </div>
+    <div style="font-size:.75rem;color:#6b5f52;margin-bottom:.5rem;" id="wishStats"></div>
+    <div class="song-list" id="wishList"></div>
+  </div>
+
+  <!-- Tab: Requests -->
+  <div class="tab-content" id="tabRequests">
+    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
+      Song requests submitted from the landing page.
+    </p>
+    <div id="requestsList"></div>
+  </div>
+
+  <!-- Tab: Reviews -->
+  <div class="tab-content" id="tabReviews">
+    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
+      Voice recordings and text reviews submitted from tribute sections.
+    </p>
+    <div style="margin-bottom:1rem;">
+      <button id="exportReviewsBtn" style="padding:8px 18px;border-radius:8px;background:rgba(255,210,150,.12);border:1px solid rgba(255,210,150,.25);color:#ffe680;cursor:pointer;font-family:inherit;font-size:.85rem;">&#x2B07; Export All Reviews as HTML</button>
+    </div>
+    <div id="reviewsList"></div>
+  </div>
+
+  <!-- Tab: Settings -->
+  <div class="tab-content" id="tabSettings">
+    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
+      Enable or disable any feature. Disabling hides the feature without stopping its background logic. Toggle on to instantly restore.
+    </p>
+    <div class="section-dates" id="settingsList"></div>
+    <div style="display:flex;gap:8px;align-items:center;margin-top:1rem;">
+      <button id="saveFeaturesBtn" style="padding:.45rem 1.25rem;border-radius:6px;cursor:pointer;font-family:'Fraunces',Georgia,serif;font-size:.8rem;background:rgba(111,207,147,.1);border:1px solid rgba(111,207,147,.3);color:#6fcf93;">Save to Firebase</button>
+      <span id="featuresSaveStatus" style="font-size:.75rem;color:#6b5f52;"></span>
+    </div>
+    <hr style="border-color:rgba(255,210,150,.08);margin:1.5rem 0;">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+      <div style="flex:1;min-width:120px;">
+        <div class="date-label">Admin Password</div>
+        <div class="date-meta">Current: <span id="currentPassDisplay">****</span></div>
+      </div>
+      <input type="password" id="newPassInput" placeholder="New password" style="background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;padding:0.4rem 0.7rem;border-radius:6px;font-size:0.85rem;width:140px;font-family:inherit;">
+      <button id="changePassBtn" style="background:rgba(255,230,128,0.1);border:1px solid rgba(255,230,128,0.2);color:#ffe680;padding:0.4rem 0.8rem;border-radius:6px;cursor:pointer;font-size:0.8rem;">Change</button>
+    </div>
+  </div>
+
+  <!-- Tab: Section Requests -->
+  <div class="tab-content" id="tabSectionRequests">
+    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
+      Approve or reject section unlock requests from content pages.
+    </p>
+    <div id="sectionRequestsList"></div>
+  </div>
+
+  <!-- Tab: Events -->
+  <div class="tab-content" id="tabEvents">
+    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
+      Seasonal events apply sky/theme overrides on special dates.
+    </p>
+    <div id="eventsList"></div>
+    <button class="add-btn" id="addEventBtn">+ Add Event</button>
+  </div>
+
+  <!-- Tab: Letter -->
+  <div class="tab-content" id="tabDynamic">
+    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
+      Write extra sections that appear on content pages — no HTML edits needed.
+    </p>
+    <div id="dynamicList"></div>
+    <button class="add-btn" id="addDynamicBtn">+ Add Entry</button>
+  </div>
+
+  <!-- Tab: Timeline -->
+  <div class="tab-content" id="tabTimeline">
+    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
+      Add entries to the shared memory timeline.
+    </p>
+    <div id="timelineList"></div>
+    <button class="add-btn" id="addTimelineBtn">+ Add Memory</button>
+  </div>
+
+  <!-- Tab: I Remember -->
+  <div class="tab-content" id="tabMemories">
+    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
+      The tiny things you notice. Specific, not generic. Rare ones show less often; "once" ones show a single time.
+    </p>
+    <div id="memoriesList"></div>
+    <button class="add-btn" id="addMemoryBtn">+ Add Memory</button>
+  </div>
+
+  <!-- Tab: Self Letters -->
+  <div class="tab-content" id="tabSelfletters">
+    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
+      Letters for "a letter that writes itself". Scheduled letters appear on their date; secret letters only through the hidden path; music = filename inside songs/.
+    </p>
+    <div id="selfLettersList"></div>
+    <button class="add-btn" id="addSelfLetterBtn">+ Add Letter</button>
+  </div>
+
+  <!-- Tab: Rare Links -->
+  <div class="tab-content" id="tabRare">
+    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
+      Rare treats for the For Tonight page. On ~10% of days, a bonus video plays under the daily gift — date-seeded, so the same video shows all day. YouTube links get embedded and play right on the page.
+    </p>
+    <div id="rareList"></div>
+    <button class="add-btn" id="addRareBtn">+ Add Rare Link</button>
+  </div>
+
+  <!-- Tab: Achievements -->
+  <div class="tab-content" id="tabAchievements">
+    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
+      Which secret letters she has opened. Toggle a letter off to stop it from being discoverable (already-opened letters stay visible).
+    </p>
+    <div class="section-dates" id="achievementsList"></div>
+  </div>
+
+  <!-- Tab: Letters -->
+  <div class="tab-content" id="tabLetters">
+    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
+      Letters written from the site.
+    </p>
+    <div id="lettersList"></div>
+  </div>
+
+  <!-- Tab: Dreams -->
+  <div class="tab-content" id="tabDreams">
+    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
+      Write dreams for the Dream Journal. Your dreams appear on the left, partner's on the right.
+    </p>
+    <div style="background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);border-radius:12px;padding:1.25rem;margin-bottom:1.5rem;">
+      <div class="field" style="margin-bottom:.85rem;">
+        <label style="display:block;font-size:.7rem;color:#6b5f52;margin-bottom:3px;text-transform:uppercase;letter-spacing:.05em;">Dream Text</label>
+        <textarea id="dreamText" rows="4" placeholder="Write the dream here..." style="width:100%;padding:.55rem .75rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:'Lora',Georgia,serif;font-size:.85rem;outline:none;resize:vertical;"></textarea>
+      </div>
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap;align-items:center;margin-bottom:.85rem;">
+        <select id="dreamAuthor" style="padding:.5rem .7rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:inherit;font-size:.85rem;outline:none;">
+          <option value="">Your Dream</option>
+          <option value="partner">Partner's Dream</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:.75rem;">
+        <button id="dreamPostBtn" style="padding:.5rem 1.25rem;border-radius:6px;cursor:pointer;font-family:'Fraunces',Georgia,serif;font-size:.85rem;background:rgba(255,230,128,.1);border:1px solid #ffe680;color:#ffe680;">Post Dream</button>
+      </div>
+    </div>
+    <div class="song-list" id="dreamList"></div>
+  </div>
+
+  <!-- Tab: Turn On -->
+  <div class="tab-content" id="tabTurnon">
+    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
+      Show or hide the journey's 12 opening branches, and browse completed playthroughs from the turn-on game.
+    </p>
+    <hr style="border-color:rgba(255,210,150,.08);margin:1.5rem 0;">
+    <h3 style="font-family:'Fraunces',Georgia,serif;font-size:1rem;font-weight:500;color:var(--gold);margin-bottom:.75rem;">&#x2661; Branch Toggles</h3>
+    <p style="color:#6b5f52;font-size:.8rem;font-style:italic;margin-bottom:1rem;">Show or hide the 12 opening branches of the journey. Uncheck to hide a branch.</p>
+    <div id="turnOnBranches"></div>
+    <p id="turnOnBranchesToast" style="font-size:.75rem;color:var(--ash);margin:0 0 .5rem;"></p>
+    <hr style="border-color:rgba(255,210,150,.08);margin:1.5rem 0;">
+    <h3 style="font-family:'Fraunces',Georgia,serif;font-size:1rem;font-weight:500;color:var(--gold);margin-bottom:.75rem;">&#x2661; Journey Map <span style="font-size:.7rem;color:#6b5f52;font-weight:400;">(read-only — every section, where it leads)</span></h3>
+    <p style="color:#6b5f52;font-size:.8rem;font-style:italic;margin-bottom:1rem;">Every branch of the journey, step by step. Expand a step to see its scene, prompt, options and where each option leads. &#x2605; END marks a final option.</p>
+    <div id="turnOnMap"></div>
+    <hr style="border-color:rgba(255,210,150,.08);margin:1.5rem 0;">
+    <h3 style="font-family:'Fraunces',Georgia,serif;font-size:1rem;font-weight:500;color:var(--gold);margin-bottom:.75rem;">&#x2661; Session History</h3>
+    <p style="color:#6b5f52;font-size:.8rem;font-style:italic;margin-bottom:1rem;">Each session is a completed playthrough from the turn-on game.</p>
+    <div id="turnOnSessionsList"></div>
+  </div>
+
+  <!-- Tab: Project (permanent data — survives cold start & reset) -->
+  <div class="tab-content" id="tabProject">
+    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
+      Permanent project data stored outside <code>config</code> — survives Cold Restart and Reset to Defaults.
+    </p>
+    <div class="feature-group">
+      <div class="feature-group-title">&#x1F9E9; Project Puzzles</div>
+      <p style="color:#6b5f52;font-size:.75rem;margin-bottom:.5rem;font-style:italic;">
+        Puzzles that stay forever. Same format as regular puzzles, stored in <code>project-puzzles</code>.
+      </p>
+      <div id="projectPuzzlesList"></div>
+      <button class="add-btn" id="addProjectPuzzleBtn">+ Add Project Puzzle</button>
+    </div>
+    <div class="feature-group">
+      <div class="feature-group-title">&#x1F4D6; The Whole Storyline</div>
+      <p style="color:#6b5f52;font-size:.75rem;margin-bottom:.5rem;font-style:italic;">
+        Multiple chapters that tell the full story — displayed on <code>story.html</code>. Stored in <code>project-texts</code>.
+      </p>
+      <div id="storylineList"></div>
+      <button class="add-btn" id="addStorylineBtn">+ Add Chapter</button>
+    </div>
+  </div>
+
+  <!-- Tab: Access -->
+  <div class="tab-content" id="tabAccess">
+    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
+      Control access to each section. Locked sections show a 5-question quiz on the landing page.
+    </p>
+    <div class="section-dates" id="accessList"></div>
+    <hr style="border-color:rgba(255,210,150,.08);margin:2rem 0;">
+    <div style="text-align:center;">
+      <div style="font-size:12px;color:#6b5f52;margin-bottom:8px;">Danger Zone</div>
+      <button id="coldRestartBtn" style="background:rgba(232,93,58,0.15);border:1px solid rgba(232,93,58,0.3);color:#e85d3a;padding:10px 24px;border-radius:8px;cursor:pointer;font-size:13px;">&#x26A0; Cold Restart — Reset All Data</button>
+      <div style="font-size:11px;color:#6b5f52;margin-top:6px;">Clears all localStorage ash-* keys. Reloads the page. Cannot be undone.</div>
+    </div>
+  </div>
+  <!-- Tab: Activity -->
+  <div class="tab-content" id="tabActivity">
+    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
+      Auto-recorded user activity: page visits, section views, reviews, and image views.
+    </p>
+    <div id="activityStats" style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px;"></div>
+    <div style="margin-bottom:.5rem;">
+      <select id="activityFilter" style="padding:.35rem .5rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:inherit;font-size:.8rem;outline:none;">
+        <option value="all">All</option>
+        <option value="page-visit">Page visits</option>
+        <option value="section-view">Section views</option>
+        <option value="review">Reviews</option>
+        <option value="image-view">Image views</option>
+      </select>
+      <button id="clearActivityBtn" style="margin-left:8px;padding:.35rem .6rem;border-radius:6px;background:rgba(232,93,58,.1);border:1px solid rgba(232,93,58,.3);color:#e85d3a;cursor:pointer;font-size:.75rem;">Clear all</button>
+    </div>
+    <div id="activityList"></div>
+  </div>
+
+  <!-- Tab: Interactions -->
+  <div class="tab-content" id="tabInteractions">
+    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
+      Every click and catch: balloons, feathers, fireflies, favorites, downloads, wishes, songs, secret triggers.
+    </p>
+    <div id="interactionsStats" style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px;"></div>
+    <div style="margin-bottom:.5rem;">
+      <button id="refreshInteractionsBtn" style="padding:.35rem .6rem;border-radius:6px;background:rgba(255,220,160,.08);border:1px solid rgba(255,210,150,.2);color:#ffebd2;cursor:pointer;font-size:.75rem;">&#x21BB; Refresh</button>
+    </div>
+    <div id="interactionsList"></div>
+  </div>
+
+  <!-- Tab: Quiz -->
+  <div class="tab-content" id="tabQuiz">
+    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
+      Manage quiz sets &mdash; CRUD, JSON import, and attempt history.
+    </p>
+    <div style="margin-bottom:.5rem;">
+      <button class="add-btn" id="addQuizBtn">+ Add Quiz</button>
+    </div>
+    <div id="quizList"></div>
+    <hr style="border-color:rgba(255,210,150,.08);margin:2rem 0;">
+    <h3 style="color:#ffe680;font-size:.9rem;margin:0 0 .5rem;">&#x1F4C2; Import JSON</h3>
+    <textarea id="quizJsonInput" rows="5" placeholder='Paste JSON array: [{ "id":"q1","title":"Quiz 1","questions":[...] }]' style="width:100%;padding:.55rem .75rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:monospace;font-size:.8rem;outline:none;resize:vertical;box-sizing:border-box;"></textarea>
+    <div style="display:flex;gap:8px;margin-top:6px;">
+      <button id="quizImportBtn" style="padding:.4rem .8rem;border-radius:6px;background:rgba(111,207,147,.1);border:1px solid rgba(111,207,147,.3);color:#6fcf93;cursor:pointer;font-size:.8rem;">Import</button>
+      <span id="quizImportStatus" style="font-size:.75rem;color:#6b5f52;align-self:center;"></span>
+    </div>
+    <hr style="border-color:rgba(255,210,150,.08);margin:2rem 0;">
+    <h3 style="color:#ffe680;font-size:.9rem;margin:0 0 .5rem;">&#x1F4CA; Attempt History</h3>
+    <div id="quizHistoryList"></div>
+  </div>
+  </div>
+  </div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modalContent"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="admin.js"></script>
+<script src="puzzle-hunt.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function (rs) { rs.forEach(function (r) { r.unregister(); }); });
+      if (location.hostname !== '127.0.0.1' && location.hostname !== 'localhost') {
+        navigator.serviceWorker.register('./sw.js').catch(function () {});
+      }
+    }
+  </script>
+  <script src="adaptive-text.js"></script>
+  <script src="matrix-rain.js"></script>
+<script src="global-easter-eggs.js"></script>
+<script defer src="interactions.js"></script>
+
+
+
+<script>document.addEventListener('mousedown',function(){document.body.style.cursor="url('cursor images/imresizer-meme-pop-cat-pack click.jpg'), auto"});document.addEventListener('mouseup',function(){document.body.style.cursor="url('cursor images/imresizer-meme-pop-cat-pack.jpg'), auto"});</script>
+</body>
+</html>

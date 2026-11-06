@@ -1,0 +1,6 @@
+node_modules/
+.DS_Thumbs
+Thumbs.db
+*.log
+.env
+firebase-config.json

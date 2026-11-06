@@ -1,0 +1,2078 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dreambox</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%99%A1%3C/text%3E%3C/svg%3E">
+  <link rel="manifest" href="manifest.json">
+  <meta name="description" content="A love letter written in a hundred pieces">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500;1,9..144,600&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap"
+    rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+  <script src="fb-db.js"></script>
+  <script src="feature-flags.js"></script>
+  <style>
+    :root {
+      --ink: #17130f;
+      --ink-soft: #1e1811;
+      --ink-line: #33291e;
+      --parchment: #ffebd2;
+      --parchment-dim: #c7b8a1;
+      --ash: #6b5f52;
+      --gold: #ffe680;
+      --ember: #e85d3a;
+      --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+      --font-body: "Lora", Georgia, "Times New Roman", serif;
+      --measure: 640px;
+      --pad-inline: clamp(1.25rem, 6vw, 2.25rem);
+      --glass: rgba(255, 220, 160, .08);
+      --glassBorder: rgba(255, 210, 150, .35);
+    }
+
+    * { box-sizing: border-box; }
+
+    html { direction: ltr; }
+
+    body {
+      cursor: url('cursor images/kuromi idle.jpg'), auto;
+
+      margin: 0;
+      background-color: #181214;
+      color: var(--parchment);
+      font-family: var(--font-body);
+      font-size: 1.0625rem;
+      line-height: 1.8;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      background-image:
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(160, 110, 60, 0.1), transparent 60%),
+        radial-gradient(ellipse 60% 40% at 50% 100%, rgba(130, 50, 40, 0.06), transparent 60%);
+    }
+
+    .hero {
+      padding: clamp(4rem, 14vh, 7rem) var(--pad-inline) clamp(2.5rem, 8vh, 4rem);
+      text-align: center;
+    }
+
+    .hero-title {
+      margin: 0;
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: clamp(2.4rem, 10vw, 4.5rem);
+      letter-spacing: 0.01em;
+      color: var(--parchment);
+      text-shadow: 0 0 40px rgba(255, 230, 128, .5), 0 0 80px rgba(255, 200, 80, .25), 0 0 120px rgba(255, 180, 60, .12), 0 2px 4px rgba(0, 0, 0, .6);
+    }
+
+    .hero-subtitle {
+      margin: 0.75rem 0 0;
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 400;
+      font-size: clamp(1rem, 2.6vw, 1.25rem);
+      color: var(--parchment-dim);
+      letter-spacing: 0.01em;
+    }
+
+    .hero-ornament {
+      width: 5.5rem;
+      height: 2px;
+      margin: clamp(2rem, 6vh, 3rem) auto 0;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      box-shadow: 0 0 12px rgba(255, 200, 100, .3);
+    }
+
+    .page {
+      max-width: calc(var(--measure) + var(--pad-inline) * 2);
+      margin: 0 auto;
+      padding: 0 var(--pad-inline) clamp(5rem, 12vh, 8rem);
+    }
+
+    .intro {
+      text-align: center;
+      padding: clamp(2rem, 5vh, 3rem) 0;
+      border-bottom: 1px solid var(--ink-line);
+      margin-bottom: clamp(2.5rem, 6vh, 4rem);
+    }
+
+    .intro h2 {
+      font-family: var(--font-display);
+      font-size: clamp(1.3rem, 3vw, 1.8rem);
+      font-weight: 500;
+      color: var(--gold);
+      margin: 0 0 0.75rem;
+    }
+
+    .intro p {
+      color: var(--parchment-dim);
+      font-size: clamp(0.95rem, 2vw, 1.05rem);
+      max-width: 520px;
+      margin: 0 auto 0.5rem;
+    }
+
+    .intro .sig {
+      font-family: var(--font-display);
+      font-style: italic;
+      color: var(--gold);
+      margin-top: 1rem;
+      font-size: 1rem;
+    }
+
+    .cards {
+      display: flex;
+      flex-direction: column;
+      gap: clamp(1.5rem, 4vh, 2.5rem);
+    }
+
+    .card {
+      background: var(--glass);
+      border: 1px solid var(--glassBorder);
+      border-radius: 12px;
+      padding: clamp(1.5rem, 4vw, 2.2rem);
+      transition: border-color 0.3s, box-shadow 0.3s, transform 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card:hover {
+      border-color: var(--gold);
+      box-shadow: 0 0 30px rgba(255, 230, 128, .08);
+      transform: translateY(-2px);
+    }
+
+    .card.unlocked:hover {
+      border-color: var(--gold);
+      box-shadow: 0 0 30px rgba(255, 230, 128, .12);
+    }
+
+    .card h3 {
+      font-family: var(--font-display);
+      font-size: clamp(1.2rem, 2.8vw, 1.6rem);
+      font-weight: 500;
+      margin: 0 0 0.5rem;
+      color: var(--parchment);
+    }
+
+    .card .desc {
+      color: var(--parchment-dim);
+      font-size: clamp(0.9rem, 1.8vw, 0.98rem);
+      margin: 0 0 1rem;
+      line-height: 1.7;
+    }
+
+    .card .timer {
+      font-family: var(--font-display);
+      font-size: clamp(1rem, 2.2vw, 1.15rem);
+      color: var(--ash);
+      margin-bottom: 1rem;
+    }
+
+    .card .timer span {
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    .card .status {
+      display: inline-block;
+      padding: 0.35rem 1rem;
+      border-radius: 20px;
+      font-family: var(--font-display);
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+    }
+
+    .card .status.locked {
+      background: rgba(232, 93, 58, 0.15);
+      color: var(--ember);
+      border: 1px solid rgba(232, 93, 58, 0.25);
+    }
+
+    .card .status.unlocked-status {
+      background: rgba(255, 230, 128, 0.12);
+      color: var(--gold);
+      border: 1px solid rgba(255, 230, 128, 0.2);
+    }
+
+    .card .enter-btn {
+      display: inline-block;
+      margin-top: 0.75rem;
+      padding: 0.5rem 1.5rem;
+      border-radius: 6px;
+      background: rgba(255, 230, 128, 0.1);
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      text-decoration: none;
+      transition: opacity 0.6s, transform 0.6s, background 0.3s, color 0.3s;
+      cursor: pointer;
+    }
+
+    .card .enter-btn:hover {
+      background: var(--gold);
+      color: var(--ink);
+    }
+
+    .card .enter-btn.hidden {
+      display: none;
+    }
+
+    .card .lock-icon {
+      font-size: 1.2rem;
+      margin-right: 0.4rem;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 2rem var(--pad-inline);
+      border-top: 1px solid var(--ink-line);
+      margin-top: clamp(2rem, 5vh, 3.5rem);
+    }
+
+    .footer p {
+      color: var(--ash);
+      font-size: 0.85rem;
+      margin: 0;
+    }
+
+    /* ---- Ember ---- */
+    #emberCanvas {
+      position: fixed; inset: 0; z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ---- Heartbeat pulse on locked cards ---- */
+    @keyframes heartbeatPulse {
+      0%, 100% { box-shadow: 0 0 8px rgba(232,93,58,.08); }
+      25% { box-shadow: 0 0 25px rgba(232,93,58,.18), 0 0 50px rgba(232,93,58,.06); }
+       50% { box-shadow: 0 0 10px rgba(232,93,58,0.1); }
+       75% { box-shadow: 0 0 30px rgba(232,93,58,0.2), 0 0 60px rgba(232,93,58,0.08); }
+    }
+    .card.locked-heartbeat {
+      animation: heartbeatPulse 4s ease-in-out infinite;
+    }
+
+    /* ---- Hover Whisper ---- */
+    .card .whisper {
+      display: block;
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 0.85rem;
+      color: var(--ash);
+      margin: 0.5rem 0 0.5rem;
+      line-height: 1.5;
+      opacity: 0;
+      max-height: 0;
+      transition: opacity 0.5s, max-height 0.5s;
+      overflow: hidden;
+    }
+    .card.locked-heartbeat:hover .whisper {
+      opacity: 1;
+      max-height: 4rem;
+    }
+
+    /* ---- Countdown Mood ---- */
+    .card .mood {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 0.8rem;
+      color: var(--ember);
+      margin-top: 0.25rem;
+      letter-spacing: 0.03em;
+      opacity: 0.7;
+    }
+    .card .mood.fade-in {
+      animation: moodFade 2s ease-in-out infinite alternate;
+    }
+    @keyframes moodFade {
+      0% { opacity: 0.4; }
+      100% { opacity: 1; }
+    }
+
+    /* ---- Smooth Unlock Animation ---- */
+    @keyframes unlockGlow {
+      0% { border-color: var(--glassBorder); box-shadow: 0 0 0 transparent; }
+      50% { border-color: var(--gold); box-shadow: 0 0 50px rgba(255,230,128,.25); }
+      100% { border-color: var(--gold); box-shadow: 0 0 20px rgba(255,230,128,.12); }
+    }
+    .card.unlocking {
+      animation: unlockGlow 1.2s ease-out !important;
+    }
+    .card .enter-btn.btn-appear {
+      opacity: 1 !important;
+      transform: translateY(0) !important;
+    }
+
+    @media (max-width: 480px) {
+      .card { padding: 1.2rem; }
+    }
+
+    /* ---- Quiz Overlay ---- */
+    .quiz-overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      display: none; align-items: center; justify-content: center;
+      background: rgba(0,0,0,.7); backdrop-filter: blur(8px);
+      padding: 1.5rem;
+    }
+    .quiz-overlay.open { display: flex; }
+    .quiz-box {
+      background: rgba(24,18,20,.96); border: 1px solid rgba(255,210,150,.12);
+      border-radius: 16px; width: 480px; max-width: 100%; max-height: 90vh;
+      overflow-y: auto; padding: 1.75rem;
+      box-shadow: 0 20px 60px rgba(0,0,0,.6);
+    }
+    .quiz-box h2 { font-family: 'Fraunces', Georgia, serif; font-size: 1.2rem; color: #ffe680; margin-bottom: .5rem; }
+    .quiz-box .quiz-intro { color: #6b5f52; font-size: .85rem; margin-bottom: 1.25rem; font-style: italic; }
+    .quiz-box .quiz-q { margin-bottom: 1rem; }
+    .quiz-box .quiz-q label { display: block; font-size: .85rem; color: #ffebd2; margin-bottom: 4px; }
+    .quiz-box .quiz-q input {
+      width: 100%; padding: .5rem .75rem; border-radius: 6px;
+      background: rgba(255,220,160,.04); border: 1px solid rgba(255,210,150,.1);
+      color: #ffebd2; font-family: inherit; font-size: .85rem; outline: none;
+    }
+    .quiz-box .quiz-q input:focus { border-color: #ffe680; }
+    .quiz-box .quiz-q input.correct { border-color: #6fcf97; }
+    .quiz-box .quiz-q input.wrong { border-color: #e85d3a; }
+    .quiz-box .quiz-err { color: #e85d3a; font-size: .8rem; margin-bottom: .75rem; display: none; }
+    .quiz-box .quiz-err.show { display: block; }
+    .quiz-box .quiz-actions { display: flex; gap: .75rem; justify-content: flex-end; margin-top: 1rem; }
+    .quiz-box .quiz-actions button {
+      padding: .45rem 1.25rem; border-radius: 6px; cursor: pointer;
+      font-family: 'Fraunces', Georgia, serif; font-size: .8rem; transition: all .25s;
+    }
+    .quiz-box .quiz-actions .btn-cancel { background: transparent; border: 1px solid rgba(255,210,150,.1); color: #6b5f52; }
+    .quiz-box .quiz-actions .btn-cancel:hover { border-color: rgba(255,210,150,.25); color: #ffebd2; }
+    .quiz-box .quiz-actions .btn-submit { background: rgba(255,230,128,.1); border: 1px solid #ffe680; color: #ffe680; }
+    .quiz-box .quiz-actions .btn-submit:hover { background: #ffe680; color: #181214; }
+    .quiz-box .quiz-success { text-align: center; padding: 2rem 0; }
+    .quiz-box .quiz-success .icon { font-size: 3rem; margin-bottom: .5rem; }
+    .quiz-box .quiz-success p { color: #6fcf97; font-size: .95rem; }
+
+    /* ---- Locked Gate ---- */
+    .gate-overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      display: none; align-items: center; justify-content: center;
+      background: rgba(0,0,0,.7); backdrop-filter: blur(8px);
+      padding: 1.5rem;
+    }
+    .gate-overlay.open { display: flex; }
+    .gate-box {
+      background: rgba(24,18,20,.96); border: 1px solid rgba(255,210,150,.12);
+      border-radius: 16px; width: 400px; max-width: 100%; padding: 2rem;
+      text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,.6);
+    }
+    .gate-box .icon { font-size: 3rem; margin-bottom: .5rem; }
+    .gate-box h2 { font-family: 'Fraunces', Georgia, serif; font-size: 1.1rem; color: #6b5f52; margin-bottom: .5rem; }
+    .gate-box p { color: #6b5f52; font-size: .85rem; margin-bottom: 1.25rem; }
+    .gate-box button {
+      padding: .45rem 1.5rem; border-radius: 6px; cursor: pointer;
+      font-family: 'Fraunces', Georgia, serif; font-size: .85rem; transition: all .25s;
+      background: transparent; border: 1px solid rgba(255,210,150,.1); color: #6b5f52;
+    }
+    .gate-box button:hover { border-color: rgba(255,210,150,.25); color: #ffebd2; }
+  </style>
+</head>
+
+<body>
+
+  <main>
+    <div class="hero">
+      <h1 class="hero-title">Dreambox</h1>
+      <p class="hero-subtitle">A story that was never meant to be forgotten</p>
+      <div class="hero-ornament"></div>
+    </div>
+
+    <div class="page">
+
+      <div class="intro">
+        <h2></h2>
+        <p>Just someone who fell too deep and chose to stay. These pages hold everything I could never say out loud — every thought, every fantasy, every organ of a love that refuses to quiet down.</p>
+        <p>Written in the dark, for the one who became the light.</p>
+        <p class="sig">— </p>
+      </div>
+
+      <div class="cards" id="cardsContainer">
+        <!-- Cards injected by JS -->
+      </div>
+
+      <!-- Song Request -->
+      <div class="song-request" style="margin-top:4rem;padding:2rem;border-top:1px solid rgba(255,255,255,0.06);text-align:center;">
+        <h3 style="font-family:var(--font-display);font-weight:400;color:var(--parchment);margin-bottom:0.5rem;">Request a Song</h3>
+        <p style="color:var(--parchment-dim);font-size:0.85rem;margin-bottom:1rem;font-style:italic;">A song that reminds you of us</p>
+        <div style="display:flex;gap:8px;max-width:400px;margin:0 auto;">
+          <input type="text" id="songRequestInput" placeholder="Song title & artist..." style="flex:1;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:var(--parchment);padding:10px 14px;border-radius:8px;font-family:inherit;font-size:0.9rem;">
+          <button id="songRequestBtn" style="background:rgba(232,93,58,0.2);border:1px solid rgba(232,93,58,0.35);color:var(--parchment);padding:10px 18px;border-radius:8px;cursor:pointer;font-family:var(--font-display);font-size:0.9rem;transition:all 0.3s;">Send</button>
+        </div>
+        <div id="songRequestStatus" style="margin-top:0.5rem;font-size:0.8rem;color:var(--parchment-dim);"></div>
+      </div>
+
+      <!-- Milestone -->
+      <div class="milestone" style="margin-top:3rem;padding:2rem;border-top:1px solid rgba(255,255,255,0.06);text-align:center;">
+        <h3 style="font-family:var(--font-display);font-weight:400;color:var(--parchment);margin-bottom:1rem;">Our Journey</h3>
+        <div id="milestoneDisplay" style="display:flex;flex-wrap:wrap;gap:1.5rem;justify-content:center;font-size:0.85rem;">
+          <div><div style="font-size:1.5rem;color:var(--gold);font-weight:600;" id="milestoneDays">--</div><div style="color:var(--parchment-dim);">Days Since First Entry</div></div>
+<div><div style="font-size:1.5rem;color:var(--gold);font-weight:600;" id="milestoneStreak">--</div><div style="color:var(--parchment-dim);">Day Streak</div></div>
+          <div><div style="font-size:1.5rem;color:var(--gold);font-weight:600;" id="milestoneUnlockDays">--</div><div style="color:var(--parchment-dim);">Days Until Next Unlock</div></div>
+          <div><div style="font-size:1.5rem;color:var(--gold);font-weight:600;" id="milestoneSectionCount">--</div><div style="color:var(--parchment-dim);">Sections Unlocked</div></div>
+        </div>
+      </div>
+
+      <div class="footer" style="display:flex;flex-direction:column;align-items:center;gap:1rem;">
+        <div style="display:flex;gap:.75rem;flex-wrap:wrap;justify-content:center;">
+          <a href="stats.html" style="background:rgba(255,220,160,.08);border:1px solid rgba(255,210,150,.15);color:#6b5f52;padding:.4rem .9rem;border-radius:6px;cursor:pointer;font-family:inherit;font-size:.8rem;text-decoration:none;transition:all .25s;" onmouseover="this.style.borderColor='#ffe680';this.style.color='#ffe680'" onmouseout="this.style.borderColor='rgba(255,210,150,.15)';this.style.color='#6b5f52'">&#x1F4CA; Stats</a>
+          <a href="the-making-of.html" style="background:rgba(255,220,160,.08);border:1px solid rgba(255,210,150,.15);color:#6b5f52;padding:.4rem .9rem;border-radius:6px;cursor:pointer;font-family:inherit;font-size:.8rem;text-decoration:none;transition:all .25s;" onmouseover="this.style.borderColor='#ffe680';this.style.color='#ffe680'" onmouseout="this.style.borderColor='rgba(255,210,150,.15)';this.style.color='#6b5f52'">&#x1F3C6; The Making of This</a>
+          <a href="admin.html" style="background:rgba(255,220,160,.08);border:1px solid rgba(255,210,150,.15);color:#6b5f52;padding:.4rem .9rem;border-radius:6px;cursor:pointer;font-family:inherit;font-size:.8rem;text-decoration:none;transition:all .25s;" onmouseover="this.style.borderColor='#ffe680';this.style.color='#ffe680'" onmouseout="this.style.borderColor='rgba(255,210,150,.15)';this.style.color='#6b5f52'">&#x2699; Admin</a>
+          <a href="documentation.html" id="docsLink" style="background:rgba(255,220,160,.08);border:1px solid rgba(255,210,150,.15);color:#6b5f52;padding:.4rem .9rem;border-radius:6px;cursor:pointer;font-family:inherit;font-size:.8rem;text-decoration:none;transition:all .25s;" onmouseover="this.style.borderColor='#ffe680';this.style.color='#ffe680'" onmouseout="this.style.borderColor='rgba(255,210,150,.15)';this.style.color='#6b5f52'">&#x1F4D6; Docs</a>
+          <a href="activity.html" id="timelineLink" style="background:rgba(255,220,160,.08);border:1px solid rgba(255,210,150,.15);color:#6b5f52;padding:.4rem .9rem;border-radius:6px;cursor:pointer;font-family:inherit;font-size:.8rem;text-decoration:none;transition:all .25s;" onmouseover="this.style.borderColor='#ffe680';this.style.color='#ffe680'" onmouseout="this.style.borderColor='rgba(255,210,150,.15)';this.style.color='#6b5f52'">&#x1F4C8; Activity</a>
+          <a href="story.html" id="ourStoryLink" style="background:rgba(255,220,160,.08);border:1px solid rgba(255,210,150,.15);color:#6b5f52;padding:.4rem .9rem;border-radius:6px;cursor:pointer;font-family:inherit;font-size:.8rem;text-decoration:none;transition:all .25s;" onmouseover="this.style.borderColor='#ffe680';this.style.color='#ffe680'" onmouseout="this.style.borderColor='rgba(255,210,150,.15)';this.style.color='#6b5f52'">&#x1F4D6; Our Story</a>
+        </div>
+        <p>for  &mdash; always</p>
+      </div>
+
+    </div>
+  </main>
+
+  <canvas id="emberCanvas"></canvas>
+
+  <!-- Quiz Overlay -->
+  <div class="quiz-overlay" id="quizOverlay">
+    <div class="quiz-box" id="quizBox">
+      <h2 id="quizTitle">One small test</h2>
+      <p class="quiz-intro" id="quizIntro">Answer these questions to unlock this section.</p>
+      <div id="quizQuestions"></div>
+      <div class="quiz-err" id="quizErr">Some answers are wrong. Try again.</div>
+      <div class="quiz-actions">
+        <button class="btn-cancel" id="quizCancel">Cancel</button>
+        <button class="btn-submit" id="quizSubmit">Unlock</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Locked Gate Overlay -->
+  <div class="gate-overlay" id="gateOverlay">
+    <div class="gate-box">
+      <div class="icon">&#x1F512;</div>
+      <h2>Section Locked</h2>
+      <p id="gateMsg">This section is currently locked by the admin.</p>
+      <button id="gateClose">Close</button>
+    </div>
+  </div>
+
+  <script src="track.js"></script>
+  <script>
+    (function () {
+
+      /* ================================================================
+         CONFIG
+         ================================================================ */
+      var UNLOCK_DATES = {
+        '100-organs':  { year: 2026, month: 6, day: 20, file: '100-organs.html' },
+        'love':        { year: 2026, month: 6, day: 21, file: 'love.html' },
+        'sky-observatory': { year: 2026, month: 6, day: 28, file: 'sky-observatory.html' },
+        'photo-gallery': { year: 2026, month: 6, day: 28, file: 'photo-gallery.html' }
+      };
+
+      FB.init();
+
+      /* ---- localhost: unlock all sections for testing ---- */
+      if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+        var keys = Object.keys(UNLOCK_DATES);
+        for (var ui = 0; ui < keys.length; ui++) {
+          UNLOCK_DATES[keys[ui]].year = 2000;
+          UNLOCK_DATES[keys[ui]].month = 1;
+          UNLOCK_DATES[keys[ui]].day = 1;
+        }
+      }
+
+      var TEASERS = {
+        '100-organs': '"the curve of her waist, the arch of her neck — catalogued in devotion..."',
+        'love': '"your morning voice, raspy and warm — the sound of someone who hasn\'t yet put up their walls..."',
+        'sky-observatory': '"fragments of light, caught in silver and shadow — moments I never want to forget..."',
+        'photo-gallery': '"every photograph holds a story, every story holds a piece of you..."'
+      };
+
+      var MOODS = [
+        { minDays: 30, msg: 'The waiting makes it sweeter\u2026', emoji: '\uD83C\uDF19' },
+        { minDays: 14, msg: 'Patience, my love\u2026',            emoji: '\uD83D\uDD6F\uFE0F' },
+        { minDays: 7,  msg: 'Getting closer, piece by piece\u2026', emoji: '\u2728' },
+        { minDays: 2,  msg: 'Almost there\u2026',                  emoji: '\uD83D\uDD25' },
+        { minDays: 0,  msg: 'Can you feel it?',                    emoji: '\uD83D\uDC9B' }
+      ];
+
+      var SECTIONS = [
+        {
+          id: '100-organs',
+          title: '100 Organs',
+          desc: 'One hundred pieces of her, catalogued in devotion \u2014 from the curve of her smile to the depths of her soul. A lover\'s anatomy, written one organ at a time.',
+          unlock: UNLOCK_DATES['100-organs'],
+          teaser: TEASERS['100-organs']
+        },
+        {
+          id: 'love',
+          title: 'Love',
+          desc: 'The softer side of the story. A hundred paragraphs that trace the quiet, tender corners of who she is \u2014 her warmth, her voice, her way of being in the world.',
+          unlock: UNLOCK_DATES['love'],
+          teaser: TEASERS['love']
+        },
+        {
+          id: 'sky-observatory',
+          title: 'Sky Observatory',
+          desc: 'Browse every sky. Find your atmosphere \u2014 a celestial journey through light, colour, and wonder.',
+          unlock: UNLOCK_DATES['sky-observatory'],
+          teaser: TEASERS['sky-observatory']
+        },
+        {
+          id: 'photo-gallery',
+          title: 'Photo Gallery',
+          desc: 'Fragments of light, caught in silver and shadow \u2014 photographs and moments that hold the warmth of her presence, frozen in time.',
+          unlock: UNLOCK_DATES['photo-gallery'],
+          teaser: TEASERS['photo-gallery']
+        }
+      ];
+
+      var container = document.getElementById('cardsContainer');
+      if (!container) return;
+
+      /* ---- Load unlock dates from Firebase ---- */
+      function loadFirebaseDates() {
+        FB.get('config', 'sections').then(function(d) {
+          var arr = d && d.data;
+          if (!arr) return;
+          var changed = false;
+          for (var fi = 0; fi < arr.length; fi++) {
+            var fs = arr[fi];
+            for (var si = 0; si < SECTIONS.length; si++) {
+              if (SECTIONS[si].id === fs.key) {
+                var newUnlock = { file: fs.file || SECTIONS[si].unlock.file };
+                if (fs.unlockDate) {
+                  var p = fs.unlockDate.split('-');
+                  newUnlock.year = parseInt(p[0]);
+                  newUnlock.month = parseInt(p[1]) - 1;
+                  newUnlock.day = parseInt(p[2]);
+                } else {
+                  // No date = unlocked immediately
+                  newUnlock.year = 2000;
+                  newUnlock.month = 1;
+                  newUnlock.day = 1;
+                }
+                if (fs.autoUnlock === false) {
+                  // Auto-unlock disabled = unlocked immediately
+                  newUnlock.year = 2000;
+                  newUnlock.month = 1;
+                  newUnlock.day = 1;
+                }
+                SECTIONS[si].unlock = newUnlock;
+                changed = true;
+                break;
+              }
+            }
+          }
+          if (changed) { render(); updateProgress(); updateMilestone(); }
+        }).catch(function(){});
+      }
+      loadFirebaseDates();
+
+      /* ================================================================
+         EMBER PARTICLES
+         ================================================================ */
+      (function embers() {
+        var canvas = document.getElementById('emberCanvas');
+        var ctx = canvas.getContext('2d');
+        var particles = [];
+        var MAX = 40;
+
+        function resize() {
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        function Particle() {
+          this.reset();
+        }
+        Particle.prototype.reset = function () {
+          this.x = Math.random() * canvas.width;
+          this.y = canvas.height + 10 + Math.random() * 30;
+          this.size = 2 + Math.random() * 3;
+          this.speedY = -(0.3 + Math.random() * 0.6);
+          this.speedX = (Math.random() - 0.5) * 0.4;
+          this.glow = 0.3 + Math.random() * 0.5;
+          this.phase = Math.random() * Math.PI * 2;
+          this.hue = 20 + Math.random() * 15; // orange-red range
+        };
+        Particle.prototype.update = function () {
+          this.y += this.speedY;
+          this.x += this.speedX + Math.sin(this.phase) * 0.15;
+          this.phase += 0.02;
+          this.glow = 0.3 + 0.5 * (0.5 + 0.5 * Math.sin(this.phase));
+          if (this.y < -20 || this.x < -20 || this.x > canvas.width + 20) this.reset();
+        };
+        Particle.prototype.draw = function () {
+          var g = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size * 4);
+          g.addColorStop(0, 'rgba(255,200,120,' + this.glow + ')');
+          g.addColorStop(0.3, 'rgba(232,93,58,' + (this.glow * 0.6) + ')');
+          g.addColorStop(1, 'rgba(180,60,30,0)');
+          ctx.fillStyle = g;
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size * 4, 0, Math.PI * 2);
+          ctx.fill();
+        };
+
+        for (var i = 0; i < MAX; i++) {
+          var p = new Particle();
+          p.y = Math.random() * canvas.height;
+          particles.push(p);
+        }
+
+        function loop() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          for (var i = 0; i < particles.length; i++) {
+            particles[i].update();
+            particles[i].draw();
+          }
+          requestAnimationFrame(loop);
+        }
+        loop();
+      })();
+
+      /* ================================================================
+         HELPERS
+         ================================================================ */
+      function padNum(n) { return n < 10 ? '0' + n : '' + n; }
+
+      function getDiff(target) {
+        var now = new Date();
+        var t = new Date(target.year, target.month, target.day);
+        return t.getTime() - now.getTime();
+      }
+
+      function getCountdownString(diffMs) {
+        if (diffMs <= 0) return null;
+        var totalSec = Math.floor(diffMs / 1000);
+        var days = Math.floor(totalSec / 86400);
+        var hours = Math.floor((totalSec % 86400) / 3600);
+        var minutes = Math.floor((totalSec % 3600) / 60);
+        var seconds = totalSec % 60;
+        return days + 'd ' + padNum(hours) + 'h ' + padNum(minutes) + 'm ' + padNum(seconds) + 's';
+      }
+
+      function getMood(diffMs) {
+        if (diffMs <= 0) return null;
+        var days = diffMs / 86400000;
+        for (var i = 0; i < MOODS.length; i++) {
+          if (days >= MOODS[i].minDays) {
+            return MOODS[i];
+          }
+        }
+        return MOODS[MOODS.length - 1];
+      }
+
+      /* ================================================================
+         BUILD CARD HTML
+         ================================================================ */
+      function buildCardHtml(s, diffMs) {
+        var unlocked = diffMs === null || diffMs <= 0;
+
+        var lockedClass = unlocked ? 'unlocked' : 'locked-heartbeat';
+        var statusHtml, timerHtml, btnHtml, whisperHtml, moodHtml;
+
+        // Always include the main <h3> and <p class="desc">
+        var h3 = '<h3>' + s.title + '</h3>';
+        var desc = '<p class="desc">' + s.desc + '</p>';
+
+        if (unlocked) {
+          statusHtml = '<span class="status unlocked-status"><span class="lock-icon">\uD83D\uDD13</span> Unlocked</span>';
+          timerHtml = '';
+          whisperHtml = '';
+          moodHtml = '';
+          btnHtml = '<a href="' + s.unlock.file + '" class="enter-btn" style="opacity:1;transform:translateY(0)">\u2192 Enter</a>';
+        } else {
+          var countdownStr = getCountdownString(diffMs);
+          statusHtml = '<span class="status locked"><span class="lock-icon">\uD83D\uDD12</span> Locked</span>';
+          timerHtml = '<div class="timer">Unlocks in <span class="countdown" data-id="' + s.id + '">' + countdownStr + '</span></div>';
+          whisperHtml = '<span class="whisper">' + s.teaser + '</span>';
+
+          var mood = getMood(diffMs);
+          moodHtml = '<span class="mood fade-in">' + mood.emoji + ' ' + mood.msg + '</span>';
+
+          btnHtml = '<a href="' + s.unlock.file + '" class="enter-btn hidden" style="opacity:0;transform:translateY(10px)" disabled>' + '\u2192 Enter</a>';
+        }
+
+        return '<div class="card ' + lockedClass + '" data-id="' + s.id + '">' +
+          h3 + desc +
+          timerHtml +
+          whisperHtml +
+          statusHtml +
+          moodHtml +
+          btnHtml +
+          '</div>';
+      }
+
+      /* ================================================================
+         RENDER
+         ================================================================ */
+      var previousState = {}; // track diffMs per section
+
+      function render() {
+        var html = '';
+        for (var i = 0; i < SECTIONS.length; i++) {
+          var s = SECTIONS[i];
+          var diffMs = getDiff(s.unlock);
+          previousState[s.id] = diffMs;
+          html += buildCardHtml(s, diffMs);
+        }
+        container.innerHTML = html;
+      }
+
+      render();
+      updateProgress();
+
+      /* ================================================================
+         ACCESS CONTROL (Admin Locks + Quiz Gate)
+         ================================================================ */
+      var SECTION_ACCESS_KEY = 'ash-section-access';
+
+      function defaultQuiz(section) {
+        if (section === 'photo-gallery') {
+          return [
+            { question: 'What is the main purpose of this gallery?', answer: 'To preserve memories' },
+            { question: 'Why did I make this gallery?', answer: 'To preserve our memories' },
+            { question: 'What makes this gallery special?', answer: 'The personal meaning' },
+            { question: 'What was I trying to build instead of just another website?', answer: 'A home' },
+            { question: 'What feeling does this gallery evoke?', answer: 'Warmth' }
+          ];
+        }
+        if (section === 'love') {
+          return [
+            { question: 'What time did we have one of our deepest conversations?', answer: '3 AM' },
+            { question: 'Where was I sitting during that conversation?', answer: 'On the floor' },
+            { question: 'Where were you?', answer: 'On the bed' },
+            { question: 'Who is every word on this website written for?', answer: 'You' },
+            { question: 'What feeling did I hope this website would give you?', answer: 'Home' }
+          ];
+        }
+        if (section === '100-organs') {
+          return [
+            { question: 'How many tributes are in this section?', answer: '100' },
+            { question: 'Who is every tribute written for?', answer: 'You' },
+            { question: 'What is being catalogued in this section?', answer: 'Your beauty' },
+            { question: 'What body part is tribute #5 about?', answer: 'The Eyes' },
+            { question: 'What is the first thing I ever noticed about you?', answer: 'Your smile' }
+          ];
+        }
+        if (section === 'sky-observatory') {
+          return [
+            { question: 'What can you change in the sky observatory?', answer: 'The sky' },
+            { question: 'What appears in the sky at night?', answer: 'Stars' },
+            { question: 'What is this website called?', answer: 'Dreambox' },
+            { question: 'What makes this observatory special?', answer: 'The stars' },
+            { question: 'What was the creator trying to build with this website?', answer: 'A home' }
+          ];
+        }
+        return [
+          { question: 'What is the theme of this website?', answer: 'Love' },
+          { question: 'What is the main color scheme?', answer: 'Purple' },
+          { question: 'How many sections does this site have?', answer: 'Many' },
+          { question: 'What is the admin passkey for this site?', answer: '' },
+          { question: 'What makes this site special?', answer: 'The details' }
+        ];
+      }
+
+      function defaultAccess() {
+        return {
+          '100-organs': { adminLocked: false, questions: defaultQuiz('100-organs') },
+          'love': { adminLocked: false, questions: defaultQuiz('love') },
+          'sky-observatory': { adminLocked: false, questions: defaultQuiz('sky-observatory') },
+          'photo-gallery': { adminLocked: false, questions: defaultQuiz('photo-gallery') }
+        };
+      }
+
+      function getAccessConfig() {
+        var raw = localStorage.getItem(SECTION_ACCESS_KEY);
+        if (raw) {
+          try {
+            var parsed = JSON.parse(raw);
+            var def = defaultAccess();
+            var changed = false;
+            for (var key in def) {
+              if (!parsed[key]) { parsed[key] = JSON.parse(JSON.stringify(def[key])); changed = true; }
+              else if (!parsed[key].questions) { parsed[key].questions = JSON.parse(JSON.stringify(def[key].questions)); changed = true; }
+            }
+            if (changed) localStorage.setItem(SECTION_ACCESS_KEY, JSON.stringify(parsed));
+            return parsed;
+          } catch(e) {}
+        }
+        var def = defaultAccess();
+        localStorage.setItem(SECTION_ACCESS_KEY, JSON.stringify(def));
+        return def;
+      }
+
+      // Sync access config from Firebase
+      if (typeof FB !== 'undefined' && FB.set) {
+        FB.get('config', 'access').then(function (ac) {
+          if (ac) {
+            try { localStorage.setItem(SECTION_ACCESS_KEY, JSON.stringify(ac)); } catch(e) {}
+          }
+        }).catch(function () {});
+      }
+
+      function esc(str) {
+        if (typeof str !== 'string') return '';
+        var d = document.createElement('div');
+        d.textContent = str;
+        return d.innerHTML;
+      }
+
+      var pendingSection = null;
+
+      function showQuiz(sectionId, sectionFile) {
+        var cfg = getAccessConfig();
+        var sc = cfg[sectionId] || {};
+        var questions = sc.questions || defaultQuiz(sectionId);
+        pendingSection = { id: sectionId, file: sectionFile };
+        var html = '';
+        for (var qi = 0; qi < questions.length; qi++) {
+          html +=
+            '<div class="quiz-q">' +
+              '<label>' + (qi + 1) + '. ' + esc(questions[qi].question) + '</label>' +
+              '<input type="text" id="quizInput' + qi + '" data-answer="' + esc(questions[qi].answer.toLowerCase()) + '" placeholder="Your answer...">' +
+            '</div>';
+        }
+        document.getElementById('quizQuestions').innerHTML = html;
+        document.getElementById('quizErr').classList.remove('show');
+        document.getElementById('quizOverlay').classList.add('open');
+        document.getElementById('quizSubmit').onclick = checkQuiz;
+        document.getElementById('quizCancel').onclick = closeQuiz;
+        function onQuizKey(e) {
+          if (e.key === 'Enter') checkQuiz();
+        }
+        document.addEventListener('keydown', onQuizKey);
+        var origClose = closeQuiz;
+        closeQuiz = function () {
+          document.removeEventListener('keydown', onQuizKey);
+          origClose();
+        };
+        setTimeout(function () {
+          var first = document.getElementById('quizInput0');
+          if (first) first.focus();
+        }, 100);
+      }
+
+      function closeQuiz() {
+        document.getElementById('quizOverlay').classList.remove('open');
+        pendingSection = null;
+      }
+
+      function checkQuiz() {
+        if (!pendingSection) return;
+        var cfg = getAccessConfig();
+        var sc = cfg[pendingSection.id] || {};
+        var questions = sc.questions || defaultQuiz(pendingSection.id);
+        var allCorrect = true;
+        for (var qi = 0; qi < questions.length; qi++) {
+          var input = document.getElementById('quizInput' + qi);
+          var answer = input.value.trim().toLowerCase();
+          var expected = questions[qi].answer.toLowerCase().trim();
+          if (answer === expected) {
+            input.className = 'correct';
+          } else {
+            input.className = 'wrong';
+            allCorrect = false;
+          }
+        }
+        if (allCorrect) {
+          if (!cfg[pendingSection.id]) cfg[pendingSection.id] = { adminLocked: true, questions: JSON.parse(JSON.stringify(questions)) };
+          cfg[pendingSection.id].quizPassed = true;
+          localStorage.setItem(SECTION_ACCESS_KEY, JSON.stringify(cfg));
+          document.getElementById('quizQuestions').innerHTML =
+            '<div class="quiz-success"><div class="icon">&#x2728;</div><p>All answers correct. Welcome.</p></div>';
+          document.querySelector('.quiz-actions').style.display = 'none';
+          document.querySelector('.quiz-intro').style.display = 'none';
+          document.getElementById('quizTitle').textContent = 'Unlocked';
+          setTimeout(function () {
+            closeQuiz();
+            if (pendingSection) {
+              window.location.href = pendingSection.file;
+            }
+          }, 1200);
+        } else {
+          document.getElementById('quizErr').classList.add('show');
+        }
+      }
+
+      // Close quiz on overlay click
+      document.getElementById('quizOverlay').addEventListener('click', function (e) {
+        if (e.target === this) closeQuiz();
+      });
+
+      // Gate overlay
+      function showGate(msg) {
+        document.getElementById('gateMsg').innerHTML = msg || 'This section is currently locked by the admin.';
+        document.getElementById('gateOverlay').classList.add('open');
+        document.getElementById('gateClose').onclick = function () {
+          document.getElementById('gateOverlay').classList.remove('open');
+        };
+      }
+
+      // Close gate on overlay click
+      document.getElementById('gateOverlay').addEventListener('click', function (e) {
+        if (e.target === this) document.getElementById('gateOverlay').classList.remove('open');
+      });
+
+      // Intercept Enter button clicks on section cards
+      container.addEventListener('click', function (e) {
+        var btn = e.target.closest('.enter-btn');
+        if (!btn) return;
+
+        var card = btn.closest('.card');
+        if (!card) return;
+        var sectionId = card.dataset.id;
+
+        // Find the section object
+        var section = null;
+        for (var si = 0; si < SECTIONS.length; si++) {
+          if (SECTIONS[si].id === sectionId) {
+            section = SECTIONS[si];
+            break;
+          }
+        }
+        if (!section) return;
+
+        // Check if still date-locked
+        var diffMs = getDiff(section.unlock);
+        if (diffMs > 0) return;
+
+        // Check access control
+        var cfg = getAccessConfig();
+        var sc = cfg[sectionId];
+
+        if (sc && sc.adminLocked) {
+          e.preventDefault();
+          if (sc.quizPassed) return;
+          showQuiz(sectionId, section.unlock.file);
+          return;
+        }
+      });
+
+      /* ================================================================
+         LIVE COUNTDOWN + SMOOTH UNLOCK
+         ================================================================ */
+      setInterval(function () {
+        var changed = false;
+
+        for (var i = 0; i < SECTIONS.length; i++) {
+          var s = SECTIONS[i];
+          var diffMs = getDiff(s.unlock);
+          var prev = previousState[s.id];
+
+          // Update timer text
+          var el = container.querySelector('[data-id="' + s.id + '"] .countdown');
+          if (el) {
+            var str = getCountdownString(diffMs);
+            if (str) {
+              el.textContent = str;
+            }
+          }
+
+          // Update mood
+          var moodEl = container.querySelector('[data-id="' + s.id + '"] .mood');
+          if (moodEl) {
+            var mood = getMood(diffMs);
+            if (mood) {
+              moodEl.textContent = mood.emoji + ' ' + mood.msg;
+            }
+          }
+
+          // Check if just unlocked
+          if (prev !== undefined && prev > 0 && diffMs <= 0) {
+            changed = true;
+            var card = container.querySelector('[data-id="' + s.id + '"]');
+            if (card) {
+              // Smooth unlock animation
+              card.classList.add('unlocking');
+              // After animation, replace content
+              setTimeout(function (section, cardEl) {
+                var newHtml = buildCardHtml(section, 0);
+                var temp = document.createElement('div');
+                temp.innerHTML = newHtml;
+                var newCard = temp.firstChild;
+                cardEl.parentNode.replaceChild(newCard, cardEl);
+                // Small reflow + appear animation
+                requestAnimationFrame(function () {
+                  var btn = newCard.querySelector('.enter-btn');
+                  if (btn) {
+                    btn.style.opacity = '1';
+                    btn.style.transform = 'translateY(0)';
+                  }
+                });
+              }, 1200, s, card);
+            }
+          }
+
+          previousState[s.id] = diffMs;
+        }
+
+        // No more location.reload()
+      }, 1000);
+
+      /* ================================================================
+         READING PROGRESS
+         ================================================================ */
+      function updateProgress() {
+        var progressEl = document.getElementById('readingProgress');
+        if (!progressEl) return;
+        if (window.FeatureFlags && !window.FeatureFlags.get('reading-progress')) {
+          progressEl.style.display = 'none';
+          return;
+        }
+        progressEl.style.display = '';
+        var total = 0;
+        var viewed = 0;
+        try {
+          for (var i = 0; i < localStorage.length; i++) {
+            var k = localStorage.key(i);
+            if (k && k.indexOf('ash-viewed-') === 0 && k.indexOf('_count') === -1) {
+              var c = parseInt(localStorage.getItem(k + '_count') || '');
+              if (!c) continue;
+              try {
+                var v = JSON.parse(localStorage.getItem(k) || '[]');
+                total += c;
+                viewed += v.length;
+              } catch(e) {}
+            }
+          }
+        } catch(e) {}
+        var pct = total > 0 ? Math.min(100, Math.round(viewed / total * 100)) : 0;
+        progressEl.querySelector('.progress-fill').style.width = pct + '%';
+        progressEl.querySelector('.progress-text').textContent = viewed + ' / ' + total + ' sections (' + pct + '%)';
+      }
+      if (!window.FeatureFlags || window.FeatureFlags.get('reading-progress')) setInterval(updateProgress, 5000);
+
+      // Milestone — runs on load AND after Firebase updates unlock dates
+      function updateMilestone() {
+        if (window.FeatureFlags && !window.FeatureFlags.get('milestone')) return;
+        var daysEl = document.getElementById('milestoneDays');
+        var unlockEl = document.getElementById('milestoneUnlockDays');
+        var countEl = document.getElementById('milestoneSectionCount');
+        if (!daysEl) return;
+
+        // Days since first visit (real first-entry tracking)
+        var FIRST_KEY = 'ash-first-visit';
+        var firstVisit;
+        try { firstVisit = localStorage.getItem(FIRST_KEY); } catch (e) {}
+        if (!firstVisit) {
+          firstVisit = Date.now();
+          try { localStorage.setItem(FIRST_KEY, firstVisit); } catch (e) {}
+        } else {
+          firstVisit = parseInt(firstVisit, 10);
+        }
+        var now = Date.now();
+        var daysSince = Math.max(0, Math.floor((now - firstVisit) / 86400000));
+        daysEl.textContent = daysSince || '0';
+
+        // Day streak � consecutive days visited (resets if a day is skipped)
+        var STREAK_KEY = 'ash-streak';
+        var LAST_KEY = 'ash-last-visit';
+        var streakEl = document.getElementById('milestoneStreak');
+        var todayKey = function () {
+          var d = new Date();
+          return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+        };
+        var yesterdayKey = function () {
+          var d = new Date(Date.now() - 86400000);
+          return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+        };
+        if (streakEl) {
+          var lastDay = localStorage.getItem(LAST_KEY) || '';
+          var streak = parseInt(localStorage.getItem(STREAK_KEY) || '0', 10) || 0;
+          if (lastDay !== todayKey()) {
+            streak = lastDay === yesterdayKey() ? streak + 1 : 1;
+            try {
+              localStorage.setItem(STREAK_KEY, String(streak));
+              localStorage.setItem(LAST_KEY, todayKey());
+            } catch (e) {}
+          }
+          streakEl.textContent = streak;
+        }
+
+        // Days until next unlock
+        var nextUnlock = Infinity;
+        var unlocked = 0;
+        SECTIONS.forEach(function(s) {
+          var t = new Date(s.unlock.year, s.unlock.month, s.unlock.day).getTime();
+          if (t <= now) unlocked++;
+          else if (t < nextUnlock) nextUnlock = t;
+        });
+        var daysUntil = nextUnlock !== Infinity ? Math.max(0, Math.floor((nextUnlock - now) / 86400000)) : 'All unlocked';
+        unlockEl.textContent = daysUntil;
+        countEl.textContent = unlocked;
+      }
+      updateMilestone();
+
+      // Song request
+      (function() {
+        if (window.FeatureFlags && !window.FeatureFlags.get('song-request')) return;
+        var input = document.getElementById('songRequestInput');
+        var btn = document.getElementById('songRequestBtn');
+        var status = document.getElementById('songRequestStatus');
+        if (!input || !btn) return;
+        btn.addEventListener('click', function() {
+          var val = input.value.trim();
+          if (!val) { status.textContent = 'Please enter a song!'; status.style.color = 'var(--ember)'; return; }
+          FB.put('songRequests', { song: val, date: new Date().toISOString() }).then(function() {
+            status.textContent = 'Your request was sent.';
+            status.style.color = 'var(--parchment-dim)';
+            input.value = '';
+          }).catch(function() {
+            status.textContent = 'Could not save request.';
+          });
+        });
+        input.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter') btn.click();
+        });
+      })();
+    })();
+  </script>
+
+  <div id="readingProgress" style="position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(23,19,15,0.92);backdrop-filter:blur(6px);padding:8px 16px;display:flex;align-items:center;gap:12px;border-top:1px solid rgba(255,230,128,0.15);font-size:0.75rem;">
+    <span style="color:var(--ash);white-space:nowrap;">Reading progress</span>
+    <div style="flex:1;height:6px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;">
+      <div class="progress-fill" style="height:100%;width:0%;background:linear-gradient(90deg,var(--gold),var(--ember));border-radius:3px;transition:width 0.6s ease;"></div>
+    </div>
+    <span class="progress-text" style="color:var(--parchment-dim);white-space:nowrap;">0 / 0 (0%)</span>
+  </div>
+
+  <script defer src="install-prompt.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function (rs) { rs.forEach(function (r) { r.unregister(); }); });
+      if (location.hostname !== '127.0.0.1' && location.hostname !== 'localhost') {
+        navigator.serviceWorker.register('./sw.js').catch(function () {});
+      }
+    }
+  </script>
+  <script src="anime.min.js"></script>
+  <script src="motion-masterpiece.js"></script>
+  <script defer src="matrix-rain.js"></script>
+<script defer src="global-easter-eggs.js"></script>
+<script defer src="interactions.js"></script>
+<script>document.addEventListener('mousedown',function(){document.body.style.cursor="url('cursor images/kuromi click.jpg'), auto"});document.addEventListener('mouseup',function(){document.body.style.cursor="url('cursor images/kuromi idle.jpg'), auto"});</script>
+<script>(function(){var el=document.getElementById('docsLink');if(el&&window.FeatureFlags&&window.FeatureFlags.get('hide-docs'))el.style.display='none';})();</script>
+<script>
+(function () {
+  var tl = document.getElementById('timelineLink');
+  if (!tl) return;
+  function check() {
+    if (window.FeatureFlags && (FeatureFlags.get('force-timeline') || FeatureFlags.get('admin-timeline-visibility'))) { tl.style.display = ''; return; }
+    var required = ['100_organs', 'love', 'sky_observatory', 'photo_gallery'];
+    var allRead = true;
+    try {
+      for (var i = 0; i < required.length; i++) {
+        var found = false;
+        for (var j = 0; j < localStorage.length; j++) {
+          var k = localStorage.key(j);
+          if (k && k.indexOf('ash-viewed-') === 0 && k.indexOf(required[i]) !== -1) { found = true; break; }
+        }
+        if (!found) { allRead = false; break; }
+      }
+    } catch (e) { allRead = false; }
+    tl.style.display = allRead ? '' : 'none';
+  }
+  (window.FeatureFlags ? window.FeatureFlags.onReady : function(fn){fn();})(check);
+  setInterval(check, 5000);
+})();
+</script>
+<script src="activity-tracker.js"></script>
+<script src="events.js"></script>
+<script src="puzzle-hunt.js"></script>
+<script src="letters.js"></script>
+<script id="quizJsonData" type="application/json">
+{
+    "title": "The Story of Us",
+    "version": "1.0",
+    "description": "A shared relationship archive where both partners answer questions independently. Some questions are about yourself, some about your partner, and some are answered by both to compare memories.",
+    "totalQuestions": 105,
+    "questionTypes": [
+        "short_text",
+        "paragraph",
+        "date",
+        "number",
+        "single_choice",
+        "multi_choice",
+        "yes_no"
+    ],
+    "answeredByValues": [
+        "Me",
+        "Her",
+        "Both"
+    ],
+    "questions": [
+        {
+            "id": 1,
+            "category": "The Beginning",
+            "question": "When did you first notice your partner?",
+            "type": "date",
+            "answeredBy": "Both",
+            "compareAnswers": true,
+            "required": true,
+            "unlock": [
+                "timeline"
+            ]
+        },
+        {
+            "id": 2,
+            "category": "The Beginning",
+            "question": "Where did you first notice your partner?",
+            "type": "short_text",
+            "answeredBy": "Both",
+            "compareAnswers": true
+        },
+        {
+            "id": 3,
+            "category": "The Beginning",
+            "question": "Who texted first?",
+            "type": "short_text",
+            "answeredBy": "Both",
+            "compareAnswers": true
+        },
+        {
+            "id": 4,
+            "category": "The Beginning",
+            "question": "What was your first impression of your partner?",
+            "type": "paragraph",
+            "answeredBy": "Both",
+            "compareAnswers": true
+        },
+        {
+            "id": 5,
+            "category": "The Beginning",
+            "question": "When did you realize they were special?",
+            "type": "paragraph",
+            "answeredBy": "Both",
+            "compareAnswers": true
+        },
+        {
+            "id": 6,
+            "category": "The Beginning",
+            "question": "Describe your earliest memory together.",
+            "type": "paragraph",
+            "answeredBy": "Both",
+            "compareAnswers": true
+        },
+        {
+            "id": 7,
+            "category": "The Beginning",
+            "question": "Who confessed first?",
+            "type": "short_text",
+            "answeredBy": "Both",
+            "compareAnswers": true
+        },
+        {
+            "id": 8,
+            "category": "The Beginning",
+            "question": "Who fell in love first?",
+            "type": "paragraph",
+            "answeredBy": "Both",
+            "compareAnswers": true
+        },
+        {
+            "id": 9,
+            "category": "The Beginning",
+            "question": "What made you keep talking to them?",
+            "type": "paragraph",
+            "answeredBy": "Both",
+            "compareAnswers": true
+        },
+        {
+            "id": 10,
+            "category": "The Beginning",
+            "question": "What's one detail from the beginning you'll never forget?",
+            "type": "paragraph",
+            "answeredBy": "Both",
+            "compareAnswers": true
+        },
+        {
+            "id": 11,
+            "category": "About Yourself",
+            "question": "What's your full name?",
+            "type": "short_text",
+            "answeredBy": "Me"
+        },
+        {
+            "id": 12,
+            "category": "About Yourself",
+            "question": "What's your nickname?",
+            "type": "short_text",
+            "answeredBy": "Her"
+        },
+        {
+            "id": 13,
+            "category": "About Yourself",
+            "question": "What's your birthday?",
+            "type": "date",
+            "answeredBy": "Me"
+        },
+        {
+            "id": 14,
+            "category": "About Yourself",
+            "question": "What's your favorite color?",
+            "type": "short_text",
+            "answeredBy": "Her"
+        },
+        {
+            "id": 15,
+            "category": "About Yourself",
+            "question": "What's your favorite flower?",
+            "type": "short_text",
+            "answeredBy": "Her"
+        },
+        {
+            "id": 16,
+            "category": "About Yourself",
+            "question": "What's your favorite perfume?",
+            "type": "short_text",
+            "answeredBy": "Her"
+        },
+        {
+            "id": 17,
+            "category": "About Yourself",
+            "question": "What's your favorite food?",
+            "type": "short_text",
+            "answeredBy": "Me"
+        },
+        {
+            "id": 18,
+            "category": "About Yourself",
+            "question": "What's your comfort food?",
+            "type": "short_text",
+            "answeredBy": "Her"
+        },
+        {
+            "id": 19,
+            "category": "About Yourself",
+            "question": "What's your dream vacation?",
+            "type": "paragraph",
+            "answeredBy": "Me"
+        },
+        {
+            "id": 20,
+            "category": "About Yourself",
+            "question": "What's your biggest dream?",
+            "type": "paragraph",
+            "answeredBy": "Her"
+        },
+        {
+            "id": 21,
+            "category": "Know Your Partner",
+            "question": "What is your partner's favorite color?",
+            "type": "short_text",
+            "answeredBy": "Both",
+            "compareAnswers": false
+        },
+        {
+            "id": 22,
+            "category": "Know Your Partner",
+            "question": "What is your partner's favorite food?",
+            "type": "short_text",
+            "answeredBy": "Both"
+        },
+        {
+            "id": 23,
+            "category": "Know Your Partner",
+            "question": "What makes your partner laugh the hardest?",
+            "type": "paragraph",
+            "answeredBy": "Both"
+        },
+        {
+            "id": 24,
+            "category": "Know Your Partner",
+            "question": "What is your partner most insecure about?",
+            "type": "paragraph",
+            "answeredBy": "Both"
+        },
+        {
+            "id": 25,
+            "category": "Know Your Partner",
+            "question": "What is your partner's dream job?",
+            "type": "paragraph",
+            "answeredBy": "Both"
+        },
+        {
+            "id": 26,
+            "category": "Memories",
+            "question": "First message date",
+            "type": "date",
+            "answeredBy": "Both",
+            "unlock": [
+                "timeline"
+            ]
+        },
+        {
+            "id": 27,
+            "category": "Memories",
+            "question": "First call date",
+            "type": "date",
+            "answeredBy": "Both",
+            "unlock": [
+                "timeline"
+            ]
+        },
+        {
+            "id": 28,
+            "category": "Memories",
+            "question": "First video call",
+            "type": "date",
+            "answeredBy": "Both",
+            "unlock": [
+                "timeline"
+            ]
+        },
+        {
+            "id": 29,
+            "category": "Memories",
+            "question": "First meeting",
+            "type": "date",
+            "answeredBy": "Both",
+            "unlock": [
+                "timeline"
+            ]
+        },
+        {
+            "id": 30,
+            "category": "Memories",
+            "question": "First hug",
+            "type": "paragraph",
+            "answeredBy": "Both",
+            "unlock": [
+                "timeline"
+            ]
+        },
+        {
+            "id": 31,
+            "category": "Memories",
+            "question": "First kiss",
+            "type": "paragraph",
+            "answeredBy": "Both",
+            "unlock": [
+                "timeline"
+            ]
+        },
+        {
+            "id": 32,
+            "category": "Memories",
+            "question": "First 'I love you'",
+            "type": "paragraph",
+            "answeredBy": "Both",
+            "unlock": [
+                "timeline"
+            ]
+        },
+        {
+            "id": 33,
+            "category": "Memories",
+            "question": "Favorite memory",
+            "type": "paragraph",
+            "answeredBy": "Both",
+            "unlock": [
+                "dynamic-content"
+            ]
+        },
+        {
+            "id": 34,
+            "category": "Memories",
+            "question": "Funniest memory",
+            "type": "paragraph",
+            "answeredBy": "Both"
+        },
+        {
+            "id": 35,
+            "category": "Memories",
+            "question": "Most emotional memory",
+            "type": "paragraph",
+            "answeredBy": "Both"
+        },
+        {
+            "id": 36,
+            "category": "Relationship",
+            "question": "Why do you love your partner?",
+            "type": "paragraph",
+            "answeredBy": "Both",
+            "unlock": [
+                "letters"
+            ]
+        },
+        {
+            "id": 37,
+            "category": "Relationship",
+            "question": "What does your partner do that melts your heart?",
+            "type": "paragraph",
+            "answeredBy": "Both"
+        },
+        {
+            "id": 38,
+            "category": "Relationship",
+            "question": "What do you miss the most?",
+            "type": "paragraph",
+            "answeredBy": "Both"
+        },
+        {
+            "id": 39,
+            "category": "Relationship",
+            "question": "One thing your partner changed about you",
+            "type": "paragraph",
+            "answeredBy": "Both"
+        },
+        {
+            "id": 40,
+            "category": "Relationship",
+            "question": "What's your favorite thing about your partner's personality?",
+            "type": "paragraph",
+            "answeredBy": "Both"
+        },
+        {
+            "id": 41,
+            "category": "Future",
+            "question": "Describe your dream home together.",
+            "type": "paragraph",
+            "answeredBy": "Both"
+        },
+        {
+            "id": 42,
+            "category": "Future",
+            "question": "Dream honeymoon destination",
+            "type": "paragraph",
+            "answeredBy": "Both"
+        },
+        {
+            "id": 43,
+            "category": "Future",
+            "question": "How many kids would you want?",
+            "type": "number",
+            "answeredBy": "Both"
+        },
+        {
+            "id": 44,
+            "category": "Future",
+            "question": "Future pets",
+            "type": "paragraph",
+            "answeredBy": "Both"
+        },
+        {
+            "id": 45,
+            "category": "Future",
+            "question": "One promise you'll always keep",
+            "type": "paragraph",
+            "answeredBy": "Both"
+        },
+        {
+            "id": 46,
+            "category": "Secrets",
+            "question": "Tell your partner something you've never told them.",
+            "type": "paragraph",
+            "answeredBy": "Me",
+            "private": true,
+            "unlock": [
+                "secret-letter"
+            ]
+        },
+        {
+            "id": 47,
+            "category": "Secrets",
+            "question": "Write a thank you they've never heard.",
+            "type": "paragraph",
+            "answeredBy": "Her",
+            "private": true,
+            "unlock": [
+                "secret-letter"
+            ]
+        },
+        {
+            "id": 48,
+            "category": "Secrets",
+            "question": "Write an apology you've never fully expressed.",
+            "type": "paragraph",
+            "answeredBy": "Me",
+            "private": true
+        },
+        {
+            "id": 49,
+            "category": "Secrets",
+            "question": "Write a wish for your future together.",
+            "type": "paragraph",
+            "answeredBy": "Her",
+            "private": true
+        },
+        {
+            "id": 50,
+            "category": "Secrets",
+            "question": "If today was your last day together, what would you tell them?",
+            "type": "paragraph",
+            "answeredBy": "Both",
+            "private": true
+        }
+,
+    {
+        "id": 51,
+        "category": "Future",
+        "question": "If you could wake up anywhere with your partner tomorrow, where would it be?",
+        "type": "paragraph",
+        "answeredBy": "Both",
+        "compareAnswers": true,
+        "unlock": [
+            "fantasies"
+        ]
+    },
+    {
+        "id": 52,
+        "category": "Future",
+        "question": "Describe your perfect Sunday together.",
+        "type": "paragraph",
+        "answeredBy": "Both",
+        "compareAnswers": true,
+        "unlock": [
+            "fantasies"
+        ]
+    },
+    {
+        "id": 53,
+        "category": "Future",
+        "question": "What is one country you dream of visiting together?",
+        "type": "short_text",
+        "answeredBy": "Both",
+        "compareAnswers": true
+    },
+    {
+        "id": 54,
+        "category": "Future",
+        "question": "What is one tradition you'd love to create together?",
+        "type": "paragraph",
+        "answeredBy": "Both",
+        "compareAnswers": true
+    },
+    {
+        "id": 55,
+        "category": "Future",
+        "question": "Describe the house you imagine living in together.",
+        "type": "paragraph",
+        "answeredBy": "Both",
+        "unlock": [
+            "fantasies",
+            "dynamic-content"
+        ]
+    },
+    {
+        "id": 56,
+        "category": "Future",
+        "question": "How do you imagine growing old together?",
+        "type": "paragraph",
+        "answeredBy": "Both",
+        "unlock": [
+            "love"
+        ]
+    },
+    {
+        "id": 57,
+        "category": "Future",
+        "question": "If money wasn't an issue, what would you do together for one whole year?",
+        "type": "paragraph",
+        "answeredBy": "Both"
+    },
+    {
+        "id": 58,
+        "category": "Future",
+        "question": "What kind of parents do you hope you'll become?",
+        "type": "paragraph",
+        "answeredBy": "Both"
+    },
+    {
+        "id": 59,
+        "category": "Future",
+        "question": "What dream should we never give up on?",
+        "type": "paragraph",
+        "answeredBy": "Both"
+    },
+    {
+        "id": 60,
+        "category": "Future",
+        "question": "Describe your perfect anniversary twenty years from now.",
+        "type": "paragraph",
+        "answeredBy": "Both",
+        "unlock": [
+            "dynamic-content"
+        ]
+    },
+    {
+        "id": 61,
+        "category": "Favorites",
+        "question": "What song reminds you most of your partner?",
+        "type": "short_text",
+        "answeredBy": "Both",
+        "compareAnswers": true,
+        "unlock": [
+            "jukebox"
+        ]
+    },
+    {
+        "id": 62,
+        "category": "Favorites",
+        "question": "Which movie feels like your relationship?",
+        "type": "short_text",
+        "answeredBy": "Both"
+    },
+    {
+        "id": 63,
+        "category": "Favorites",
+        "question": "What's your favorite photo of your partner?",
+        "type": "paragraph",
+        "answeredBy": "Both"
+    },
+    {
+        "id": 64,
+        "category": "Favorites",
+        "question": "What's your favorite outfit they've ever worn?",
+        "type": "paragraph",
+        "answeredBy": "Both"
+    },
+    {
+        "id": 65,
+        "category": "Favorites",
+        "question": "What's your favorite thing they cook, buy, or recommend?",
+        "type": "paragraph",
+        "answeredBy": "Both"
+    },
+    {
+        "id": 66,
+        "category": "Habits",
+        "question": "What's the cutest habit your partner has?",
+        "type": "paragraph",
+        "answeredBy": "Both",
+        "unlock": [
+            "100-organs"
+        ]
+    },
+    {
+        "id": 67,
+        "category": "Habits",
+        "question": "What's one habit you'd never want your partner to lose?",
+        "type": "paragraph",
+        "answeredBy": "Both"
+    },
+    {
+        "id": 68,
+        "category": "Habits",
+        "question": "What's something your partner does without realizing that you always notice?",
+        "type": "paragraph",
+        "answeredBy": "Both",
+        "unlock": [
+            "love"
+        ]
+    },
+    {
+        "id": 69,
+        "category": "Habits",
+        "question": "How does your partner usually cheer you up?",
+        "type": "paragraph",
+        "answeredBy": "Both"
+    },
+    {
+        "id": 70,
+        "category": "Habits",
+        "question": "What's your favorite way to spend time together?",
+        "type": "paragraph",
+        "answeredBy": "Both"
+    },
+    {
+        "id": 71,
+        "category": "Compatibility",
+        "question": "What do you think is your partner's biggest fear?",
+        "type": "paragraph",
+        "answeredBy": "Both",
+        "compareAnswers": false
+    },
+    {
+        "id": 72,
+        "category": "Compatibility",
+        "question": "What do you think your partner's biggest dream is?",
+        "type": "paragraph",
+        "answeredBy": "Both",
+        "compareAnswers": false
+    },
+    {
+        "id": 73,
+        "category": "Compatibility",
+        "question": "If your partner had one free day, how do you think they'd spend it?",
+        "type": "paragraph",
+        "answeredBy": "Both"
+    },
+    {
+        "id": 74,
+        "category": "Compatibility",
+        "question": "What's one thing your partner wishes people understood about them?",
+        "type": "paragraph",
+        "answeredBy": "Both"
+    },
+    {
+        "id": 75,
+        "category": "Compatibility",
+        "question": "Describe your partner in exactly five words.",
+        "type": "short_text",
+        "answeredBy": "Both"
+    },
+    {
+        "id": 76,
+        "category": "Hidden Letters",
+        "question": "Write a letter to your partner that they can only unlock after finishing the website.",
+        "type": "paragraph",
+        "answeredBy": "Both",
+        "private": true,
+        "unlock": [
+            "secret-letter"
+        ]
+    },
+    {
+        "id": 77,
+        "category": "Hidden Letters",
+        "question": "Write about a memory that still makes your heart ache.",
+        "type": "paragraph",
+        "answeredBy": "Both",
+        "private": true
+    },
+    {
+        "id": 78,
+        "category": "Hidden Letters",
+        "question": "What's one promise you silently made to your partner?",
+        "type": "paragraph",
+        "answeredBy": "Both",
+        "private": true
+    },
+    {
+        "id": 79,
+        "category": "Hidden Letters",
+        "question": "What's one thank you you've never properly said?",
+        "type": "paragraph",
+        "answeredBy": "Both",
+        "private": true
+    },
+    {
+        "id": 80,
+        "category": "Hidden Letters",
+        "question": "If this website became a time capsule, what message would you leave for your future selves?",
+        "type": "paragraph",
+        "answeredBy": "Both",
+        "private": true
+    },
+    {
+        "id": 81,
+        "category": "Treasure Hunt",
+        "question": "Name a place that only the two of you would immediately recognize.",
+        "type": "short_text",
+        "answeredBy": "Both",
+        "unlock": [
+            "puzzle"
+        ]
+    },
+    {
+        "id": 82,
+        "category": "Treasure Hunt",
+        "question": "What's one word that instantly reminds you of your relationship?",
+        "type": "short_text",
+        "answeredBy": "Both",
+        "unlock": [
+            "puzzle"
+        ]
+    },
+    {
+        "id": 83,
+        "category": "Treasure Hunt",
+        "question": "Name an object that represents your relationship.",
+        "type": "short_text",
+        "answeredBy": "Both",
+        "unlock": [
+            "puzzle"
+        ]
+    },
+    {
+        "id": 84,
+        "category": "Treasure Hunt",
+        "question": "What's one number that's meaningful only to the two of you?",
+        "type": "short_text",
+        "answeredBy": "Both",
+        "unlock": [
+            "puzzle"
+        ]
+    },
+    {
+        "id": 85,
+        "category": "Treasure Hunt",
+        "question": "What's your oldest inside joke?",
+        "type": "paragraph",
+        "answeredBy": "Both",
+        "unlock": [
+            "puzzle"
+        ]
+    },
+    {
+        "id": 86,
+        "category": "Website",
+        "question": "Which page of this website do you think you'll revisit the most?",
+        "type": "short_text",
+        "answeredBy": "Both"
+    },
+    {
+        "id": 87,
+        "category": "Website",
+        "question": "Which feature made you smile the most?",
+        "type": "paragraph",
+        "answeredBy": "Both"
+    },
+    {
+        "id": 88,
+        "category": "Website",
+        "question": "Which feature made you emotional?",
+        "type": "paragraph",
+        "answeredBy": "Both"
+    },
+    {
+        "id": 89,
+        "category": "Website",
+        "question": "If you could add one new feature, what would it be?",
+        "type": "paragraph",
+        "answeredBy": "Both"
+    },
+    {
+        "id": 90,
+        "category": "Website",
+        "question": "What's one memory that deserves its own page?",
+        "type": "paragraph",
+        "answeredBy": "Both"
+    },
+    {
+        "id": 91,
+        "category": "Reflection",
+        "question": "Describe your entire love story in your own words.",
+        "type": "paragraph",
+        "answeredBy": "Both"
+    },
+    {
+        "id": 92,
+        "category": "Reflection",
+        "question": "What has your partner taught you about love?",
+        "type": "paragraph",
+        "answeredBy": "Both"
+    },
+    {
+        "id": 93,
+        "category": "Reflection",
+        "question": "How have you changed since meeting your partner?",
+        "type": "paragraph",
+        "answeredBy": "Both"
+    },
+    {
+        "id": 94,
+        "category": "Reflection",
+        "question": "What moment made you the happiest?",
+        "type": "paragraph",
+        "answeredBy": "Both"
+    },
+    {
+        "id": 95,
+        "category": "Reflection",
+        "question": "What's the biggest challenge you've overcome together?",
+        "type": "paragraph",
+        "answeredBy": "Both"
+    },
+    {
+        "id": 96,
+        "category": "Reflection",
+        "question": "Finish this sentence: 'Home is...'",
+        "type": "paragraph",
+        "answeredBy": "Both"
+    },
+    {
+        "id": 97,
+        "category": "Reflection",
+        "question": "Finish this sentence: 'Forever means...'",
+        "type": "paragraph",
+        "answeredBy": "Both"
+    },
+    {
+        "id": 98,
+        "category": "Reflection",
+        "question": "What do you hope your partner remembers about you forever?",
+        "type": "paragraph",
+        "answeredBy": "Both"
+    },
+    {
+        "id": 99,
+        "category": "Reflection",
+        "question": "If you could relive one day together, which would it be?",
+        "type": "paragraph",
+        "answeredBy": "Both"
+    },
+    {
+        "id": 100,
+        "category": "Reflection",
+        "question": "What's one thing you'll always choose your partner for?",
+        "type": "paragraph",
+        "answeredBy": "Both"
+    },
+    {
+        "id": 101,
+        "category": "Final Letter",
+        "question": "Write a message to your partner that they'll read years from now.",
+        "type": "paragraph",
+        "answeredBy": "Both",
+        "private": true,
+        "unlock": [
+            "time-capsule"
+        ]
+    },
+    {
+        "id": 102,
+        "category": "Final Letter",
+        "question": "If your partner could only keep one memory of you, which would you choose?",
+        "type": "paragraph",
+        "answeredBy": "Both"
+    },
+    {
+        "id": 103,
+        "category": "Final Letter",
+        "question": "What's one sentence that perfectly describes your partner?",
+        "type": "paragraph",
+        "answeredBy": "Both"
+    },
+    {
+        "id": 104,
+        "category": "Final Letter",
+        "question": "What do you hope your relationship looks like in fifty years?",
+        "type": "paragraph",
+        "answeredBy": "Both"
+    },
+    {
+        "id": 105,
+        "category": "Final Letter",
+        "question": "If this was the last page of our story, what would you write?",
+        "type": "paragraph",
+        "answeredBy": "Both",
+        "private": true,
+        "unlock": [
+            "ending",
+            "credits"
+        ]
+    }
+]
+}
+</script>
+
+</body>
+
+</html>

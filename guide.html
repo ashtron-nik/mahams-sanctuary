@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>guide &mdash; Dreambox</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500;1,9..144,600&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #17130f;
+  --ink-soft: #1e1811;
+  --ink-line: #33291e;
+  --parchment: #ffebd2;
+  --parchment-dim: #c7b8a1;
+  --ash: #6b5f52;
+  --gold: #ffe680;
+  --ember: #e85d3a;
+  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-body: "Lora", Georgia, "Times New Roman", serif;
+  --measure: 660px;
+  --pad-inline: clamp(1.25rem, 6vw, 2.25rem);
+  --glass: rgba(255, 220, 160, .08);
+  --glassBorder: rgba(255, 210, 150, .35);
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background-color: #181214;
+  color: var(--parchment);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(160, 110, 60, 0.1), transparent 60%),
+    radial-gradient(ellipse 60% 40% at 50% 100%, rgba(130, 50, 40, 0.06), transparent 60%);
+}
+.page {
+  max-width: calc(var(--measure) + var(--pad-inline) * 2);
+  margin: 0 auto;
+  padding: 0 var(--pad-inline) clamp(5rem, 12vh, 8rem);
+}
+.hero {
+  padding: clamp(4rem, 14vh, 7rem) var(--pad-inline) clamp(2rem, 6vh, 3rem);
+  text-align: center;
+}
+.hero-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(2rem, 8vw, 3.5rem);
+  letter-spacing: 0.01em;
+  color: var(--parchment);
+  text-shadow: 0 0 40px rgba(255, 230, 128, .5), 0 0 80px rgba(255, 200, 80, .25);
+}
+.hero-subtitle {
+  margin: 0.75rem 0 0;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(1rem, 2.6vw, 1.25rem);
+  color: var(--parchment-dim);
+}
+.hero-ornament {
+  width: 5.5rem;
+  height: 2px;
+  margin: clamp(1.5rem, 4vh, 2.5rem) auto 0;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+.letter {
+  max-width: 520px;
+  margin: 0 auto clamp(2rem, 5vh, 3rem);
+  padding: clamp(1.5rem, 4vw, 2rem);
+  background: var(--glass);
+  border: 1px solid var(--glassBorder);
+  border-radius: 12px;
+  text-align: left;
+  font-style: italic;
+  color: var(--parchment-dim);
+  font-size: 0.95rem;
+  line-height: 1.8;
+  position: relative;
+}
+.letter::before {
+  content: '\201C';
+  font-family: var(--font-display);
+  font-size: 4rem;
+  color: var(--gold);
+  position: absolute;
+  top: -0.5rem;
+  left: 0.75rem;
+  opacity: 0.3;
+  line-height: 1;
+}
+.letter .sig {
+  font-family: var(--font-display);
+  font-style: normal;
+  color: var(--gold);
+  text-align: right;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+h2 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(1.3rem, 3vw, 1.8rem);
+  color: var(--gold);
+  margin: 2.5rem 0 1rem;
+  text-align: center;
+}
+h2:first-of-type { margin-top: 0; }
+
+.section-card {
+  background: var(--glass);
+  border: 1px solid var(--glassBorder);
+  border-radius: 12px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  cursor: pointer;
+}
+.section-card:hover {
+  border-color: rgba(255, 230, 128, 0.25);
+  box-shadow: 0 0 25px rgba(255, 230, 128, 0.05);
+}
+.section-card .card-header {
+  padding: clamp(1rem, 3vw, 1.4rem) clamp(1rem, 3vw, 1.5rem);
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  user-select: none;
+}
+.section-card .card-header .arrow {
+  color: var(--ash);
+  font-size: 0.8rem;
+  margin-top: 0.3rem;
+  transition: transform 0.3s;
+  flex-shrink: 0;
+}
+.section-card.open .card-header .arrow {
+  transform: rotate(90deg);
+}
+.section-card .card-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease, padding 0.3s ease;
+  padding: 0 clamp(1rem, 3vw, 1.5rem);
+}
+.section-card.open .card-body {
+  max-height: 800px;
+  padding: 0 clamp(1rem, 3vw, 1.5rem) clamp(1rem, 3vw, 1.5rem);
+}
+.section-card .tag {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  padding: 0.15rem 0.6rem;
+  border-radius: 10px;
+  margin-bottom: 0.4rem;
+  letter-spacing: 0.03em;
+  flex-shrink: 0;
+}
+.tag-romantic { background: rgba(232, 93, 58, 0.15); color: var(--ember); border: 1px solid rgba(232, 93, 58, 0.2); }
+.tag-tender { background: rgba(255, 230, 128, 0.1); color: var(--gold); border: 1px solid rgba(255, 230, 128, 0.15); }
+.tag-intimate { background: rgba(180, 80, 120, 0.15); color: #d4a0b8; border: 1px solid rgba(180, 80, 120, 0.2); }
+.tag-visual { background: rgba(100, 180, 200, 0.12); color: #88c8d8; border: 1px solid rgba(100, 180, 200, 0.18); }
+.tag-game { background: rgba(100, 200, 150, 0.12); color: #7dd4a8; border: 1px solid rgba(100, 200, 150, 0.18); }
+.section-card h3 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(1rem, 2.4vw, 1.2rem);
+  color: var(--parchment);
+  margin: 0;
+}
+.section-card .desc {
+  color: var(--parchment-dim);
+  font-size: 0.9rem;
+  margin: 0.4rem 0;
+  line-height: 1.7;
+}
+.section-card .teaser {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 0.85rem;
+  color: var(--ash);
+  margin: 0.4rem 0;
+  padding-left: 0.75rem;
+  border-left: 2px solid var(--ink-line);
+}
+.section-card .card-details {
+  font-size: 0.85rem;
+  color: var(--parchment-dim);
+  line-height: 1.7;
+  margin-top: 0.5rem;
+}
+.section-card .card-details strong {
+  color: var(--gold);
+  font-weight: 500;
+}
+.section-card .music-pair {
+  margin-top: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(255, 220, 160, 0.03);
+  border-radius: 6px;
+  font-size: 0.8rem;
+  color: var(--ash);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+.section-card .music-pair span {
+  color: var(--parchment-dim);
+}
+
+.rec-box {
+  background: rgba(255, 230, 128, 0.04);
+  border: 1px solid rgba(255, 230, 128, 0.12);
+  border-radius: 12px;
+  padding: clamp(1rem, 3vw, 1.5rem);
+  margin: 1.5rem 0;
+  text-align: center;
+}
+.rec-box p {
+  color: var(--parchment-dim);
+  font-size: 0.9rem;
+  margin: 0 0 0.75rem;
+  font-style: italic;
+}
+.rec-box .rec-btn {
+  padding: 0.5rem 1.2rem;
+  border-radius: 6px;
+  background: rgba(255, 230, 128, 0.1);
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.rec-box .rec-btn:hover {
+  background: var(--gold);
+  color: var(--ink);
+}
+.rec-box .rec-result {
+  margin-top: 0.75rem;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  color: var(--parchment);
+  min-height: 2rem;
+}
+
+.secret-box {
+  background: rgba(232, 93, 58, 0.06);
+  border: 1px dashed rgba(232, 93, 58, 0.2);
+  border-radius: 10px;
+  padding: 1.25rem 1.5rem;
+  margin: 1rem 0;
+  transition: border-color 0.3s;
+}
+.secret-box:hover {
+  border-color: rgba(232, 93, 58, 0.35);
+}
+.secret-box .title {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  color: var(--ember);
+  margin-bottom: 0.5rem;
+}
+.secret-box .hint-item {
+  color: var(--parchment-dim);
+  font-size: 0.85rem;
+  padding: 0.3rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  line-height: 1.5;
+}
+.secret-box .hint-item:last-child { border-bottom: none; }
+.secret-box .hint-item .found {
+  color: #6fcf93;
+  font-size: 0.75rem;
+}
+
+ol.path-list {
+  list-style: none;
+  counter-reset: step;
+  padding: 0;
+  margin: 1.5rem 0;
+}
+ol.path-list li {
+  counter-increment: step;
+  padding: 0.8rem 0 0.8rem 2.5rem;
+  position: relative;
+  color: var(--parchment-dim);
+  font-size: 0.9rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  cursor: pointer;
+  transition: color 0.3s;
+}
+ol.path-list li:hover { color: var(--parchment); }
+ol.path-list li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 0.8rem;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  background: var(--glass);
+  border: 1px solid var(--glassBorder);
+  color: var(--gold);
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+}
+ol.path-list li.done::before {
+  background: rgba(111, 207, 147, 0.15);
+  border-color: #6fcf93;
+  content: '\2713';
+}
+ol.path-list li.done { color: #6fcf93; }
+ol.path-list li:last-child { border-bottom: none; }
+
+.letter-link {
+  display: inline-block;
+  margin-top: 1.5rem;
+  padding: 0.6rem 1.5rem;
+  border-radius: 8px;
+  background: rgba(255, 230, 128, 0.08);
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: all 0.3s;
+}
+.letter-link:hover {
+  background: var(--gold);
+  color: var(--ink);
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.footer {
+  text-align: center;
+  padding: 2rem var(--pad-inline);
+  border-top: 1px solid var(--ink-line);
+  margin-top: clamp(2rem, 5vh, 3.5rem);
+}
+.footer p { color: var(--ash); font-size: 0.85rem; margin: 0; }
+
+.progress-bar {
+  height: 3px;
+  background: var(--ink-line);
+  border-radius: 2px;
+  margin: 1rem 0;
+  overflow: hidden;
+}
+.progress-bar .fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--gold), var(--ember));
+  transition: width 0.5s;
+  border-radius: 2px;
+}
+.progress-label {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--ash);
+  margin-bottom: 0.5rem;
+}
+</style>
+</head>
+<body>
+<main>
+<div class="hero">
+  <h1 class="hero-title">how to explore this world</h1>
+  <p class="hero-subtitle">A map for the woman it was built for</p>
+  <div class="hero-ornament"></div>
+</div>
+<div class="page">
+
+<div class="letter fade-in">
+  <p>This website is a love letter written in fragments&mdash;each page a different room in the same house. I built it in the dark, alone, imagining your face when you'd find each piece. Some pages will make you cry. Some will make you call me dramatic. Some will make you pause and look away from the screen for a moment. That pause is what I wanted most.</p>
+  <p>You don't have to follow the order I've laid out. You can skip, loop back, leave and return weeks later. The site will remember where you left off. But if you want the experience as I imagined it&mdash;as a single story told across many rooms&mdash;this guide will show you the way.</p>
+  <p>Every page has something hidden. Read carefully. Click things that don't look like buttons. Check the console. Look at the source code if you know how. There are layers I never told you about.</p>
+  <p class="sig">&mdash; </p>
+</div>
+
+<div class="fade-in">
+  <h2>Your Progress</h2>
+  <div class="progress-label" id="progressLabel">0 / 8 sections explored</div>
+  <div class="progress-bar"><div class="fill" id="progressFill"></div></div>
+</div>
+
+<div class="fade-in">
+  <h2>The Sections</h2>
+</div>
+
+<div class="section-card fade-in" data-section="100-organs">
+  <div class="card-header">
+    <span class="arrow">&#x25B6;</span>
+    <div>
+      <span class="tag tag-romantic">Romantic</span>
+      <h3>100 Organs</h3>
+      <p class="desc">213 poetic tributes&mdash;one for every part of her body and soul, catalogued like an anatomy of love.</p>
+      <p class="teaser">&ldquo;I could spend a lifetime looking into your eyes and I genuinely believe I would still notice something new on the very last day.&rdquo;</p>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="card-details">
+      <p>This is the heart of the site. Eight sections covering everything from her hair and eyes down to her toes&mdash;and then deeper, into her lungs, her bones, her soul. Each entry is a numbered paragraph, each one a different way of saying <strong>I see you</strong>.</p>
+      <p><strong>Best read:</strong> Start to finish, but pause between sections. Don't binge it. Let each section settle.</p>
+      <p><strong>Hidden thing:</strong> Try clicking the number on any entry. Some have secret verses that only appear on click.</p>
+    </div>
+    <div class="music-pair">&#x1F3B5; <span>Read with:</span> &ldquo;Nahin Milta&rdquo; &mdash; Bayaan</div>
+  </div>
+</div>
+
+<div class="section-card fade-in" data-section="love">
+  <div class="card-header">
+    <span class="arrow">&#x25B6;</span>
+    <div>
+      <span class="tag tag-tender">Tender</span>
+      <h3>Love</h3>
+      <p class="desc">The softer side&mdash;her voice, her habits, her personality, the future you're building together.</p>
+      <p class="teaser">&ldquo;Your morning voice, raspy and warm&mdash;the sound of someone who hasn't yet put up their walls.&rdquo;</p>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="card-details">
+      <p>Where 100 Organs describes <em>what she's made of</em>, Love describes <em>who she is</em>. Five sections: body details, voice and habits, inner world, relationships, and your story together.</p>
+      <p><strong>Best read:</strong> After 100 Organs. The shift from physical to personal is intentional.</p>
+      <p><strong>Hidden thing:</strong> The last section has a hidden message. Read every word of the final entry carefully.</p>
+    </div>
+    <div class="music-pair">&#x1F3B5; <span>Read with:</span> &ldquo;Double Take&rdquo; &mdash; Dhruv</div>
+  </div>
+</div>
+
+<div class="section-card fade-in" data-section="fantasies">
+  <div class="card-header">
+    <span class="arrow">&#x25B6;</span>
+    <div>
+      <span class="tag tag-intimate">Intimate</span>
+      <h3>Fantasies</h3>
+      <p class="desc">The unguarded pages. Scenarios imagined&mdash;some tender, some intense, all honest.</p>
+      <p class="teaser">&ldquo;When our skin finally meets, when there is no distance left between us&hellip;&rdquo;</p>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="card-details">
+      <p>This section is the version of me that doesn't hold back. Read it when you're alone and ready for words that don't get said in public.</p>
+      <p><strong>Best read:</strong> At night. When the house is quiet and no one will interrupt.</p>
+      <p><strong>Hidden thing:</strong> Some entries have details you'll only notice if you hover over them.</p>
+    </div>
+    <div class="music-pair">&#x1F3B5; <span>Read with:</span> &ldquo;Sunsetz&rdquo; &mdash; Cigarettes After Sex</div>
+  </div>
+</div>
+
+<div class="section-card fade-in" data-section="sky-observatory">
+  <div class="card-header">
+    <span class="arrow">&#x25B6;</span>
+    <div>
+      <span class="tag tag-visual">Visual</span>
+      <h3>Sky Observatory</h3>
+      <p class="desc">A procedural sky generator&mdash;constellations, nebulae, stars arranged into memories.</p>
+      <p class="teaser">&ldquo;Fragments of light, caught in silver and shadow&mdash;moments I never want to forget.&rdquo;</p>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="card-details">
+      <p>Every visit generates a different sky. Some constellations are hidden messages. The longer you look, the more you'll find. Click the stars. Watch the colors shift.</p>
+      <p><strong>Best read:</strong> When you can't sleep. Open it, put your phone down, and watch the sky form.</p>
+      <p><strong>Hidden thing:</strong> There are nearly 100 constellations. Some only appear at certain times.</p>
+    </div>
+    <div class="music-pair">&#x1F3B5; <span>Read with:</span> &ldquo;Mystery of Love&rdquo; &mdash; Sufjan Stevens</div>
+  </div>
+</div>
+
+<div class="section-card fade-in" data-section="photo-gallery">
+  <div class="card-header">
+    <span class="arrow">&#x25B6;</span>
+    <div>
+      <span class="tag tag-visual">Visual</span>
+      <h3>Photo Gallery</h3>
+      <p class="desc">Every photo I have of her, paired with what I was thinking when I first saw it.</p>
+      <p class="teaser">&ldquo;For the days you miss yourself through my eyes.&rdquo;</p>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="card-details">
+      <p>A collection of photos&mdash;each with a caption that captures what I felt the moment I saw that version of you. Some are old. Some are recent. All of them are how I see you.</p>
+      <p><strong>Best read:</strong> When you're having a bad day and need to remember.</p>
+      <p><strong>Hidden thing:</strong> Some photos have hidden captions that only appear if you tap and hold.</p>
+    </div>
+    <div class="music-pair">&#x1F3B5; <span>Read with:</span> &ldquo;White Keys&rdquo; &mdash; Raveena</div>
+  </div>
+</div>
+
+<div class="fade-in">
+  <h2>Hidden & Extra</h2>
+</div>
+
+<div class="section-card fade-in" data-section="puzzle-hunt">
+  <div class="card-header">
+    <span class="arrow">&#x25B6;</span>
+    <div>
+      <span class="tag tag-game">Quest</span>
+      <h3>Puzzle Hunt</h3>
+      <p class="desc">Questions about us that unlock rewards when answered correctly.</p>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="card-details">
+      <p>Some sections are locked behind questions only you would know the answer to. Get them right and you unlock something special. Get them wrong and you can try again&mdash;no penalty, no shame.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section-card fade-in" data-section="secret-letters">
+  <div class="card-header">
+    <span class="arrow">&#x25B6;</span>
+    <div>
+      <span class="tag tag-game">Collection</span>
+      <h3>Secret Letters</h3>
+      <p class="desc">30 letters hidden across the entire site. Some in plain sight, some behind puzzles.</p>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="card-details">
+      <p>Letters I wrote that don't belong to any specific section. They appear as you explore&mdash;sometimes when you reach a certain page, sometimes when you click something that doesn't look clickable, sometimes when you just wait long enough.</p>
+      <p>Collect all 30. The final letter is different from the rest.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section-card fade-in" data-section="companions">
+  <div class="card-header">
+    <span class="arrow">&#x25B6;</span>
+    <div>
+      <span class="tag tag-game">Companion</span>
+      <h3>Butterflies & Fireflies</h3>
+      <p class="desc">Two quiet companions that appear the more time you spend here.</p>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="card-details">
+      <p>Butterflies appear across pages as you explore&mdash;catch them. Fireflies fill a jar the longer you stay on the site. They mean nothing and everything.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section-card fade-in" data-section="story">
+  <div class="card-header">
+    <span class="arrow">&#x25B6;</span>
+    <div>
+      <span class="tag tag-tender">Reflection</span>
+      <h3>Our Story & Timeline</h3>
+      <p class="desc">The real story&mdash;no metaphors, no poetry. Just how it happened.</p>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="card-details">
+      <p>A grounded version of how this all began. The timeline of real events. Read these pages when you want the truth without the ornament.</p>
+    </div>
+    <div class="music-pair">&#x1F3B5; <span>Read with:</span> &ldquo;Hum&rdquo; &mdash; Murtaza Qizilbash</div>
+  </div>
+</div>
+
+<div class="fade-in">
+  <h2>What Should You Read Today?</h2>
+  <div class="rec-box">
+    <p>Not sure where to go? Let me choose for you based on how you're feeling.</p>
+    <button class="rec-btn" id="recBtn">&#x2728; Recommend Something</button>
+    <div class="rec-result" id="recResult"></div>
+  </div>
+</div>
+
+<div class="fade-in">
+  <h2>Suggested Path</h2>
+  <p style="color:var(--parchment-dim);font-size:0.9rem;text-align:center;margin-bottom:0.5rem;">If you want the experience I designed, follow this route. Click each step to mark it done.</p>
+  <ol class="path-list" id="pathList">
+    <li data-path="0">Start at the <strong>Home page</strong> &mdash; take in the intro, the ember canvas, the quiet.</li>
+    <li data-path="1">Open <strong>100 Organs</strong> first. Read from the beginning. Take breaks between sections.</li>
+    <li data-path="2">Move to <strong>Love</strong>. Let the tone shift from physical to personal.</li>
+    <li data-path="3">Visit <strong>Our Story</strong> and <strong>Timeline</strong> &mdash; the real-world anchor.</li>
+    <li data-path="4">Explore the <strong>Sky Observatory</strong> on a night you can't sleep.</li>
+    <li data-path="5">Read <strong>Fantasies</strong> when you're alone and unguarded.</li>
+    <li data-path="6">Browse the <strong>Photo Gallery</strong> whenever you forget how I see you.</li>
+    <li data-path="7">Finish with <strong>Secret Letters</strong> &mdash; find them all, then read the last one first.</li>
+  </ol>
+  <p style="color:var(--ash);font-size:0.8rem;font-style:italic;text-align:center;">Or ignore all of this and click whatever calls to you. The site works either way.</p>
+</div>
+
+<div class="sep" style="width:3rem;height:1px;margin:2rem auto;background:linear-gradient(90deg,transparent,var(--ash),transparent);"></div>
+
+<div class="secret-box fade-in">
+  <div class="title">&#x2726; Easter Eggs &mdash; A Partial Map</div>
+  <div class="hint-item">&#x2022; Every page has at least one hidden thing. If you think you've seen everything, you haven't.</div>
+  <div class="hint-item">&#x2022; There are secret pages not linked from anywhere. The URLs are words you'll only know if you read everything.</div>
+  <div class="hint-item">&#x2022; Collect all 30 secret letters. The final letter is different from the rest.</div>
+</div>
+
+<div style="text-align:center;margin-top:2rem;">
+  <a href="promises.html" class="letter-link">&#x2661; Read the 100 Promises</a>
+</div>
+
+<div class="footer">
+  <p>built for  &mdash; explore at your own pace</p>
+</div>
+
+</div>
+</main>
+
+<script>
+(function () {
+  // Accordion cards
+  var cards = document.querySelectorAll('.section-card');
+  cards.forEach(function (card) {
+    card.querySelector('.card-header').addEventListener('click', function () {
+      card.classList.toggle('open');
+    });
+  });
+
+  // Fade in on scroll
+  var faders = document.querySelectorAll('.fade-in');
+  function checkFade() {
+    faders.forEach(function (el) {
+      var rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight - 80) el.classList.add('visible');
+    });
+  }
+  window.addEventListener('scroll', checkFade);
+  checkFade();
+
+  // Random recommendation
+  var recs = [
+    { name: '100 Organs', desc: 'You want to feel something deep. Start with the first section.' },
+    { name: 'Love', desc: 'You need softness today. Read about her voice, her habits, her warmth.' },
+    { name: 'Fantasies', desc: 'You\'re feeling bold. Go to the unguarded pages.' },
+    { name: 'Sky Observatory', desc: 'You need beauty without words. Watch the stars form.' },
+    { name: 'Photo Gallery', desc: 'You miss her. Go look at her face.' },
+    { name: 'Secret Letters', desc: 'You want to discover something. Go hunting.' },
+    { name: 'Our Story', desc: 'You want the truth. No poetry. Just the real story.' },
+    { name: 'Puzzle Hunt', desc: 'You\'re in the mood for a challenge. Test your memory of us.' }
+  ];
+  document.getElementById('recBtn').addEventListener('click', function () {
+    var r = recs[Math.floor(Math.random() * recs.length)];
+    document.getElementById('recResult').textContent = r.name + ' \u2014 ' + r.desc;
+  });
+
+  // Path list progress (localStorage)
+  var paths = document.querySelectorAll('#pathList li');
+  var saved = JSON.parse(localStorage.getItem('guide-path-progress') || '[]');
+  paths.forEach(function (li) {
+    var idx = li.dataset.path;
+    if (saved.indexOf(idx) !== -1) li.classList.add('done');
+    li.addEventListener('click', function () {
+      this.classList.toggle('done');
+      var done = [];
+      paths.forEach(function (p) { if (p.classList.contains('done')) done.push(p.dataset.path); });
+      localStorage.setItem('guide-path-progress', JSON.stringify(done));
+      updateProgress();
+    });
+  });
+
+  function updateProgress() {
+    var done = document.querySelectorAll('#pathList li.done').length;
+    var total = paths.length;
+    document.getElementById('progressLabel').textContent = done + ' / ' + total + ' steps completed';
+    document.getElementById('progressFill').style.width = (done / total * 100) + '%';
+  }
+  updateProgress();
+})();
+</script>
+
+<script src="global-easter-eggs.js"></script>
+<script defer src="interactions.js"></script>
+</body>
+</html>

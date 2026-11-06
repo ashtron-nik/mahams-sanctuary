@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#181214">
+<title>for tonight</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  html, body { margin: 0; background: #0d0a12; }
+  body { min-height: 100vh; font-family: Georgia, serif; color: #ffebd2; overflow-x: hidden; }
+  .ft-stage {
+    min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 2rem 1.25rem; box-sizing: border-box; text-align: center; position: relative;
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(52,44,72,.35), transparent 55%),
+      radial-gradient(ellipse at 50% 110%, rgba(255,230,128,.05), transparent 60%);
+  }
+  .ft-star { position: fixed; width: 2px; height: 2px; border-radius: 50%; background: #ffe680; opacity: .25; pointer-events: none; }
+  .ft-moon { position: fixed; top: 4.5rem; right: 2rem; width: 3.2rem; height: 3.2rem; border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #fff6d8, #ffe680 55%, rgba(255,230,128,0));
+    box-shadow: 0 0 30px rgba(255,230,128,.25); opacity: .8; pointer-events: none; }
+  .ft-hidden { opacity: 0; }
+  .ft-line { transition: opacity 1.4s ease; }
+  .ft-hello { color: #ffe680; font-style: italic; letter-spacing: .18em; font-size: 1.05rem; text-shadow: 0 0 22px rgba(255,230,128,.3); }
+  .ft-soft { color: #a08f7e; font-style: italic; font-size: .95rem; margin-top: 1rem; }
+  .ft-title { color: #ffe680; font-size: 1.35rem; letter-spacing: .12em; margin-top: 1.4rem; }
+  .ft-card {
+    margin-top: 1.6rem; max-width: 480px; width: 100%; background: rgba(28,24,26,.85);
+    border: 1px solid rgba(255,210,150,.14); border-radius: 18px; padding: 1.6rem 1.4rem; box-sizing: border-box;
+    box-shadow: 0 8px 40px rgba(0,0,0,.45); transition: opacity 1.2s ease, transform 1.2s ease;
+  }
+  .ft-card.ft-reveal { opacity: 1; transform: none; }
+  .ft-kicker { color: #c9a24b; font-size: .72rem; letter-spacing: .25em; text-transform: uppercase; }
+  .ft-card h2 { color: #ffebd2; font-weight: normal; font-size: 1.15rem; margin: .5rem 0 .9rem; }
+  .ft-card p { color: #d9c8b4; line-height: 1.75; font-size: .95rem; margin: 0; white-space: pre-wrap; }
+  .ft-meta { color: #7d6f60; font-size: .78rem; margin-top: 1rem; font-style: italic; }
+  .ft-photo { max-width: 100%; max-height: 46vh; border-radius: 12px; border: 1px solid rgba(255,210,150,.14); }
+  .ft-slot { margin-top: .8rem; }
+  .ft-slot audio, .ft-slot video { width: 100%; border-radius: 8px; }
+  .ft-card.ft-rare { margin-top: 1.1rem; border-color: rgba(185,161,123,.25); }
+  .ft-card.ft-rare h2 { color: #e6d3b0; }
+  .ft-ender { margin-top: 2.2rem; }
+  .ft-ender .ft-line { font-style: italic; color: #a08f7e; font-size: .95rem; }
+  .ft-ender .ft-line + .ft-line { margin-top: .5rem; }
+  .ft-return {
+    display: inline-block; margin-top: 1.6rem; padding: .7rem 1.6rem; border: 1px solid rgba(255,230,128,.3);
+    border-radius: 999px; color: #ffe680; text-decoration: none; font-size: .85rem; letter-spacing: .08em;
+    background: rgba(255,230,128,.05); transition: background .3s ease, border-color .3s ease;
+  }
+  .ft-return:hover { background: rgba(255,230,128,.12); border-color: rgba(255,230,128,.55); }
+  .ft-footer { margin-top: 2.4rem; font-size: .7rem; color: #55493d; letter-spacing: .2em; }
+  @media (max-width: 400px) {
+    .ft-moon { top: 2.5rem; right: 1.2rem; width: 2.4rem; height: 2.4rem; }
+    .ft-card { padding: 1.2rem 1rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ft-line, .ft-card { transition: none; }
+    .ft-star { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="ft-stage">
+  <div class="ft-moon"></div>
+  <div id="ftStars"></div>
+
+  <div id="ftIntro" class="ft-line ft-hidden">
+    <div class="ft-hello" id="line1">Something for tonight...</div>
+    <div class="ft-soft ft-hidden" id="line2">I left a little something here for you.</div>
+    <div class="ft-title ft-hidden" id="line3">Tonight's little gift</div>
+  </div>
+
+  <div id="ftCard" class="ft-card ft-hidden"></div>
+
+  <div id="ftEnd" class="ft-ender ft-hidden">
+    <div class="ft-line">That's all for tonight.</div>
+    <div class="ft-line">But I'll leave something here for you again.</div>
+    <a class="ft-return" href="index.html">Return to the world</a>
+    <div style="margin-top:1.6rem;">
+      <a href="i-remember.html" style="color:#55493d;text-decoration:none;font-style:italic;font-size:.8rem;letter-spacing:.15em;">i remember...</a>
+      <span style="color:#3d3529;"> · </span>
+      <a href="letter-that-writes-itself.html" style="color:#55493d;text-decoration:none;font-style:italic;font-size:.8rem;letter-spacing:.15em;">a letter that writes itself</a>
+      <span style="color:#3d3529;"> · </span>
+      <a href="make-her-sleep.html" style="color:#55493d;text-decoration:none;font-style:italic;font-size:.8rem;letter-spacing:.15em;">when you can't sleep</a>
+    </div>
+  </div>
+
+  <div class="ft-footer">ash</div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="fb-db.js"></script>
+<script src="global-easter-eggs.js"></script>
+<script defer src="interactions.js"></script>
+<script src="activity-tracker.js"></script>
+
+<script>
+(function () {
+  'use strict';
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var BASE = reduce ? 350 : 1400;
+
+  function show(el) { el.classList.remove('ft-hidden'); }
+
+  function stars() {
+    if (reduce) return;
+    var wrap = document.getElementById('ftStars');
+    var frag = document.createDocumentFragment();
+    for (var i = 0; i < 42; i++) {
+      var s = document.createElement('i');
+      s.className = 'ft-star';
+      s.style.left = (Math.random() * 100).toFixed(1) + '%';
+      s.style.top = (Math.random() * 100).toFixed(1) + '%';
+      s.style.opacity = (0.15 + Math.random() * 0.45).toFixed(2);
+      s.style.animation = 'lwTwinkle ' + (2 + Math.random() * 3).toFixed(2) + 's ease-in-out ' + (Math.random() * 2).toFixed(2) + 's infinite';
+      frag.appendChild(s);
+    }
+    wrap.appendChild(frag);
+  }
+
+  function esc(x) { return String(x == null ? '' : x).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;'); }
+
+  function textOf(it, fields) {
+    for (var i = 0; i < fields.length; i++) {
+      var v = it[fields[i]];
+      if (v && typeof v === 'string' && v.trim()) return v.trim();
+    }
+    return '';
+  }
+
+  var NOTES = [
+    'I thought of you today. That is all. That is everything.',
+    'Somewhere between your last goodnight and my first thought of you, I smiled.',
+    'You do not need to do anything tonight. You already made this day worth keeping.',
+    'If you are reading this at night, I hope you are warm. I hope you know you are loved.',
+    'Today was ordinary until I remembered you. Then it was not ordinary at all.',
+    'I am not saying this because the day asks for it. I am saying it because it is true.',
+    'The stars out there are not as steady as the way I feel about you. That is the truth.',
+    'When you wake up tomorrow, this night will still be mine. Remember that.'
+  ];
+
+  function buildCatalog(pools) {
+    var cat = [];
+    var letters = pools[0] || [], timeline = (pools[1] && pools[1].list) || [], gallery = (pools[2] && pools[2].list) || [];
+    var wishes = pools[3] || [], dreams = pools[4] || [], songs = pools[5] || [], rareLinks = pools[6] || [];
+
+    letters.forEach(function (it) {
+      var body = textOf(it, ['body', 'content', 'text']);
+      if (body) cat.push({ kind: 'letter', title: textOf(it, ['subject', 'title']) || 'A letter', text: body });
+    });
+    timeline.forEach(function (it) {
+      var body = textOf(it, ['body', 'text']);
+      if (body || it.title) cat.push({ kind: 'memory', title: it.title || 'A memory', text: body, meta: textOf(it, ['date', 'year']) });
+    });
+    gallery.forEach(function (it) {
+      var src = '';
+      if (typeof it.file === 'string') src = it.file;
+      else if (it.fileBlob instanceof Blob) { try { src = URL.createObjectURL(it.fileBlob); } catch (e) {} }
+      if (src) cat.push({ kind: 'photo', src: src, note: textOf(it, ['note', 'label']) });
+    });
+    wishes.forEach(function (it) {
+      var t = textOf(it, ['text', 'wish', 'message']);
+      if (t) cat.push({ kind: 'wish', text: t });
+    });
+    dreams.forEach(function (it) {
+      var t = textOf(it, ['text', 'content', 'entry', 'message']);
+      if (t) cat.push({ kind: 'dream', title: textOf(it, ['title']), text: t });
+    });
+    songs.forEach(function (it) {
+      if (it.file) cat.push({ kind: 'song', title: textOf(it, ['title']), artist: textOf(it, ['artist']), file: it.file, type: it.type || '' });
+    });
+    NOTES.forEach(function (t) { cat.push({ kind: 'note', text: t }); });
+    var rare = rareLinks.map(function (it) { return { title: textOf(it, ['title']), url: it.url }; });
+    return { cat: cat, rare: rare };
+  }
+
+  function mulberry32(seed) {
+    var a = seed >>> 0;
+    return function () {
+      a |= 0; a = (a + 0x6D2B79F5) | 0;
+      var t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  function todayKey() {
+    var d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+
+  function pickIndex(cat, key) {
+    var parts = key.split('-');
+    var seed = Math.floor(Date.UTC(+parts[0], +parts[1] - 1, +parts[2]) / 86400000);
+    var rnd = mulberry32(seed);
+    return Math.floor(rnd() * cat.length);
+  }
+
+  function choose(cat) {
+    var key = todayKey();
+    var stored = null;
+    try { stored = JSON.parse(localStorage.getItem('ash-for-tonight') || 'null'); } catch (e) {}
+    if (stored && stored.d === key && stored.i >= 0 && stored.i < cat.length) return cat[stored.i];
+    var i = pickIndex(cat, key);
+    try { localStorage.setItem('ash-for-tonight', JSON.stringify({ d: key, i: i })); } catch (e) {}
+    return cat[i];
+  }
+
+  function kindLabel(kind) {
+    return { letter: 'a letter', memory: 'a memory', photo: 'a photograph', wish: 'a wish',
+             dream: 'a dream', song: 'a song', note: 'a quiet thought' }[kind] || 'a quiet thought';
+  }
+
+  function render(it) {
+    var c = document.getElementById('ftCard');
+    var html = '<div class="ft-kicker">' + esc(kindLabel(it.kind)) + '</div>';
+    if (it.kind === 'photo') {
+      html += '<div class="ft-slot"><img class="ft-photo" loading="lazy" alt="for you" src="' + esc(it.src) + '"></div>';
+      if (it.note) html += '<p style="margin-top:.9rem;font-style:italic;">' + esc(it.note) + '</p>';
+    } else if (it.kind === 'song') {
+      if (it.title) html += '<h2>' + esc(it.title) + (it.artist ? ' <span style="color:#7d6f60;font-size:.8rem;">— ' + esc(it.artist) + '</span>' : '') + '</h2>';
+      var tag = (it.type || '').indexOf('video') !== -1 ? 'video' : 'audio';
+      html += '<div class="ft-slot"><' + tag + ' controls preload="metadata" src="songs/' + esc(it.file) + '"></' + tag + '></div>';
+    } else {
+      if (it.title) html += '<h2>' + esc(it.title) + '</h2>';
+      if (it.text) html += '<p>' + esc(it.text) + '</p>';
+      if (it.kind === 'wish') html = html.replace('<p>', '<p style="font-style:italic;">');
+    }
+    if (it.meta) html += '<div class="ft-meta">' + esc(it.meta) + '</div>';
+    c.innerHTML = html;
+  }
+
+  function ytEmbed(url) {
+    var m = url.match(/(?:youtube\.com\/(?:watch\?.*v=|embed\/|shorts\/|live\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/);
+    if (!m) return null;
+    return '<iframe src="https://www.youtube-nocookie.com/embed/' + esc(m[1]) + '" title="for you" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px;background:#000;"></iframe>';
+  }
+
+  function renderRareBonus(rare) {
+    var key = todayKey();
+    var parts = key.split('-');
+    var seed = Math.floor(Date.UTC(+parts[0], +parts[1] - 1, +parts[2]) / 86400000);
+    var rnd = mulberry32(seed + 7); // separate stream from the main pick
+    if (rnd() >= 0.10) return; // rare day: ~10%
+    var active = rare.filter(function (r) { return r.on !== false && r.url; });
+    if (!active.length) return;
+    var link = active[pickIndex(active, key)];
+    var embed = ytEmbed(link.url);
+    var c = document.getElementById('ftCard');
+    var box = document.createElement('div');
+    box.className = 'ft-card ft-rare';
+    box.innerHTML =
+      '<div class="ft-kicker" style="color:#b9a17b;">one more thing, only on rare nights...</div>' +
+      (link.title ? '<h2>' + esc(link.title) + '</h2>' : '') +
+      '<div class="ft-slot">' + (embed || '<video controls preload="metadata" src="' + esc(link.url) + '"></video>') + '</div>';
+    c.parentNode.insertBefore(box, c.nextSibling);
+  }
+
+  function begin(cat, rare) {
+    stars();
+    show(document.getElementById('line1'));
+    setTimeout(function () { show(document.getElementById('line2')); }, BASE * 1.6);
+    setTimeout(function () { show(document.getElementById('line3')); }, BASE * 3.2);
+    setTimeout(function () {
+      var card = document.getElementById('ftCard');
+      render(choose(cat));
+      show(card);
+      if (rare && rare.length) renderRareBonus(rare);
+      if (!reduce) card.style.transform = 'translateY(10px)';
+      setTimeout(function () {
+        card.classList.add('ft-reveal');
+        show(document.getElementById('ftEnd'));
+      }, 60);
+    }, BASE * 4.4);
+  }
+
+  function load() {
+    var reads = [
+      (typeof FB !== 'undefined' && FB.getAll) ? FB.getAll('letters').catch(function () { return []; }) : Promise.resolve([]),
+      (typeof FB !== 'undefined' && FB.get) ? FB.get('config', 'timeline').catch(function () { return null; }) : Promise.resolve(null),
+      (typeof FB !== 'undefined' && FB.get) ? FB.get('config', 'gallery').catch(function () { return null; }) : Promise.resolve(null),
+      (typeof FB !== 'undefined' && FB.getAll) ? FB.getAll('wishes').catch(function () { return []; }) : Promise.resolve([]),
+      (typeof FB !== 'undefined' && FB.getAll) ? FB.getAll('dreams').catch(function () { return []; }) : Promise.resolve([]),
+      fetch('songs/list.json').then(function (r) { return r.ok ? r.json() : []; }).catch(function () { return []; }),
+      (typeof FB !== 'undefined' && FB.getAll) ? FB.getAll('rareLinks').catch(function () { return []; }) : Promise.resolve([])
+    ];
+    Promise.all(reads).then(function (pools) {
+      var pack = buildCatalog(pools);
+      begin(pack.cat, pack.rare);
+    });
+  }
+
+  load();
+})();
+</script>
+</body>
+</html>

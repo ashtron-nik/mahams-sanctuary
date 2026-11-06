@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Our Story &mdash; Dreambox</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9D%A4%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500;1,9..144,600&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+  <script src="fb-db.js"></script>
+<script src="global-easter-eggs.js"></script>
+<script defer src="interactions.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0d0a12; color: #e8d8f0;
+      font-family: 'Lora', Georgia, serif; line-height: 1.8;
+      min-height: 100vh; padding: 3rem 1.5rem;
+    }
+    .story-container { max-width: 680px; margin: 0 auto; }
+    .story-main-title {
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: 2rem; font-weight: 400; font-style: italic;
+      color: #c8a8f0; text-align: center; margin-bottom: 0.5rem;
+    }
+    .story-sub { text-align: center; color: #6a5a7a; font-size: .85rem; font-style: italic; margin-bottom: 2rem; }
+    .section-title {
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: 1.1rem; font-weight: 400; font-style: italic;
+      color: #b8a0d8; text-align: center; margin-bottom: 1.5rem;
+      padding-top: 1rem;
+    }
+    .section-title .icon { margin-right: 6px; }
+    .section-divider {
+      border: none; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(200,160,255,0.15), transparent);
+      margin: 2.5rem 0;
+    }
+    .tl-wrap { position: relative; padding-left: 2rem; }
+    .tl-wrap::before {
+      content: ''; position: absolute; left: 10px; top: 0; bottom: 0;
+      width: 2px; background: linear-gradient(180deg, rgba(200,160,255,0.3), rgba(200,160,255,0.05));
+    }
+    .tl-item { position: relative; margin-bottom: 1.8rem; }
+    .tl-dot {
+      position: absolute; left: -2rem; top: 6px;
+      width: 14px; height: 14px; border-radius: 50%;
+      background: #c8a8f0; border: 2px solid #0d0a12; z-index: 1;
+    }
+    .tl-card {
+      background: rgba(200,160,255,0.02); border: 1px solid rgba(200,160,255,0.06);
+      border-radius: 12px; padding: 1.2rem 1.4rem;
+    }
+    .tl-date { font-size: .75rem; color: #7a6a8a; font-weight: 500; letter-spacing: 0.5px; margin-bottom: 4px; }
+    .tl-title { font-family: 'Fraunces', Georgia, serif; font-size: 1rem; font-weight: 400; color: #d8c8e8; }
+    .tl-body { font-size: .85rem; color: #b0a0c0; margin-top: 6px; line-height: 1.6; }
+    .tl-img { margin-top: 10px; max-width: 100%; border-radius: 8px; }
+    .story-chapter {
+      background: rgba(200,160,255,0.02); border: 1px solid rgba(200,160,255,0.06);
+      border-radius: 16px; padding: 2rem 2rem; margin-bottom: 1.5rem;
+    }
+    .story-chapter-title {
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: 1.3rem; font-weight: 400; font-style: italic;
+      color: #b8a0d8; margin-bottom: 1rem;
+    }
+    .story-chapter-body { font-size: 0.95rem; color: #d0c0e0; font-weight: 300; line-height: 2; white-space: pre-wrap; }
+    .empty-state { text-align: center; color: #6a5a7a; font-style: italic; padding: 3rem 0; font-size: .85rem; }
+    .loader { text-align: center; color: #6a5a7a; font-style: italic; padding: 3rem 0; }
+    .back {
+      display: block; text-align: center; margin-top: 2.5rem;
+      color: #6a5a7a; text-decoration: none; font-size: .85rem;
+      font-style: italic; transition: color .3s;
+    }
+    .back:hover { color: #c8a8f0; }
+
+    .quiz-wrap { font-size: .85rem; }
+    .quiz-progress { text-align: center; color: #7a6a8a; margin-bottom: 1.2rem; font-size: .8rem; font-style: italic; }
+    .quiz-cat { margin-bottom: .75rem; border-radius: 8px; border: 1px solid rgba(200,160,255,0.06); overflow: hidden; }
+    .quiz-cat-header {
+      padding: .6rem .9rem; background: rgba(200,160,255,0.04);
+      cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+      font-size: .85rem; color: #c8a8f0; font-weight: 600; user-select: none;
+    }
+    .quiz-arrow { transition: transform .2s; font-size: .75rem; }
+    .quiz-cat-body { padding: 0 .9rem; max-height: 0; overflow: hidden; transition: max-height .3s ease; }
+    .quiz-q { padding: .7rem 0; border-bottom: 1px solid rgba(200,160,255,0.04); }
+    .quiz-q:last-child { border-bottom: none; }
+    .quiz-q-text { color: #e8d8f0; font-size: .82rem; margin-bottom: 3px; }
+    .quiz-q-meta { color: #7a6a8a; font-size: .7rem; font-style: italic; }
+    .quiz-unlock { color: #6fcf93; }
+    .quiz-q-inputs { margin-top: 6px; }
+    .quiz-input {
+      width: 100%; padding: .4rem .6rem; border-radius: 5px;
+      background: rgba(200,160,255,0.04); border: 1px solid rgba(200,160,255,0.1);
+      color: #e8d8f0; font-family: 'Lora', Georgia, serif; font-size: .82rem;
+      outline: none; resize: vertical; box-sizing: border-box;
+    }
+    .quiz-textarea { min-height: 50px; }
+    .quiz-radio-label, .quiz-opt-label {
+      display: inline-block; color: #c0b0d0; font-size: .8rem; margin-right: 12px; padding: 3px 0; cursor: pointer;
+    }
+    .quiz-opt-label { display: block; }
+    .quiz-save-btn {
+      display: block; width: 100%; padding: .55rem; border-radius: 6px;
+      background: rgba(200,160,255,0.08); border: 1px solid rgba(200,160,255,0.2);
+      color: #c8a8f0; cursor: pointer; font-size: .85rem; margin-top: 1rem; transition: all .25s;
+    }
+    .quiz-save-btn:hover { background: rgba(200,160,255,0.15); }
+    @media (max-width: 500px) {
+      body { padding: 1.5rem 1rem; }
+      .story-chapter { padding: 1.2rem; }
+      .timeline-content { padding: 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="story-container">
+    <div class="story-main-title">&#x1F4D6; Our Story</div>
+    <p class="story-sub">the timeline &middot; the storyline &middot; the quiz</p>
+
+    <div class="section-title"><span class="icon">&#x23F3;</span> timeline</div>
+    <div id="storyTimeline"><div class="loader">Loading...</div></div>
+
+    <hr class="section-divider">
+
+    <div class="section-title"><span class="icon">&#x1F4DC;</span> the storyline</div>
+    <div id="storyChapters"><div class="loader">Loading...</div></div>
+
+    <hr class="section-divider">
+
+    <div class="section-title"><span class="icon">&#x1F4D6;</span> the story of us</div>
+    <div id="storyQuiz"><div class="loader">Loading quiz...</div></div>
+
+    <a href="index.html" class="back">&larr; back to the beginning</a>
+  </div>
+  <script src="story-text.js?v=6"></script>
+</body>
+</html>

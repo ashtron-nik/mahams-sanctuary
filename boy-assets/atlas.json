@@ -1,0 +1,1189 @@
+{
+  "meta": {
+    "image": "atlas.png",
+    "source": "boy sprite sheet (removal.ai background-removed preview, 600x400px)",
+    "pixelArt": true,
+    "note": "Frame rects were extracted via connected-component analysis on the real alpha channel of the uploaded preview image, cross-checked against the sheet's printed section labels. This source is a low-resolution PREVIEW (not a production-size sheet), so some adjacent poses that touch at this resolution were merged into a single crop, and a few sections have fewer distinguishable frames than the sheet visually implies. See README for the full honest-gaps table."
+  },
+  "animations": {
+    "idle": {
+      "frames": [
+        {
+          "x": 10,
+          "y": 11,
+          "w": 25,
+          "h": 107
+        },
+        {
+          "x": 33,
+          "y": 12,
+          "w": 34,
+          "h": 107
+        },
+        {
+          "x": 67,
+          "y": 12,
+          "w": 35,
+          "h": 107
+        },
+        {
+          "x": 103,
+          "y": 12,
+          "w": 30,
+          "h": 107
+        },
+        {
+          "x": 133,
+          "y": 12,
+          "w": 30,
+          "h": 107
+        },
+        {
+          "x": 163,
+          "y": 12,
+          "w": 30,
+          "h": 107
+        },
+        {
+          "x": 193,
+          "y": 12,
+          "w": 30,
+          "h": 107
+        },
+        {
+          "x": 223,
+          "y": 12,
+          "w": 30,
+          "h": 107
+        },
+        {
+          "x": 253,
+          "y": 12,
+          "w": 25,
+          "h": 107
+        },
+        {
+          "x": 278,
+          "y": 12,
+          "w": 30,
+          "h": 107
+        },
+        {
+          "x": 307,
+          "y": 12,
+          "w": 29,
+          "h": 107
+        },
+        {
+          "x": 332,
+          "y": 11,
+          "w": 39,
+          "h": 108
+        }
+      ],
+      "fps": 4,
+      "loop": true
+    },
+    "face_neutral": {
+      "frames": [
+        {
+          "x": 389,
+          "y": 13,
+          "w": 27,
+          "h": 28
+        }
+      ],
+      "fps": 1,
+      "loop": false
+    },
+    "face_smile": {
+      "frames": [
+        {
+          "x": 424,
+          "y": 13,
+          "w": 27,
+          "h": 28
+        }
+      ],
+      "fps": 1,
+      "loop": false
+    },
+    "face_laugh": {
+      "frames": [
+        {
+          "x": 458,
+          "y": 13,
+          "w": 27,
+          "h": 28
+        }
+      ],
+      "fps": 1,
+      "loop": false
+    },
+    "face_blush": {
+      "frames": [
+        {
+          "x": 487,
+          "y": 13,
+          "w": 32,
+          "h": 28
+        }
+      ],
+      "fps": 1,
+      "loop": false
+    },
+    "face_annoyed": {
+      "frames": [
+        {
+          "x": 526,
+          "y": 13,
+          "w": 26,
+          "h": 28
+        }
+      ],
+      "fps": 1,
+      "loop": false
+    },
+    "face_surprised": {
+      "frames": [
+        {
+          "x": 558,
+          "y": 13,
+          "w": 25,
+          "h": 28
+        }
+      ],
+      "fps": 1,
+      "loop": false
+    },
+    "face_sleepy": {
+      "frames": [
+        {
+          "x": 389,
+          "y": 49,
+          "w": 27,
+          "h": 28
+        }
+      ],
+      "fps": 1,
+      "loop": false
+    },
+    "face_cry": {
+      "frames": [
+        {
+          "x": 399,
+          "y": 90,
+          "w": 24,
+          "h": 29
+        }
+      ],
+      "fps": 1,
+      "loop": false
+    },
+    "face_happyCry": {
+      "frames": [
+        {
+          "x": 422,
+          "y": 49,
+          "w": 27,
+          "h": 28
+        }
+      ],
+      "fps": 1,
+      "loop": false
+    },
+    "face_daydream": {
+      "frames": [
+        {
+          "x": 436,
+          "y": 90,
+          "w": 24,
+          "h": 29
+        }
+      ],
+      "fps": 1,
+      "loop": false
+    },
+    "face_curious": {
+      "frames": [
+        {
+          "x": 458,
+          "y": 49,
+          "w": 26,
+          "h": 29
+        }
+      ],
+      "fps": 1,
+      "loop": false
+    },
+    "face_shy": {
+      "frames": [
+        {
+          "x": 459,
+          "y": 91,
+          "w": 22,
+          "h": 28
+        }
+      ],
+      "fps": 1,
+      "loop": false
+    },
+    "face_angry": {
+      "frames": [
+        {
+          "x": 484,
+          "y": 91,
+          "w": 18,
+          "h": 28
+        }
+      ],
+      "fps": 1,
+      "loop": false
+    },
+    "walkDown": {
+      "frames": [
+        {
+          "x": 7,
+          "y": 133,
+          "w": 27,
+          "h": 36
+        },
+        {
+          "x": 39,
+          "y": 133,
+          "w": 30,
+          "h": 36
+        },
+        {
+          "x": 72,
+          "y": 133,
+          "w": 34,
+          "h": 36
+        },
+        {
+          "x": 111,
+          "y": 133,
+          "w": 30,
+          "h": 36
+        }
+      ],
+      "fps": 6,
+      "loop": true,
+      "flippable": true
+    },
+    "walkLeft": {
+      "frames": [
+        {
+          "x": 157,
+          "y": 141,
+          "w": 41,
+          "h": 28
+        },
+        {
+          "x": 198,
+          "y": 148,
+          "w": 37,
+          "h": 21
+        },
+        {
+          "x": 236,
+          "y": 142,
+          "w": 37,
+          "h": 26
+        },
+        {
+          "x": 274,
+          "y": 145,
+          "w": 42,
+          "h": 24
+        }
+      ],
+      "fps": 6,
+      "loop": true,
+      "flippable": true
+    },
+    "walkRight": {
+      "frames": [
+        {
+          "x": 329,
+          "y": 133,
+          "w": 27,
+          "h": 38
+        },
+        {
+          "x": 362,
+          "y": 134,
+          "w": 27,
+          "h": 37
+        },
+        {
+          "x": 393,
+          "y": 134,
+          "w": 27,
+          "h": 37
+        },
+        {
+          "x": 426,
+          "y": 134,
+          "w": 27,
+          "h": 37
+        }
+      ],
+      "fps": 6,
+      "loop": true,
+      "flippable": true
+    },
+    "run": {
+      "frames": [
+        {
+          "x": 473,
+          "y": 134,
+          "w": 24,
+          "h": 39
+        },
+        {
+          "x": 507,
+          "y": 134,
+          "w": 24,
+          "h": 40
+        }
+      ],
+      "fps": 10,
+      "loop": true,
+      "flippable": true
+    },
+    "sit": {
+      "frames": [
+        {
+          "x": 9,
+          "y": 187,
+          "w": 31,
+          "h": 39
+        },
+        {
+          "x": 42,
+          "y": 185,
+          "w": 34,
+          "h": 42
+        },
+        {
+          "x": 84,
+          "y": 188,
+          "w": 24,
+          "h": 38
+        },
+        {
+          "x": 127,
+          "y": 188,
+          "w": 26,
+          "h": 39
+        }
+      ],
+      "fps": 4,
+      "loop": false
+    },
+    "sleep": {
+      "frames": [
+        {
+          "x": 164,
+          "y": 187,
+          "w": 23,
+          "h": 40
+        },
+        {
+          "x": 191,
+          "y": 189,
+          "w": 23,
+          "h": 38
+        },
+        {
+          "x": 227,
+          "y": 188,
+          "w": 29,
+          "h": 38
+        },
+        {
+          "x": 276,
+          "y": 188,
+          "w": 27,
+          "h": 38
+        }
+      ],
+      "fps": 2,
+      "loop": true
+    },
+    "bend": {
+      "frames": [
+        {
+          "x": 308,
+          "y": 191,
+          "w": 29,
+          "h": 34
+        },
+        {
+          "x": 341,
+          "y": 187,
+          "w": 32,
+          "h": 39
+        },
+        {
+          "x": 385,
+          "y": 187,
+          "w": 25,
+          "h": 39
+        },
+        {
+          "x": 412,
+          "y": 187,
+          "w": 36,
+          "h": 40
+        }
+      ],
+      "fps": 4,
+      "loop": false
+    },
+    "thinking": {
+      "frames": [
+        {
+          "x": 458,
+          "y": 195,
+          "w": 28,
+          "h": 33
+        },
+        {
+          "x": 495,
+          "y": 195,
+          "w": 26,
+          "h": 33
+        },
+        {
+          "x": 525,
+          "y": 195,
+          "w": 30,
+          "h": 33
+        },
+        {
+          "x": 561,
+          "y": 195,
+          "w": 28,
+          "h": 33
+        }
+      ],
+      "fps": 3,
+      "loop": false
+    },
+    "happy": {
+      "frames": [
+        {
+          "x": 12,
+          "y": 240,
+          "w": 29,
+          "h": 37
+        },
+        {
+          "x": 49,
+          "y": 240,
+          "w": 27,
+          "h": 38
+        }
+      ],
+      "fps": 5,
+      "loop": false
+    },
+    "clap": {
+      "frames": [
+        {
+          "x": 85,
+          "y": 240,
+          "w": 26,
+          "h": 37
+        }
+      ],
+      "fps": 1,
+      "loop": false
+    },
+    "shy": {
+      "frames": [
+        {
+          "x": 121,
+          "y": 240,
+          "w": 25,
+          "h": 38
+        }
+      ],
+      "fps": 1,
+      "loop": false
+    },
+    "surprised": {
+      "frames": [
+        {
+          "x": 156,
+          "y": 240,
+          "w": 28,
+          "h": 38
+        }
+      ],
+      "fps": 1,
+      "loop": false
+    },
+    "sad": {
+      "frames": [
+        {
+          "x": 206,
+          "y": 242,
+          "w": 36,
+          "h": 36
+        }
+      ],
+      "fps": 1,
+      "loop": false
+    },
+    "sleepy": {
+      "frames": [
+        {
+          "x": 245,
+          "y": 242,
+          "w": 53,
+          "h": 36
+        }
+      ],
+      "fps": 1,
+      "loop": false
+    },
+    "stretch": {
+      "frames": [
+        {
+          "x": 304,
+          "y": 242,
+          "w": 32,
+          "h": 35
+        },
+        {
+          "x": 351,
+          "y": 237,
+          "w": 29,
+          "h": 41
+        }
+      ],
+      "fps": 4,
+      "loop": false
+    },
+    "wave": {
+      "frames": [
+        {
+          "x": 390,
+          "y": 242,
+          "w": 29,
+          "h": 36
+        },
+        {
+          "x": 447,
+          "y": 242,
+          "w": 33,
+          "h": 41
+        }
+      ],
+      "fps": 4,
+      "loop": false
+    },
+    "point": {
+      "frames": [
+        {
+          "x": 490,
+          "y": 242,
+          "w": 28,
+          "h": 41
+        },
+        {
+          "x": 535,
+          "y": 242,
+          "w": 34,
+          "h": 41
+        }
+      ],
+      "fps": 3,
+      "loop": false
+    },
+    "giveFlower": {
+      "frames": [
+        {
+          "x": 4,
+          "y": 297,
+          "w": 66,
+          "h": 40
+        }
+      ],
+      "fps": 1,
+      "loop": false
+    },
+    "giveHeart": {
+      "frames": [
+        {
+          "x": 79,
+          "y": 299,
+          "w": 41,
+          "h": 38
+        }
+      ],
+      "fps": 1,
+      "loop": false
+    },
+    "giveLantern": {
+      "frames": [
+        {
+          "x": 131,
+          "y": 299,
+          "w": 34,
+          "h": 39
+        }
+      ],
+      "fps": 1,
+      "loop": false
+    },
+    "giveDragonEgg": {
+      "frames": [
+        {
+          "x": 183,
+          "y": 298,
+          "w": 48,
+          "h": 42
+        }
+      ],
+      "fps": 1,
+      "loop": false
+    },
+    "giveStar": {
+      "frames": [
+        {
+          "x": 244,
+          "y": 301,
+          "w": 51,
+          "h": 39
+        }
+      ],
+      "fps": 1,
+      "loop": false
+    },
+    "giveDragon": {
+      "frames": [
+        {
+          "x": 312,
+          "y": 297,
+          "w": 45,
+          "h": 40
+        }
+      ],
+      "fps": 1,
+      "loop": false
+    },
+    "petCat": {
+      "frames": [
+        {
+          "x": 372,
+          "y": 299,
+          "w": 27,
+          "h": 41
+        }
+      ],
+      "fps": 1,
+      "loop": false
+    },
+    "feedDragon": {
+      "frames": [
+        {
+          "x": 419,
+          "y": 301,
+          "w": 52,
+          "h": 39
+        }
+      ],
+      "fps": 1,
+      "loop": false
+    },
+    "watchButterfly": {
+      "frames": [
+        {
+          "x": 483,
+          "y": 302,
+          "w": 26,
+          "h": 38
+        }
+      ],
+      "fps": 1,
+      "loop": false
+    },
+    "catchCoin": {
+      "frames": [
+        {
+          "x": 529,
+          "y": 311,
+          "w": 63,
+          "h": 30
+        }
+      ],
+      "fps": 1,
+      "loop": false
+    },
+    "sitUnderTree": {
+      "frames": [
+        {
+          "x": 10,
+          "y": 362,
+          "w": 26,
+          "h": 35
+        }
+      ],
+      "fps": 1,
+      "loop": false
+    },
+    "drinkTea": {
+      "frames": [
+        {
+          "x": 45,
+          "y": 362,
+          "w": 23,
+          "h": 35
+        }
+      ],
+      "fps": 1,
+      "loop": false
+    },
+    "playFlute": {
+      "frames": [
+        {
+          "x": 77,
+          "y": 362,
+          "w": 23,
+          "h": 35
+        }
+      ],
+      "fps": 1,
+      "loop": false
+    },
+    "gazeAtMoon": {
+      "frames": [
+        {
+          "x": 106,
+          "y": 361,
+          "w": 33,
+          "h": 36
+        }
+      ],
+      "fps": 1,
+      "loop": false
+    },
+    "fishInClouds": {
+      "frames": [
+        {
+          "x": 147,
+          "y": 362,
+          "w": 23,
+          "h": 35
+        }
+      ],
+      "fps": 1,
+      "loop": false
+    },
+    "lightLantern": {
+      "frames": [
+        {
+          "x": 180,
+          "y": 362,
+          "w": 25,
+          "h": 36
+        }
+      ],
+      "fps": 1,
+      "loop": false
+    },
+    "constellations": {
+      "frames": [
+        {
+          "x": 217,
+          "y": 361,
+          "w": 25,
+          "h": 36
+        }
+      ],
+      "fps": 1,
+      "loop": false
+    },
+    "watchBird": {
+      "frames": [
+        {
+          "x": 269,
+          "y": 365,
+          "w": 31,
+          "h": 34
+        }
+      ],
+      "fps": 1,
+      "loop": false
+    },
+    "hugDragon": {
+      "frames": [
+        {
+          "x": 314,
+          "y": 362,
+          "w": 49,
+          "h": 36
+        }
+      ],
+      "fps": 1,
+      "loop": false
+    },
+    "dance": {
+      "frames": [
+        {
+          "x": 366,
+          "y": 364,
+          "w": 31,
+          "h": 34
+        },
+        {
+          "x": 411,
+          "y": 362,
+          "w": 25,
+          "h": 36
+        }
+      ],
+      "fps": 1,
+      "loop": false
+    },
+    "celebrate": {
+      "frames": [
+        {
+          "x": 512,
+          "y": 362,
+          "w": 21,
+          "h": 18
+        }
+      ],
+      "fps": 1,
+      "loop": false
+    },
+    "heart": {
+      "frames": [
+        {
+          "x": 533,
+          "y": 362,
+          "w": 21,
+          "h": 18
+        },
+        {
+          "x": 555,
+          "y": 362,
+          "w": 20,
+          "h": 18
+        }
+      ],
+      "fps": 3,
+      "loop": false
+    },
+    "lookAtSky": {
+      "frames": [
+        {
+          "x": 106,
+          "y": 361,
+          "w": 33,
+          "h": 36
+        }
+      ],
+      "fps": 1,
+      "loop": false,
+      "fallback": "gazeAtMoon"
+    },
+    "touchFlower": {
+      "frames": [
+        {
+          "x": 4,
+          "y": 297,
+          "w": 66,
+          "h": 40
+        }
+      ],
+      "fps": 1,
+      "loop": false,
+      "fallback": "giveFlower"
+    },
+    "collectFlower": {
+      "frames": [
+        {
+          "x": 4,
+          "y": 297,
+          "w": 66,
+          "h": 40
+        }
+      ],
+      "fps": 1,
+      "loop": false,
+      "fallback": "giveFlower"
+    },
+    "collectStar": {
+      "frames": [
+        {
+          "x": 244,
+          "y": 301,
+          "w": 51,
+          "h": 39
+        }
+      ],
+      "fps": 1,
+      "loop": false,
+      "fallback": "giveStar"
+    },
+    "listenMusic": {
+      "frames": [
+        {
+          "x": 366,
+          "y": 364,
+          "w": 31,
+          "h": 34
+        },
+        {
+          "x": 411,
+          "y": 362,
+          "w": 25,
+          "h": 36
+        }
+      ],
+      "fps": 1,
+      "loop": false,
+      "fallback": "dance"
+    },
+    "write": {
+      "frames": [
+        {
+          "x": 458,
+          "y": 195,
+          "w": 28,
+          "h": 33
+        },
+        {
+          "x": 495,
+          "y": 195,
+          "w": 26,
+          "h": 33
+        },
+        {
+          "x": 525,
+          "y": 195,
+          "w": 30,
+          "h": 33
+        },
+        {
+          "x": 561,
+          "y": 195,
+          "w": 28,
+          "h": 33
+        }
+      ],
+      "fps": 3,
+      "loop": false,
+      "fallback": "thinking"
+    },
+    "sitOnCloud": {
+      "frames": [
+        {
+          "x": 106,
+          "y": 361,
+          "w": 33,
+          "h": 36
+        }
+      ],
+      "fps": 1,
+      "loop": false,
+      "fallback": "gazeAtMoon"
+    },
+    "readBook": {
+      "frames": [
+        {
+          "x": 9,
+          "y": 187,
+          "w": 31,
+          "h": 39
+        },
+        {
+          "x": 42,
+          "y": 185,
+          "w": 34,
+          "h": 42
+        },
+        {
+          "x": 84,
+          "y": 188,
+          "w": 24,
+          "h": 38
+        },
+        {
+          "x": 127,
+          "y": 188,
+          "w": 26,
+          "h": 39
+        }
+      ],
+      "fps": 4,
+      "loop": false,
+      "fallback": "sit"
+    },
+    "walk": {
+      "frames": [
+        {
+          "x": 157,
+          "y": 141,
+          "w": 41,
+          "h": 28
+        },
+        {
+          "x": 198,
+          "y": 148,
+          "w": 37,
+          "h": 21
+        },
+        {
+          "x": 236,
+          "y": 142,
+          "w": 37,
+          "h": 26
+        },
+        {
+          "x": 274,
+          "y": 145,
+          "w": 42,
+          "h": 24
+        }
+      ],
+      "fps": 6,
+      "loop": true,
+      "flippable": true,
+      "note": "reuses the real walkLeft cycle; mirrored via flip for walking right, matching the flip-based movement convention"
+    },
+    "blink": {
+      "frames": [
+        {
+          "x": 10,
+          "y": 11,
+          "w": 25,
+          "h": 107
+        },
+        {
+          "x": 133,
+          "y": 12,
+          "w": 30,
+          "h": 107
+        }
+      ],
+      "fps": 8,
+      "loop": false,
+      "fallback": "idle frames alternated, no dedicated closed-eye frame"
+    },
+    "lookAround": {
+      "frames": [
+        {
+          "x": 458,
+          "y": 49,
+          "w": 26,
+          "h": 29
+        },
+        {
+          "x": 10,
+          "y": 11,
+          "w": 25,
+          "h": 107
+        }
+      ],
+      "fps": 4,
+      "loop": false,
+      "fallback": "face_curious pose alternated with idle, no dedicated look-around cycle"
+    },
+    "yawn": {
+      "frames": [
+        {
+          "x": 389,
+          "y": 49,
+          "w": 27,
+          "h": 28
+        },
+        {
+          "x": 245,
+          "y": 242,
+          "w": 53,
+          "h": 36
+        }
+      ],
+      "fps": 4,
+      "loop": false,
+      "fallback": "combines the two sleepy poses, no dedicated yawn frame"
+    },
+    "reading": {
+      "frames": [
+        {
+          "x": 9,
+          "y": 187,
+          "w": 31,
+          "h": 39
+        },
+        {
+          "x": 42,
+          "y": 185,
+          "w": 34,
+          "h": 42
+        }
+      ],
+      "fps": 4,
+      "loop": true,
+      "fallback": "reuses sit frames, no dedicated reading pose"
+    },
+    "umbrella": {
+      "frames": [
+        {
+          "x": 206,
+          "y": 242,
+          "w": 36,
+          "h": 36
+        }
+      ],
+      "fps": 1,
+      "loop": false,
+      "fallback": "reuses sad pose as the rain reaction, no dedicated umbrella frame"
+    },
+    "turnAround": {
+      "frames": [
+        {
+          "x": 157,
+          "y": 141,
+          "w": 41,
+          "h": 28
+        },
+        {
+          "x": 329,
+          "y": 133,
+          "w": 27,
+          "h": 38
+        }
+      ],
+      "fps": 4,
+      "loop": false,
+      "fallback": "combines one walkLeft + one walkRight frame, no dedicated turn frame"
+    },
+    "spin": {
+      "frames": [
+        {
+          "x": 366,
+          "y": 364,
+          "w": 31,
+          "h": 34
+        },
+        {
+          "x": 411,
+          "y": 362,
+          "w": 25,
+          "h": 36
+        }
+      ],
+      "fps": 1,
+      "loop": false,
+      "fallback": "reuses dance pose, no dedicated spin frame"
+    }
+  }
+}

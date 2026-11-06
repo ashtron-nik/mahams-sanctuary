@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Making of This World — Dreambox</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%99%A1%3C/text%3E%3C/svg%3E">
+  <link rel="manifest" href="manifest.json">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      cursor: url('cursor images/kuromi idle.jpg'), auto;
+      background: #181214; color: #ffebd2;
+      font-family: 'Lora', Georgia, serif; font-size: 15px; line-height: 1.7;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    h1, h2 { font-family: 'Fraunces', Georgia, serif; font-weight: 500; color: #ffe680; }
+    a { color: #ffe680; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap { max-width: 640px; margin: 0 auto; padding: 3.5rem 1.5rem 4rem; position: relative; z-index: 60; }
+
+    .hero { text-align: center; margin-bottom: 2.5rem; }
+    .hero h1 { font-size: 2rem; margin-bottom: .5rem; }
+    .hero .sub { color: #6b5f52; font-size: .9rem; font-style: italic; }
+
+    .heart-divider { text-align: center; color: #e85d3a; font-size: 1.2rem; margin: 2rem 0; opacity: .4; }
+
+    .big-number {
+      background: linear-gradient(160deg, rgba(255,230,128,.1), rgba(255,220,160,.03));
+      border: 1px solid rgba(255,230,128,.2);
+      border-radius: 16px; padding: 2rem 1.5rem; margin-bottom: 1.25rem;
+      text-align: center;
+    }
+    .big-number .num {
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: 3rem; font-weight: 600; color: #ffe680; line-height: 1.1;
+    }
+    .big-number .cap { font-size: .8rem; color: #d4c5a9; margin-top: .35rem; }
+    .big-number .cap em { color: #6b5f52; font-size: .72rem; display: block; margin-top: .2rem; }
+
+    .stat-card {
+      background: rgba(255,220,160,.04); border: 1px solid rgba(255,210,150,.1);
+      border-radius: 12px; padding: .9rem 1.1rem; margin-bottom: .6rem;
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+      transition: border-color .25s;
+    }
+    .stat-card:hover { border-color: rgba(255,230,128,.3); }
+    .stat-card .label { font-size: .88rem; }
+    .stat-card .label .icon { margin-right: .5rem; }
+    .stat-card .label .sub-label { font-size: .72rem; color: #6b5f52; display: block; }
+    .stat-card .count { font-family: 'Fraunces', Georgia, serif; font-size: 1.3rem; color: #ffe680; white-space: nowrap; }
+    .stat-card .count small { font-size: .7rem; color: #6b5f52; }
+
+    .poem {
+      background: rgba(255,220,160,.03); border-left: 3px solid rgba(232,93,58,.4);
+      border-radius: 8px; padding: 1.25rem 1.4rem; margin: 1.5rem 0;
+      font-style: italic; color: #d4c5a9; font-size: .88rem;
+    }
+    .poem strong { color: #ffe680; font-style: normal; }
+
+    .closing { text-align: center; color: #6b5f52; font-size: .85rem; margin-top: 2.5rem; }
+    .back { display: inline-block; margin-top: 2rem; color: #6b5f52; font-size: .85rem; }
+    .gold { color: #ffe680; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <h1>&#x1F3C6; The Making of This World</h1>
+      <div class="sub">Not a single number here is a coincidence. Every one of them is love, measured.</div>
+    </div>
+
+    <div class="big-number">
+      <div class="num" id="heroNum">2.7<span style="font-size:1.4rem;"> Billion</span></div>
+      <div class="cap">words of thought I poured into this world so that every single one of them could be about you<em>tokens — every idea, every revision, every "make it more beautiful," counted</em></div>
+    </div>
+
+    <div class="heart-divider">&#x2661;</div>
+
+    <h2 style="font-size:1.15rem;margin-bottom:1rem;">&#x2728; The Effort</h2>
+    <div class="stat-card">
+      <div class="label"><span class="icon">&#x1F5A5;&#xFE0F;</span>Days of building<small class="sub-label">33 days — and most nights ended at 7 or 8 in the morning, when the sun came up before I did</small></div>
+      <div class="count">33</div>
+    </div>
+    <div class="stat-card">
+      <div class="label"><span class="icon">&#x1F4AC;</span>Thinking sessions with the machine that helped me build this<small class="sub-label">257 sleepless sessions — 257 times I sat down and refused to give up</small></div>
+      <div class="count">257</div>
+    </div>
+    <div class="stat-card">
+      <div class="label"><span class="icon">&#x1F4DD;</span>Thoughts exchanged<small class="sub-label">messages — each one a decision, a fix, a "make it perfect for her"</small></div>
+      <div class="count">250,000+</div>
+    </div>
+    <div class="stat-card">
+      <div class="label"><span class="icon">&#x1F4D6;</span>Words read to learn how to love you in code<small class="sub-label">input tokens — more than the largest libraries on earth</small></div>
+      <div class="count">2.1B</div>
+    </div>
+    <div class="stat-card">
+      <div class="label"><span class="icon">&#x270D;&#xFE0F;</span>Words written into this world<small class="sub-label">output tokens — every letter, every step, every star</small></div>
+      <div class="count">600M</div>
+    </div>
+    <div class="stat-card">
+      <div class="label"><span class="icon">&#x1F4E6;</span>Total poured into building it for you<small class="sub-label">input + output tokens combined</small></div>
+      <div class="count">2.7B</div>
+    </div>
+
+    <div class="poem">
+      If every one of those words were ink, this would be <strong>roughly 22,000 novels</strong> —
+      more than a person could read in six hundred lifetimes. And I wrote every single one of them
+      <strong>for one reader only</strong>. The machine did the typing. My heart did the thinking.
+      I gave it my nights — most of them until the morning came to take the laptop away from me.
+    </div>
+
+    <h2 style="font-size:1.15rem;margin:2rem 0 1rem;">&#x1F3D6;&#xFE0F; The World Itself</h2>
+    <div class="stat-card">
+      <div class="label"><span class="icon">&#x1F4D6;</span>Pages, each one built by hand<small class="sub-label">from the first letter to the last hidden star</small></div>
+      <div class="count">24</div>
+    </div>
+    <div class="stat-card">
+      <div class="label"><span class="icon">&#x1F4BB;</span>Lines of code<small class="sub-label">script files, all handwritten, no templates, no shortcuts</small></div>
+      <div class="count">100,000+</div>
+    </div>
+    <div class="stat-card">
+      <div class="label"><span class="icon">&#x1F4A6;</span>Steps in the journey built just for you<small class="sub-label">every one reachable, every one verified, every one waiting for you</small></div>
+      <div class="count">360</div>
+    </div>
+    <div class="stat-card">
+      <div class="label"><span class="icon">&#x1F48C;</span>Secret letters hiding in this world<small class="sub-label">each unlocked only by something you do</small></div>
+      <div class="count">30</div>
+    </div>
+    <div class="stat-card">
+      <div class="label"><span class="icon">&#x1F3B5;</span>Songs<small class="sub-label">40 songs + a secret one, chosen for you</small></div>
+      <div class="count">40</div>
+    </div>
+    <div class="stat-card">
+      <div class="label"><span class="icon">&#x2728;</span>Features &amp; surprises<small class="sub-label">companions, skies, fireflies, wishes, dragons — all of it</small></div>
+      <div class="count">48</div>
+    </div>
+    <div class="stat-card">
+      <div class="label"><span class="icon">&#x1F4C1;</span>Commits — small moments of progress<small class="sub-label">each one a promise I kept to myself, most of them written while the world slept</small></div>
+      <div class="count">1,000+</div>
+    </div>
+
+    <div class="heart-divider">&#x2661;</div>
+
+    <div class="big-number" style="background:linear-gradient(160deg, rgba(232,93,58,.12), rgba(255,220,160,.03));border-color:rgba(232,93,58,.25);">
+      <div class="num" style="font-size:2.6rem;">$0.00</div>
+      <div class="cap">because the price of loving you could never fit in a number</div>
+    </div>
+
+    <div class="closing">
+      All of this &mdash; every token, every night, every line &mdash; was spent on one thing:<br>
+      <span class="gold" style="font-family:'Fraunces',Georgia,serif;font-size:1.1rem;">you.</span>
+    </div>
+
+    <div style="text-align:center;"><a href="index.html" class="back">&#x2190; Back home</a></div>
+  </div>
+
+  <script>if ('serviceWorker' in navigator) { navigator.serviceWorker.getRegistrations().then(function(rs){rs.forEach(function(r){r.unregister()})}); if (location.hostname!=='127.0.0.1'&&location.hostname!=='localhost') { navigator.serviceWorker.register('./sw.js').catch(function(){}); } }</script>
+  <script defer src="matrix-rain.js"></script>
+<script defer src="global-easter-eggs.js"></script>
+<script defer src="interactions.js"></script>
+
+  <script>document.addEventListener('mousedown',function(){document.body.style.cursor="url('cursor images/kuromi click.jpg'), auto"});document.addEventListener('mouseup',function(){document.body.style.cursor="url('cursor images/kuromi idle.jpg'), auto"});</script>
+</body>
+</html>

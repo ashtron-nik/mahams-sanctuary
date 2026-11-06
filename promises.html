@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>100 promises &mdash; Dreambox</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500;1,9..144,600&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #17130f;
+  --ink-soft: #1e1811;
+  --ink-line: #33291e;
+  --parchment: #ffebd2;
+  --parchment-dim: #c7b8a1;
+  --ash: #6b5f52;
+  --gold: #ffe680;
+  --ember: #e85d3a;
+  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-body: "Lora", Georgia, "Times New Roman", serif;
+  --measure: 640px;
+  --pad-inline: clamp(1.25rem, 6vw, 2.25rem);
+  --glass: rgba(255, 220, 160, .08);
+  --glassBorder: rgba(255, 210, 150, .35);
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background-color: #181214;
+  color: var(--parchment);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(160, 110, 60, 0.1), transparent 60%),
+    radial-gradient(ellipse 60% 40% at 50% 100%, rgba(130, 50, 40, 0.06), transparent 60%);
+}
+.page {
+  max-width: calc(var(--measure) + var(--pad-inline) * 2);
+  margin: 0 auto;
+  padding: 0 var(--pad-inline) clamp(5rem, 12vh, 8rem);
+}
+.hero {
+  padding: clamp(4rem, 14vh, 7rem) var(--pad-inline) clamp(2rem, 6vh, 3rem);
+  text-align: center;
+}
+.hero-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(2.4rem, 10vw, 4rem);
+  letter-spacing: 0.01em;
+  color: var(--parchment);
+  text-shadow: 0 0 40px rgba(255, 230, 128, .5), 0 0 80px rgba(255, 200, 80, .25);
+}
+.hero-subtitle {
+  margin: 0.75rem 0 0;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(1rem, 2.6vw, 1.25rem);
+  color: var(--parchment-dim);
+}
+.hero-ornament {
+  width: 5.5rem;
+  height: 2px;
+  margin: clamp(1.5rem, 4vh, 2.5rem) auto 0;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  box-shadow: 0 0 12px rgba(255, 200, 100, .3);
+}
+.intro {
+  text-align: center;
+  padding: clamp(1.5rem, 4vh, 2.5rem) 0;
+  border-bottom: 1px solid var(--ink-line);
+  margin-bottom: clamp(2rem, 5vh, 3rem);
+}
+.intro p {
+  color: var(--parchment-dim);
+  font-size: clamp(0.95rem, 2vw, 1.05rem);
+  max-width: 520px;
+  margin: 0 auto 0.5rem;
+}
+h2 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(1.3rem, 3vw, 1.8rem);
+  color: var(--gold);
+  margin: 2.5rem 0 1rem;
+  text-align: center;
+}
+
+.promise-of-day {
+  max-width: 480px;
+  margin: 0 auto 2rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, rgba(255, 230, 128, 0.06), rgba(232, 93, 58, 0.04));
+  border: 1px solid rgba(255, 230, 128, 0.2);
+  border-radius: 12px;
+  text-align: center;
+  position: relative;
+}
+.promise-of-day .label {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--ash);
+  margin-bottom: 0.5rem;
+}
+.promise-of-day .promise-text {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  color: var(--parchment);
+  line-height: 1.6;
+  margin-bottom: 0.75rem;
+}
+.promise-of-day .promise-num {
+  font-size: 0.75rem;
+  color: var(--ash);
+}
+
+.controls {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 1rem 0 2rem;
+}
+.controls button {
+  padding: 0.45rem 1.1rem;
+  border-radius: 6px;
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.btn-gold {
+  background: rgba(255, 230, 128, 0.1);
+  border: 1px solid var(--gold);
+  color: var(--gold);
+}
+.btn-gold:hover { background: var(--gold); color: var(--ink); }
+.btn-ember {
+  background: rgba(232, 93, 58, 0.1);
+  border: 1px solid var(--ember);
+  color: var(--ember);
+}
+.btn-ember:hover { background: var(--ember); color: var(--parchment); }
+.btn-green {
+  background: rgba(111, 207, 147, 0.1);
+  border: 1px solid rgba(111, 207, 147, 0.3);
+  color: #6fcf93;
+}
+.btn-green:hover { background: #6fcf93; color: var(--ink); }
+
+.count-bar {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--ash);
+  margin: 1rem 0;
+}
+.count-bar span { color: var(--gold); font-weight: 600; }
+
+.category-label {
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  color: var(--ash);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  text-align: center;
+  margin: 2.5rem 0 0.75rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--ink-line);
+  position: relative;
+}
+.category-label::after {
+  content: '\2661';
+  display: block;
+  font-size: 0.8rem;
+  color: var(--ember);
+  margin-top: 0.25rem;
+  opacity: 0.4;
+}
+
+.promise-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.promise-list li {
+  padding: 0.65rem 0;
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  font-size: 0.92rem;
+  color: var(--parchment-dim);
+  line-height: 1.6;
+  transition: color 0.3s, background 0.3s;
+  cursor: default;
+  position: relative;
+}
+.promise-list li:hover {
+  color: var(--parchment);
+}
+.promise-list li .heart {
+  flex-shrink: 0;
+  cursor: pointer;
+  font-size: 0.8rem;
+  padding-top: 0.15rem;
+  user-select: none;
+  transition: transform 0.2s;
+  color: var(--ash);
+}
+.promise-list li .heart:hover { transform: scale(1.3); }
+.promise-list li .heart.lit { color: var(--ember); }
+.promise-list li.bookmarked {
+  background: rgba(232, 93, 58, 0.04);
+  border-radius: 4px;
+  margin: 0 -0.5rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+.promise-list .num {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  color: var(--ash);
+  min-width: 2rem;
+  text-align: right;
+  flex-shrink: 0;
+  padding-top: 0.05rem;
+}
+.promise-list .text { flex: 1; }
+.promise-list .text strong { color: var(--parchment); font-weight: 500; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.write-box {
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background: var(--glass);
+  border: 1px dashed var(--glassBorder);
+  border-radius: 12px;
+  text-align: center;
+}
+.write-box h3 {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  color: var(--parchment);
+  margin: 0 0 0.5rem;
+}
+.write-box textarea {
+  width: 100%;
+  max-width: 400px;
+  height: 80px;
+  background: rgba(255, 220, 160, 0.04);
+  border: 1px solid rgba(255, 210, 150, 0.1);
+  border-radius: 8px;
+  color: var(--parchment);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  padding: 0.75rem;
+  resize: vertical;
+  outline: none;
+}
+.write-box textarea:focus { border-color: var(--gold); }
+.write-box .write-btn {
+  display: block;
+  margin: 0.75rem auto 0;
+  padding: 0.5rem 1.2rem;
+  border-radius: 6px;
+  background: rgba(255, 230, 128, 0.1);
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.write-box .write-btn:hover { background: var(--gold); color: var(--ink); }
+.write-box .written-list {
+  margin-top: 1rem;
+  text-align: left;
+}
+.write-box .written-item {
+  padding: 0.4rem 0.6rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  font-size: 0.85rem;
+  color: var(--parchment-dim);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.write-box .written-item .del {
+  color: var(--ash);
+  cursor: pointer;
+  font-size: 0.75rem;
+  padding: 0 0.3rem;
+}
+.write-box .written-item .del:hover { color: var(--ember); }
+
+.accept-section {
+  text-align: center;
+  margin: 3rem 0;
+  padding: 2rem;
+  border-top: 1px solid var(--ink-line);
+  border-bottom: 1px solid var(--ink-line);
+}
+.accept-section p {
+  color: var(--parchment-dim);
+  font-size: 0.9rem;
+  font-style: italic;
+  margin: 0 0 1rem;
+}
+.accept-btn {
+  padding: 0.7rem 2rem;
+  border-radius: 8px;
+  background: rgba(232, 93, 58, 0.1);
+  border: 1px solid var(--ember);
+  color: var(--ember);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.accept-btn:hover { background: var(--ember); color: var(--parchment); transform: scale(1.05); }
+.accept-btn.accepted { background: #6fcf93; border-color: #6fcf93; color: var(--ink); }
+
+.footer {
+  text-align: center;
+  padding: 2rem var(--pad-inline);
+  border-top: 1px solid var(--ink-line);
+  margin-top: clamp(2rem, 5vh, 3.5rem);
+}
+.footer p { color: var(--ash); font-size: 0.85rem; margin: 0; }
+
+@keyframes confetti {
+  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(-400px) rotate(720deg); opacity: 0; }
+}
+.confetti-piece {
+  position: fixed;
+  width: 6px;
+  height: 6px;
+  border-radius: 2px;
+  z-index: 9999;
+  pointer-events: none;
+  animation: confetti 2s ease-out forwards;
+}
+</style>
+</head>
+<body>
+<main>
+<div class="hero">
+  <h1 class="hero-title">100 promises</h1>
+  <p class="hero-subtitle">Not paragraphs. Not poetry. Just things I mean.</p>
+  <div class="hero-ornament"></div>
+</div>
+<div class="page">
+
+<div class="intro">
+  <p>The website is called "100 prghs" but you always read it as "100 promises." So here they are&mdash;explicit, numbered, and kept from the moment you read them.</p>
+  <p>Click the <span style="color:var(--ember);">&#x2661;</span> next to any promise to bookmark it. The ones that matter most to you will stay marked.</p>
+</div>
+
+<div class="promise-of-day fade-in" id="pod">
+  <div class="label">&#x2728; Promise of the Day</div>
+  <div class="promise-text" id="podText"></div>
+  <div class="promise-num" id="podNum"></div>
+</div>
+
+<div class="controls fade-in">
+  <button class="btn-gold" id="surpriseBtn">&#x2728; Surprise Me</button>
+  <button class="btn-green" id="showBookmarked">&#x2661; Bookmarked (<span id="bookmarkCount">0</span>)</button>
+</div>
+
+<div class="count-bar fade-in">
+  <span id="seenCount">0</span> / 100 promises read &middot; <span id="keptCount">0</span> bookmarked
+</div>
+
+<div id="fullList">
+
+<div class="category-label fade-in">Presence</div>
+<ul class="promise-list">
+  <li data-idx="0" class="fade-in"><span class="heart">&#x2661;</span><span class="num">1.</span><span class="text">I will show up. Not just when it's easy&mdash;especially when it's not.</span></li>
+  <li data-idx="1" class="fade-in"><span class="heart">&#x2661;</span><span class="num">2.</span><span class="text">I will listen more than I speak when you need to be heard.</span></li>
+  <li data-idx="2" class="fade-in"><span class="heart">&#x2661;</span><span class="num">3.</span><span class="text">I will not let distance change the way I love you.</span></li>
+  <li data-idx="3" class="fade-in"><span class="heart">&#x2661;</span><span class="num">4.</span><span class="text">I will remember the small things&mdash;what makes you laugh, what hurts you, what you need without having to ask.</span></li>
+  <li data-idx="4" class="fade-in"><span class="heart">&#x2661;</span><span class="num">5.</span><span class="text">I will be present. Physically, mentally, emotionally&mdash;all of me, when I'm with you.</span></li>
+  <li data-idx="5" class="fade-in"><span class="heart">&#x2661;</span><span class="num">6.</span><span class="text">I will reach for your hand even when we don't need to hold them.</span></li>
+  <li data-idx="6" class="fade-in"><span class="heart">&#x2661;</span><span class="num">7.</span><span class="text">I will stay on the phone until you fall asleep, even if I have to be up early.</span></li>
+  <li data-idx="7" class="fade-in"><span class="heart">&#x2661;</span><span class="num">8.</span><span class="text">I will never make you feel like you're bothering me when you reach out.</span></li>
+  <li data-idx="8" class="fade-in"><span class="heart">&#x2661;</span><span class="num">9.</span><span class="text">I will let you catch me staring and never look away.</span></li>
+  <li data-idx="9" class="fade-in"><span class="heart">&#x2661;</span><span class="num">10.</span><span class="text">I will choose to be with you every single day, not out of habit but out of intention.</span></li>
+</ul>
+
+<div class="category-label fade-in">Honesty</div>
+<ul class="promise-list">
+  <li data-idx="10" class="fade-in"><span class="heart">&#x2661;</span><span class="num">11.</span><span class="text">I will always tell you the truth&mdash;even when the truth is hard, even when a lie would be easier.</span></li>
+  <li data-idx="11" class="fade-in"><span class="heart">&#x2661;</span><span class="num">12.</span><span class="text">I will admit when I'm wrong and mean it.</span></li>
+  <li data-idx="12" class="fade-in"><span class="heart">&#x2661;</span><span class="num">13.</span><span class="text">I will share my fears with you, even the ones that make me feel weak.</span></li>
+  <li data-idx="13" class="fade-in"><span class="heart">&#x2661;</span><span class="num">14.</span><span class="text">I will not hide my feelings to protect your reaction. You deserve my honesty.</span></li>
+  <li data-idx="14" class="fade-in"><span class="heart">&#x2661;</span><span class="num">15.</span><span class="text">I will tell you when something you did hurt me&mdash;not to blame you, but because hiding it would build a wall.</span></li>
+  <li data-idx="15" class="fade-in"><span class="heart">&#x2661;</span><span class="num">16.</span><span class="text">I will not pretend to be fine when I'm not.</span></li>
+  <li data-idx="16" class="fade-in"><span class="heart">&#x2661;</span><span class="num">17.</span><span class="text">I will be honest about what I want&mdash;from life, from us, from you.</span></li>
+  <li data-idx="17" class="fade-in"><span class="heart">&#x2661;</span><span class="num">18.</span><span class="text">I will own my mistakes fully, without excuses.</span></li>
+  <li data-idx="18" class="fade-in"><span class="heart">&#x2661;</span><span class="num">19.</span><span class="text">I will not make you guess what I'm feeling.</span></li>
+  <li data-idx="19" class="fade-in"><span class="heart">&#x2661;</span><span class="num">20.</span><span class="text">I will be the same person with you that I am when I'm alone.</span></li>
+</ul>
+
+<div class="category-label fade-in">Patience & Growth</div>
+<ul class="promise-list">
+  <li data-idx="20" class="fade-in"><span class="heart">&#x2661;</span><span class="num">21.</span><span class="text">I will be patient with your silences, your struggles, your slow days.</span></li>
+  <li data-idx="21" class="fade-in"><span class="heart">&#x2661;</span><span class="num">22.</span><span class="text">I will grow with you, not ahead of you or away from you.</span></li>
+  <li data-idx="22" class="fade-in"><span class="heart">&#x2661;</span><span class="num">23.</span><span class="text">I will not expect you to be perfect. I will not hold your past against you.</span></li>
+  <li data-idx="23" class="fade-in"><span class="heart">&#x2661;</span><span class="num">24.</span><span class="text">I will give you space when you need it, without making you feel guilty for needing it.</span></li>
+  <li data-idx="24" class="fade-in"><span class="heart">&#x2661;</span><span class="num">25.</span><span class="text">I will let you change. I will love every version of you, not just the one I met.</span></li>
+  <li data-idx="25" class="fade-in"><span class="heart">&#x2661;</span><span class="num">26.</span><span class="text">I will not rush you. Not into talking, not into healing, not into anything.</span></li>
+  <li data-idx="26" class="fade-in"><span class="heart">&#x2661;</span><span class="num">27.</span><span class="text">I will keep showing up even when we're in a rough season.</span></li>
+  <li data-idx="27" class="fade-in"><span class="heart">&#x2661;</span><span class="num">28.</span><span class="text">I will learn the things that matter to you, even if I don't understand them at first.</span></li>
+  <li data-idx="28" class="fade-in"><span class="heart">&#x2661;</span><span class="num">29.</span><span class="text">I will not keep score. When we fight, I'll fight for us&mdash;not to win.</span></li>
+  <li data-idx="29" class="fade-in"><span class="heart">&#x2661;</span><span class="num">30.</span><span class="text">I will give you the same grace I hope you give me.</span></li>
+</ul>
+
+<div class="category-label fade-in">Protection</div>
+<ul class="promise-list">
+  <li data-idx="30" class="fade-in"><span class="heart">&#x2661;</span><span class="num">31.</span><span class="text">I will protect your peace, even from myself if I'm the one disturbing it.</span></li>
+  <li data-idx="31" class="fade-in"><span class="heart">&#x2661;</span><span class="num">32.</span><span class="text">I will be your safe place&mdash;the one person you never have to perform for.</span></li>
+  <li data-idx="32" class="fade-in"><span class="heart">&#x2661;</span><span class="num">33.</span><span class="text">I will defend you when you're not in the room.</span></li>
+  <li data-idx="33" class="fade-in"><span class="heart">&#x2661;</span><span class="num">34.</span><span class="text">I will never use what you told me in confidence against you.</span></li>
+  <li data-idx="34" class="fade-in"><span class="heart">&#x2661;</span><span class="num">35.</span><span class="text">I will keep your secrets the way I keep my own.</span></li>
+  <li data-idx="35" class="fade-in"><span class="heart">&#x2661;</span><span class="num">36.</span><span class="text">I will not let anyone speak badly about you in my presence without saying something.</span></li>
+  <li data-idx="36" class="fade-in"><span class="heart">&#x2661;</span><span class="num">37.</span><span class="text">I will protect the parts of you that are fragile, not by hiding them but by holding them carefully.</span></li>
+  <li data-idx="37" class="fade-in"><span class="heart">&#x2661;</span><span class="num">38.</span><span class="text">I will never make you feel unsafe&mdash;physically, emotionally, or in how you express yourself.</span></li>
+  <li data-idx="38" class="fade-in"><span class="heart">&#x2661;</span><span class="num">39.</span><span class="text">I will not share what you share with me without your permission.</span></li>
+  <li data-idx="39" class="fade-in"><span class="heart">&#x2661;</span><span class="num">40.</span><span class="text">I will be the person you can fall apart in front of and not fear being seen differently.</span></li>
+</ul>
+
+<div class="category-label fade-in">Love & Affection</div>
+<ul class="promise-list">
+  <li data-idx="40" class="fade-in"><span class="heart">&#x2661;</span><span class="num">41.</span><span class="text">I will kiss you like it's the first time, even after a thousand times.</span></li>
+  <li data-idx="41" class="fade-in"><span class="heart">&#x2661;</span><span class="num">42.</span><span class="text">I will touch you in ways that remind you you're loved, not just desired.</span></li>
+  <li data-idx="42" class="fade-in"><span class="heart">&#x2661;</span><span class="num">43.</span><span class="text">I will say "I love you" in the moments it matters most&mdash;not out of routine, but out of overwhelming truth.</span></li>
+  <li data-idx="43" class="fade-in"><span class="heart">&#x2661;</span><span class="num">44.</span><span class="text">I will make love to you with intention, not just instinct.</span></li>
+  <li data-idx="44" class="fade-in"><span class="heart">&#x2661;</span><span class="num">45.</span><span class="text">I will kiss your forehead when words aren't enough.</span></li>
+  <li data-idx="45" class="fade-in"><span class="heart">&#x2661;</span><span class="num">46.</span><span class="text">I will hold you differently on days when you're breaking.</span></li>
+  <li data-idx="46" class="fade-in"><span class="heart">&#x2661;</span><span class="num">47.</span><span class="text">I will never stop courting you, even after I've already won you.</span></li>
+  <li data-idx="47" class="fade-in"><span class="heart">&#x2661;</span><span class="num">48.</span><span class="text">I will look at you like you're the most beautiful woman in the world&mdash;because to me, you are.</span></li>
+  <li data-idx="48" class="fade-in"><span class="heart">&#x2661;</span><span class="num">49.</span><span class="text">I will love you in your love language, not just mine.</span></li>
+  <li data-idx="49" class="fade-in"><span class="heart">&#x2661;</span><span class="num">50.</span><span class="text">I will remind you that you are desirable, even on days you don't feel it.</span></li>
+</ul>
+
+<div class="category-label fade-in">Support</div>
+<ul class="promise-list">
+  <li data-idx="50" class="fade-in"><span class="heart">&#x2661;</span><span class="num">51.</span><span class="text">I will celebrate your wins like they're my own&mdash;because they are.</span></li>
+  <li data-idx="51" class="fade-in"><span class="heart">&#x2661;</span><span class="num">52.</span><span class="text">I will encourage your dreams, even when they don't include me.</span></li>
+  <li data-idx="52" class="fade-in"><span class="heart">&#x2661;</span><span class="num">53.</span><span class="text">I will be your first call when something good happens.</span></li>
+  <li data-idx="53" class="fade-in"><span class="heart">&#x2661;</span><span class="num">54.</span><span class="text">I will be your last call when something falls apart.</span></li>
+  <li data-idx="54" class="fade-in"><span class="heart">&#x2661;</span><span class="num">55.</span><span class="text">I will push you toward the person you want to become, not keep you as the person you are.</span></li>
+  <li data-idx="55" class="fade-in"><span class="heart">&#x2661;</span><span class="num">56.</span><span class="text">I will help carry the weight when life gets too heavy.</span></li>
+  <li data-idx="56" class="fade-in"><span class="heart">&#x2661;</span><span class="num">57.</span><span class="text">I will believe in you on the days you can't believe in yourself.</span></li>
+  <li data-idx="57" class="fade-in"><span class="heart">&#x2661;</span><span class="num">58.</span><span class="text">I will be your soft place to land, not another thing you have to hold up.</span></li>
+  <li data-idx="58" class="fade-in"><span class="heart">&#x2661;</span><span class="num">59.</span><span class="text">I will not compete with you. Your success is our success.</span></li>
+  <li data-idx="59" class="fade-in"><span class="heart">&#x2661;</span><span class="num">60.</span><span class="text">I will remind you of how far you've come when you're too hard on yourself.</span></li>
+</ul>
+
+<div class="category-label fade-in">Everyday Life</div>
+<ul class="promise-list">
+  <li data-idx="60" class="fade-in"><span class="heart">&#x2661;</span><span class="num">61.</span><span class="text">I will bring you tea without being asked.</span></li>
+  <li data-idx="61" class="fade-in"><span class="heart">&#x2661;</span><span class="num">62.</span><span class="text">I will save you the last bite of something good.</span></li>
+  <li data-idx="62" class="fade-in"><span class="heart">&#x2661;</span><span class="num">63.</span><span class="text">I will dance with you in the kitchen, even with no music playing.</span></li>
+  <li data-idx="63" class="fade-in"><span class="heart">&#x2661;</span><span class="num">64.</span><span class="text">I will laugh with you&mdash;really laugh, the kind that hurts your stomach.</span></li>
+  <li data-idx="64" class="fade-in"><span class="heart">&#x2661;</span><span class="num">65.</span><span class="text">I will sit in comfortable silence with you and not feel the need to fill it.</span></li>
+  <li data-idx="65" class="fade-in"><span class="heart">&#x2661;</span><span class="num">66.</span><span class="text">I will travel with you. See the world through your eyes and let you see it through mine.</span></li>
+  <li data-idx="66" class="fade-in"><span class="heart">&#x2661;</span><span class="num">67.</span><span class="text">I will build a home with you&mdash;not just a house, but a place that feels like us.</span></li>
+  <li data-idx="67" class="fade-in"><span class="heart">&#x2661;</span><span class="num">68.</span><span class="text">I will watch the sun set with you and not look at my phone once.</span></li>
+  <li data-idx="68" class="fade-in"><span class="heart">&#x2661;</span><span class="num">69.</span><span class="text">I will let you pick the movie, even if I've seen it before.</span></li>
+  <li data-idx="69" class="fade-in"><span class="heart">&#x2661;</span><span class="num">70.</span><span class="text">I will find new reasons to make you smile, even when I've already used all the old ones.</span></li>
+</ul>
+
+<div class="category-label fade-in">Through Hard Times</div>
+<ul class="promise-list">
+  <li data-idx="70" class="fade-in"><span class="heart">&#x2661;</span><span class="num">71.</span><span class="text">I will not leave when things get difficult.</span></li>
+  <li data-idx="71" class="fade-in"><span class="heart">&#x2661;</span><span class="num">72.</span><span class="text">I will fight for us before I let us go.</span></li>
+  <li data-idx="72" class="fade-in"><span class="heart">&#x2661;</span><span class="num">73.</span><span class="text">I will stay by your side in sickness, in exhaustion, in seasons that feel endless.</span></li>
+  <li data-idx="73" class="fade-in"><span class="heart">&#x2661;</span><span class="num">74.</span><span class="text">I will not give up on you because of one bad day, one bad week, or one bad season.</span></li>
+  <li data-idx="74" class="fade-in"><span class="heart">&#x2661;</span><span class="num">75.</span><span class="text">I will communicate instead of shutting down, even when it takes everything in me.</span></li>
+  <li data-idx="75" class="fade-in"><span class="heart">&#x2661;</span><span class="num">76.</span><span class="text">I will wait for you if you need time, without resentment.</span></li>
+  <li data-idx="76" class="fade-in"><span class="heart">&#x2661;</span><span class="num">77.</span><span class="text">I will remind us both why we started when we forget.</span></li>
+  <li data-idx="77" class="fade-in"><span class="heart">&#x2661;</span><span class="num">78.</span><span class="text">I will not let pride get in the way of reconciliation.</span></li>
+  <li data-idx="78" class="fade-in"><span class="heart">&#x2661;</span><span class="num">79.</span><span class="text">I will choose to heal alongside you, not alone.</span></li>
+  <li data-idx="79" class="fade-in"><span class="heart">&#x2661;</span><span class="num">80.</span><span class="text">I will never weaponize your vulnerabilities. They are sacred to me.</span></li>
+</ul>
+
+<div class="category-label fade-in">Forever & Beyond</div>
+<ul class="promise-list">
+  <li data-idx="80" class="fade-in"><span class="heart">&#x2661;</span><span class="num">81.</span><span class="text">I will grow old with you and still hold your hand like we're twenty.</span></li>
+  <li data-idx="81" class="fade-in"><span class="heart">&#x2661;</span><span class="num">82.</span><span class="text">I will choose you in every lifetime I get.</span></li>
+  <li data-idx="82" class="fade-in"><span class="heart">&#x2661;</span><span class="num">83.</span><span class="text">I will marry you not because it's expected, but because I want to sign my name next to yours forever.</span></li>
+  <li data-idx="83" class="fade-in"><span class="heart">&#x2661;</span><span class="num">84.</span><span class="text">I will build a family with you, if you want one&mdash;or build a world with just the two of us if you don't.</span></li>
+  <li data-idx="84" class="fade-in"><span class="heart">&#x2661;</span><span class="num">85.</span><span class="text">I will love you in this life and, if there's anything after it, I'll find you there too.</span></li>
+  <li data-idx="85" class="fade-in"><span class="heart">&#x2661;</span><span class="num">86.</span><span class="text">I will create traditions that belong only to us.</span></li>
+  <li data-idx="86" class="fade-in"><span class="heart">&#x2661;</span><span class="num">87.</span><span class="text">I will keep writing about you for as long as I can write.</span></li>
+  <li data-idx="87" class="fade-in"><span class="heart">&#x2661;</span><span class="num">88.</span><span class="text">I will love you the same way when your hair turns grey and your skin changes.</span></li>
+  <li data-idx="88" class="fade-in"><span class="heart">&#x2661;</span><span class="num">89.</span><span class="text">I will leave you notes in places you'll find long after I'm gone.</span></li>
+  <li data-idx="89" class="fade-in"><span class="heart">&#x2661;</span><span class="num">90.</span><span class="text">I will make sure you know, every single day, that you were the best decision I ever made.</span></li>
+</ul>
+
+<div class="category-label fade-in">Unconditional</div>
+<ul class="promise-list">
+  <li data-idx="90" class="fade-in"><span class="heart">&#x2661;</span><span class="num">91.</span><span class="text">I will love you without conditions, without fine print, without "if you" or "as long as you."</span></li>
+  <li data-idx="91" class="fade-in"><span class="heart">&#x2661;</span><span class="num">92.</span><span class="text">I will accept every part of you&mdash;the messy, the difficult, the unhealed&mdash;without trying to fix you.</span></li>
+  <li data-idx="92" class="fade-in"><span class="heart">&#x2661;</span><span class="num">93.</span><span class="text">I will not compare you to anyone else, past or imaginary.</span></li>
+  <li data-idx="93" class="fade-in"><span class="heart">&#x2661;</span><span class="num">94.</span><span class="text">I will love you at your worst and not hold it against you at your best.</span></li>
+  <li data-idx="94" class="fade-in"><span class="heart">&#x2661;</span><span class="num">95.</span><span class="text">I will never make you feel like you have to earn my love.</span></li>
+  <li data-idx="95" class="fade-in"><span class="heart">&#x2661;</span><span class="num">96.</span><span class="text">I will stay even when the novelty fades, because love is not a feeling&mdash;it's a commitment I renew daily.</span></li>
+  <li data-idx="96" class="fade-in"><span class="heart">&#x2661;</span><span class="num">97.</span><span class="text">I will not leave you behind as I grow. You are not a chapter&mdash;you are the whole book.</span></li>
+  <li data-idx="97" class="fade-in"><span class="heart">&#x2661;</span><span class="num">98.</span><span class="text">I will be yours completely, without reservation, without hiding, without backup plans.</span></li>
+  <li data-idx="98" class="fade-in"><span class="heart">&#x2661;</span><span class="num">99.</span><span class="text">I will never stop choosing you. Not because I have to, but because there has never been anyone else I'd choose instead.</span></li>
+  <li data-idx="99" class="fade-in"><span class="heart">&#x2661;</span><span class="num">100.</span><span class="text">I will keep all 100 of these promises, not because this list holds me accountable&mdash;but because you do.</span></li>
+</ul>
+
+</div>
+
+<div class="write-box fade-in">
+  <h3>&#x2728; Write Your Own Promise</h3>
+  <p style="color:var(--ash);font-size:0.8rem;margin:0 0 0.75rem;">Something you want me to promise you? Write it here.</p>
+  <textarea id="userPromiseInput" placeholder="I promise you..."></textarea>
+  <button class="write-btn" id="addPromiseBtn">Add Your Promise</button>
+  <div class="written-list" id="userPromises"></div>
+</div>
+
+<div class="accept-section fade-in">
+  <p>I wrote 100 promises. But a promise only means something if someone receives it.</p>
+  <button class="accept-btn" id="acceptBtn">&#x2661; I Accept These Promises</button>
+</div>
+
+<div class="footer">
+  <p>for  &mdash; i promise.</p>
+</div>
+
+</div>
+</main>
+
+<script>
+(function () {
+  var PROMISES = document.querySelectorAll('#fullList .promise-list li');
+  var TOTAL = PROMISES.length;
+
+  // Bookmark toggle
+  var bookmarked = JSON.parse(localStorage.getItem('promises-bookmarked') || '[]');
+  function saveBookmarks() { localStorage.setItem('promises-bookmarked', JSON.stringify(bookmarked)); }
+  function updateUI() {
+    document.getElementById('bookmarkCount').textContent = bookmarked.length;
+    document.getElementById('keptCount').textContent = bookmarked.length;
+    PROMISES.forEach(function (li) {
+      var idx = li.dataset.idx;
+      var heart = li.querySelector('.heart');
+      if (bookmarked.indexOf(idx) !== -1) {
+        heart.classList.add('lit');
+        li.classList.add('bookmarked');
+      } else {
+        heart.classList.remove('lit');
+        li.classList.remove('bookmarked');
+      }
+    });
+  }
+  PROMISES.forEach(function (li) {
+    li.querySelector('.heart').addEventListener('click', function (e) {
+      e.stopPropagation();
+      var idx = li.dataset.idx;
+      var pos = bookmarked.indexOf(idx);
+      if (pos === -1) { bookmarked.push(idx); if (window.Interactions) window.Interactions.record('content', 'promise_bookmarked', String(parseInt(idx, 10) + 1)); }
+      else { bookmarked.splice(pos, 1); if (window.Interactions) window.Interactions.record('content', 'promise_unbookmarked', String(parseInt(idx, 10) + 1)); }
+      saveBookmarks(); updateUI();
+    });
+  });
+  updateUI();
+
+  // Seen count (scroll tracking)
+  var seen = JSON.parse(localStorage.getItem('promises-seen') || '[]');
+  function trackSeen() {
+    PROMISES.forEach(function (li) {
+      var idx = li.dataset.idx;
+      var rect = li.getBoundingClientRect();
+      if (rect.top < window.innerHeight + 100 && seen.indexOf(idx) === -1) {
+        seen.push(idx);
+        localStorage.setItem('promises-seen', JSON.stringify(seen));
+      }
+    });
+    document.getElementById('seenCount').textContent = seen.length;
+  }
+  window.addEventListener('scroll', trackSeen);
+  trackSeen();
+
+  // Promise of the Day
+  var allTexts = [];
+  PROMISES.forEach(function (li) {
+    allTexts.push({ idx: li.dataset.idx, text: li.querySelector('.text').textContent });
+  });
+  function setPOD() {
+    var today = new Date().toDateString();
+    var savedDay = localStorage.getItem('pod-day');
+    var savedIdx = localStorage.getItem('pod-idx');
+    if (savedDay === today && savedIdx !== null) {
+      showPOD(parseInt(savedIdx));
+    } else {
+      var rand = Math.floor(Math.random() * allTexts.length);
+      localStorage.setItem('pod-day', today);
+      localStorage.setItem('pod-idx', rand);
+      showPOD(rand);
+    }
+  }
+  function showPOD(idx) {
+    var p = allTexts[idx];
+    document.getElementById('podText').textContent = '\u201C' + p.text + '\u201D';
+    document.getElementById('podNum').textContent = 'Promise #' + (parseInt(p.idx) + 1);
+  }
+  setPOD();
+
+  // Surprise Me
+  document.getElementById('surpriseBtn').addEventListener('click', function () {
+    var rand = Math.floor(Math.random() * allTexts.length);
+    showPOD(rand);
+    // Scroll to top of POD
+    document.getElementById('pod').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    // Flash effect
+    document.getElementById('pod').style.transition = 'border-color 0.3s';
+    document.getElementById('pod').style.borderColor = 'var(--ember)';
+    setTimeout(function () { document.getElementById('pod').style.borderColor = ''; }, 1500);
+  });
+
+  // Show only bookmarked
+  var showingAll = true;
+  document.getElementById('showBookmarked').addEventListener('click', function () {
+    showingAll = !showingAll;
+    if (showingAll) {
+      PROMISES.forEach(function (li) { li.style.display = ''; });
+      this.textContent = '\u2661 Bookmarked (' + bookmarked.length + ')';
+    } else {
+      PROMISES.forEach(function (li) {
+        li.style.display = li.classList.contains('bookmarked') ? '' : 'none';
+      });
+      this.textContent = '\u2728 Show All';
+    }
+  });
+
+  // Fade in on scroll
+  var faders = document.querySelectorAll('.fade-in');
+  function checkFade() {
+    faders.forEach(function (el) {
+      if (el.getBoundingClientRect().top < window.innerHeight - 60) el.classList.add('visible');
+    });
+  }
+  window.addEventListener('scroll', checkFade);
+  checkFade();
+
+  // Write your own promise
+  var userPromises = JSON.parse(localStorage.getItem('user-promises') || '[]');
+  function renderUserPromises() {
+    var container = document.getElementById('userPromises');
+    if (!userPromises.length) { container.innerHTML = ''; return; }
+    var html = '<p style="color:var(--ash);font-size:0.75rem;margin:0 0 0.5rem;">Your promises:</p>';
+    userPromises.forEach(function (p, i) {
+      html += '<div class="written-item">' +
+        '<span>' + (i + 1) + '. ' + esc(p) + '</span>' +
+        '<span class="del" data-idx="' + i + '">&#x2715;</span></div>';
+    });
+    container.innerHTML = html;
+    container.querySelectorAll('.del').forEach(function (el) {
+      el.addEventListener('click', function () {
+        userPromises.splice(parseInt(this.dataset.idx), 1);
+        localStorage.setItem('user-promises', JSON.stringify(userPromises));
+        renderUserPromises();
+      });
+    });
+  }
+  document.getElementById('addPromiseBtn').addEventListener('click', function () {
+    var val = document.getElementById('userPromiseInput').value.trim();
+    if (!val) return;
+    userPromises.push(val);
+    localStorage.setItem('user-promises', JSON.stringify(userPromises));
+    document.getElementById('userPromiseInput').value = '';
+    renderUserPromises();
+  });
+  renderUserPromises();
+
+  // I Accept
+  document.getElementById('acceptBtn').addEventListener('click', function () {
+    var btn = this;
+    if (btn.classList.contains('accepted')) return;
+    btn.classList.add('accepted');
+    btn.textContent = '\u2705 Accepted \u2661';
+    // Confetti burst
+    var colors = ['#ffe680', '#e85d3a', '#6fcf93', '#88c8d8', '#d4a0b8'];
+    for (var i = 0; i < 50; i++) {
+      (function () {
+        var piece = document.createElement('div');
+        piece.className = 'confetti-piece';
+        piece.style.left = (Math.random() * 100) + 'vw';
+        piece.style.top = (Math.random() * 100) + 'vh';
+        piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+        piece.style.animationDelay = (Math.random() * 0.5) + 's';
+        piece.style.animationDuration = (1.5 + Math.random() * 1) + 's';
+        document.body.appendChild(piece);
+        setTimeout(function () { piece.remove(); }, 3000);
+      })();
+    }
+  });
+
+  function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+})();
+</script>
+
+<script src="global-easter-eggs.js"></script>
+<script defer src="interactions.js"></script>
+</body>
+</html>

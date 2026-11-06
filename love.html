@@ -1,0 +1,1477 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <link rel="preload" href="girl-assets/atlas.png" as="image">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>More of You, More of Us</title>
+  <style>body{cursor:url('cursor images/kuromi idle.jpg'),auto}</style>
+  <!-- Section numbering continuous from 100-organs (141+). Intimate threshold >= 48. -->
+  <meta name="description" content="The Things I Still Need to Tell You">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500;1,9..144,600&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap"
+    rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%99%A1%3C/text%3E%3C/svg%3E">
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+  <script src="fb-db.js"></script>
+  <script src="section-lock.js"></script>
+  <script>sectionLock('love');</script>
+  <style>.mood-btn:hover{background:rgba(255,255,255,0.12)!important}</style>
+</head>
+
+<body data-page="love">
+  <div class="loader">
+
+    <h1>For You</h1>
+
+    <p>Loading Memories...</p>
+
+  </div>
+
+  <div class="cursorLight"></div>
+
+  <div class="petals"></div>
+
+  <div class="toc"></div>
+  <div class="hearts">
+
+    <span>🤍</span>
+    <span>🤍</span>
+    <span>🤍</span>
+    <span>🤍</span>
+    <span>🤍</span>
+    <span>🤍</span>
+    <span>💜</span>
+    <span>💜</span>
+    <span>💜</span>
+    <span>💜</span>
+    <span>💜</span>
+    <span>💜</span>
+
+  </div>
+  <div class="progress-track" aria-hidden="true">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
+
+  <main>
+    <header class="hero">
+      <h1 class="hero-title">For You</h1>
+      <p class="hero-subtitle">The Things I Still Need to Tell You</p>
+      <div class="hero-ornament" aria-hidden="true"></div>
+    </header>
+
+    <article class="page">
+            <section class="dedication">
+        <p class="dedication-kicker">Still</p>
+        <p class="dedication-body">There is never enough paper. Never enough ink. Never enough silence in the middle of the night to write down everything you make me feel.
+
+          So here are more pieces of you, smaller moments, quieter corners, things I noticed but did not know how to
+          say the first time.
+
+          This is not a repeat. This is a deepening. The hundred organs were the map of your body, the geography of
+          who you are. This is the softness that lives inside those boundaries. The warmth that radiates from your skin
+          when you have forgotten to guard yourself. The way you say my name when you are too tired to perform for the
+          world. The love that exists not in grand gestures, but in the ordinary, sacred architecture of a shared life.
+
+          This is about the you that exists in the spaces between, the voice you have only in the morning, the sighs
+          you release when no one else is listening, the way your body curls toward mine in sleep without waking.
+          These are the things I still need to tell you. Not because I forgot, but because some truths only reveal
+          themselves after the first layer has been peeled away.
+
+          Every sunset.
+          Every thought.
+          Every breath between us.
+          Every quiet morning I got to watch you exist.
+
+          Still you.
+          Still us.
+          Still not finished.
+
+          And I hope we never will be.</p>
+      </section>
+
+      <div class="parallax-divider" style="background-image: url('./parallax/parallax_moon.png');">
+        <div class="parallax-overlay"></div>
+        <div class="parallax-text">A single light in the dark...</div>
+      </div>
+
+      <div class="flow">
+<!-- Mood filter bar -->
+<div class="mood-filter-bar" style="display:flex;flex-wrap:wrap;gap:8px;padding:1rem 0 2rem;justify-content:center;border-bottom:1px solid rgba(255,230,128,0.12);margin-bottom:2rem;background:rgba(255,255,255,0.03);border-radius:12px;">
+  <button class="mood-btn active" data-mood="all" style="background:linear-gradient(135deg, rgba(232,93,58,0.3) 0%, rgba(255,200,100,0.2) 100%);border:1px solid rgba(232,93,58,0.5);color:#ffebd2;padding:6px 16px;border-radius:20px;cursor:pointer;font-family:inherit;font-size:0.85rem;transition:all 0.3s;font-weight:500;">All</button>
+  <button class="mood-btn" data-mood="romantic" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#ffebd2;padding:6px 16px;border-radius:20px;cursor:pointer;font-family:inherit;font-size:0.85rem;transition:all 0.3s;">Romantic</button>
+  <button class="mood-btn" data-mood="playful" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#ffebd2;padding:6px 16px;border-radius:20px;cursor:pointer;font-family:inherit;font-size:0.85rem;transition:all 0.3s;">Playful</button>
+  <button class="mood-btn" data-mood="intimate" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#ffebd2;padding:6px 16px;border-radius:20px;cursor:pointer;font-family:inherit;font-size:0.85rem;transition:all 0.3s;">Intimate</button>
+  <button class="mood-btn" data-mood="grateful" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#ffebd2;padding:6px 16px;border-radius:20px;cursor:pointer;font-family:inherit;font-size:0.85rem;transition:all 0.3s;">Grateful</button>
+  <button class="mood-btn" data-mood="longing" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#ffebd2;padding:6px 16px;border-radius:20px;cursor:pointer;font-family:inherit;font-size:0.85rem;transition:all 0.3s;">Longing</button>
+</div>
+
+
+        <div class="accordion-group" data-group="body-details">
+          <div class="accordion-header" onclick="this.parentElement.classList.toggle('open')">
+            <span class="group-title">Body Details</span>
+            <span><span class="group-count">17 sections</span><span class="group-arrow">u{25BC}</span></span>
+          </div>
+          <div class="accordion-content">
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Temples</span></h2>
+          <p class="tribute-body">The sides of your forehead, where your hair meets your skin, where I press my thumbs when the world has been too loud for you. They are soft and warm, and when I hold them you close your eyes. In that moment I am not just touching you. I am telling you you can rest now.</p>
+          <p class="tribute-body">your temples have caught every headache, every worry, every thought that kept you awake. And still they remain gentle under my fingers. They are where I go when words are not enough. Where I remind you, without speaking, that you do not have to carry everything alone.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Jaw</span></h2>
+          <p class="tribute-body">The strong line of your lower face, where tension lives when you are stressed. I cup it in my hand when I want you to look at me. I trace it with my thumb when you are falling asleep. your jaw holds your teeth, your words, your bite. It is the part of you that clenches when you are holding something back.</p>
+          <p class="tribute-body">I want to be the reason your jaw relaxes. The reason you do not have to hold everything so tightly. When you let your jaw go slack, when you trust me enough to let your face soften, I see the version of you that exists only in safety. And I want to protect that version forever.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Where Your Heart Beats Through Skin</span></h2>
+          <p class="tribute-body">your wrists. your neck. Behind your ears. The places where your heartbeat becomes visible. I press my lips to them to feel you alive against my mouth. Each beat tells me you are real. Each thrum beneath your skin is a reminder that this beautiful person exists.</p>
+          <p class="tribute-body">your pulse quickens when you are excited. Slows when you are at peace. And when I hold you close enough to feel it syncing with mine, I understand what people mean when they talk about two hearts becoming one. your pulse is the rhythm I want to fall asleep to every night.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Collarbone</span></h2>
+          <p class="tribute-body">The slender bone that runs from your shoulder to the base of your throat. It is elegant in a way that feels almost architectural. When you wear a shirt that exposes it, I cannot stop looking. It is the first place I want to kiss when you are wearing something nice. It is the first place I do kiss when you are wearing nothing.</p>
+          <p class="tribute-body">I rest my lips in the hollow above it and feel your pulse beneath my mouth. your collarbone is where vulnerability meets beauty. It is fragile and strong all at once. like you. Every time I see it, I want to press a kiss there, just to remind you that even the most delicate parts of you are cherished.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Birthmarks</span></h2>
+          <p class="tribute-body">The unique constellations scattered across your skin. No one else in the world has the exact same pattern. They are your signature, written in pigment. I have memorized each one. The small dot behind your ear. The faint one on your hip. The one you think is ugly that I think is perfect.</p>
+          <p class="tribute-body">They are proof that you were made to be one of a kind. Every mark tells a story of cells that decided to be different. To stand out. Just like you. I kiss them not because they are flawless, but because they belong to you. And anything that belongs to you is beautiful to me.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Hidden Wings</span></h2>
+          <p class="tribute-body">The two wings beneath your skin that you never learned to use. When you stand with your back to me, I trace them with my fingertips, following the curve of each bone. They feel incredibly fragile, yet they have carried so much.</p>
+          <p class="tribute-body">These are the parts of you that ache after long days. The parts that tense when you are anxious. The parts that relax only when you feel completely safe. I want to be the reason they soften. I want to be the place where your wings learn to rest.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Line That Holds You</span></h2>
+          <p class="tribute-body">The long line of bones that runs from the base of your skull to the base of your back. When you turn away from me, your spine is a roadmap I follow with my fingers. Each vertebra is a stop along the way, a reminder of the structure that holds you together. It has carried every burden you have ever shouldered.</p>
+          <p class="tribute-body">I trace it when you are sad. I kiss it when you are happy. I press my forehead against it when I do not have words. your spine is the backbone of who you are, literally and figuratively. It has kept you upright through everything. And I want to be the one who helps it rest.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Ribs</span></h2>
+          <p class="tribute-body">The cage that holds your heart. When I hold you close I can feel them through your skin, rising and falling with every breath. They protect the most important part of you. And somehow you let me press myself against that protection.</p>
+          <p class="tribute-body">I love the way they flutter when I tickle you. The way they expand when you take a deep breath before saying something brave. They are the architecture of your vulnerability. Strong enough to guard you. Flexible enough to let you breathe. Beautiful in a way most people never notice.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Where My Hands Belong</span></h2>
+          <p class="tribute-body">The place where my hands naturally fall when I stand behind you. It is the narrowing of you, the part that makes your silhouette unmistakable. When I hold your waist, I am holding the middle of you, the centre of your gravity. It is where I pull you close when I want to feel you against me.</p>
+          <p class="tribute-body">your waist curves in a way that makes me want to trace it over and over. It is the seam where your upper body meets your lower body, and it is perfect in its transition. I love how it feels when you wear something fitted. I love even more how it feels when you wear nothing at all.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Where You Began</span></h2>
+          <p class="tribute-body">The first home you ever had. A tiny scar from the beginning of your existence. It reminds me that you were once small enough to fit inside someone else. That you have been growing, changing, becoming, your entire life.</p>
+          <p class="tribute-body">I kiss it sometimes. Not because it is beautiful in the way eyes or lips are beautiful, but because it is a reminder that you have always been here. That you existed before I knew you. That you will continue to exist in ways I will never fully understand. It is the center of you. And I love every inch around it.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Soft Place Below</span></h2>
+          <p class="tribute-body">The soft curve below your navel, where your body softens into something private and warm. It is not a part of you you show everyone. It is a part of you I am allowed to touch, to kiss, to rest my hand against while you fall asleep. It holds the history of every meal, every lazy morning, every moment you let yourself be soft.</p>
+          <p class="tribute-body">I press my palm there and feel you breathing slow beneath my hand. It is the most vulnerable part of you, and you let me hold it like it is something precious. Because to me, it is. Every inch of it. Every stretch mark. Every curve. It is yours. And I love it because it is yours.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Hollow I Hold</span></h2>
+          <p class="tribute-body">The curve where my hand finds its natural resting place. It fits perfectly into my palm, as if your body was designed with my hand in mind. When we stand together, that is where I pull you closer. That is where the distance between us disappears.</p>
+          <p class="tribute-body">It is a quiet part of you. Not demanding attention. But it speaks volumes in the language of touch. Every time my hand settles there, I am saying: you are mine. I have you. I am not letting go. And you lean into it, trusting me with that vulnerable space.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Tailbone</span></h2>
+          <p class="tribute-body">The tiny curve at the very bottom of your spine. It is hidden, almost secret, a part of you you probably never think about. But when you lie on your side and I trace your backbone downward, that is where the journey ends. That small, delicate point that makes your arch when I kiss it.</p>
+          <p class="tribute-body">It is the balance point of your entire body. The place where your spine meets the rest of you. And somehow it feels sacred. Like the final period at the end of a beautiful sentence I never want to stop reading.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Map of Your Palms</span></h2>
+          <p class="tribute-body">The open side of your hands, where your life line runs from wrist to index finger. I hold your palms against my chest when I want you to feel my heartbeat. I kiss them when they have been working too hard. your palms have held so much. They have wiped tears, packed boxes, typed messages, reached for me in the dark.</p>
+          <p class="tribute-body">I love the texture of your palms. The calluses from things you have built, the softness from cream you apply at night. Every line tells a story. And I want to read every single one. your palms are you offering to the world. And I want to be the one who holds them gently in return.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Footsteps</span></h2>
+          <p class="tribute-body">I know the sound of you approaching before I see you. There is a rhythm to the way you walk. A certain weight, a certain pace, that my ears have learned to recognize. It is the sound of someone coming closer. The sound of my world about to become brighter.</p>
+          <p class="tribute-body">your footsteps have walked toward me when I needed you. They have walked away when you need space. They have paced during anxiety, danced during joy, and wandered during thought. Every step you take is a story. And I want to be beside you for as many of them as you will let me.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Posture</span></h2>
+          <p class="tribute-body">The way you hold yourself up. Straight when you are confident. Slightly curved when you are tired. your shoulders go back when you are about to say something important. They slump when the day has been too long. your posture tells me everything I need to know about how you are feeling, even when you do not say a word.</p>
+          <p class="tribute-body">I notice the way you stand when you are waiting for me. The way you lean when you are interested. The way you fold into yourself when you are protecting your heart. Every angle of your body is a sentence in a language I have learned to read. And I want to spend the rest of my life becoming fluent.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Way You Move Through a Room</span></h2>
+          <p class="tribute-body">you do not enter a space so much as you change it. There is a shift in the air when you walk in. People look up. Conversations adjust. The room rearranges itself around you presence, and you may not even notice. But I do. I notice every time.</p>
+          <p class="tribute-body">The way you navigate around furniture, around people, around obstacles. The way you pause at doorways. The way you turn your head when you hear something interesting. your movement through the world is a dance that only you know the steps to. And I could watch it forever.</p>
+        </div>
+          </div>
+        </div>
+
+
+        <div class="accordion-group" data-group="voice--habits---daily-life">
+          <div class="accordion-header" onclick="this.parentElement.classList.toggle('open')">
+            <span class="group-title">Voice, Habits & Daily Life</span>
+            <span><span class="group-count">17 sections</span><span class="group-arrow">u{25BC}</span></span>
+          </div>
+          <div class="accordion-content">
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Morning Voice</span></h2>
+          <p class="tribute-body">Raspy. Warm. Entirely yours. The first words you speak each day carry the weight of sleep, the residue of dreams. your morning voice is lower, slower, more honest. It does not perform. It simply exists.</p>
+          <p class="tribute-body">I could listen to you morning voice forever. It is the sound of vulnerability. The sound of someone who has not yet put up their walls for the day. When you say my name in that voice, it feels like the first time anyone has ever said it properly.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Whisper</span></h2>
+          <p class="tribute-body">The voice you use when you want only me to hear. It is softer than your regular voice, lower, more intentional. When you whisper, every word feels like a secret. I lean in closer. I stop breathing so I can catch every syllable. your whisper is intimacy made audible.</p>
+          <p class="tribute-body">you whisper in the dark, when we are lying face to face. you whisper when you are telling me something vulnerable. you whisper when you are being playful, teasing me with words only I am meant to hear. your whisper is a gift you give only to those closest to you. And I treasure every hushed syllable.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Sound of Your Yawn</span></h2>
+          <p class="tribute-body">The smallest, most human sound. It escapes you without permission, usually at the end of a long day. It is a sound of release. Of tiredness finally being acknowledged. Of your body telling you it is time to rest.</p>
+          <p class="tribute-body">your yawn is not elegant. It is not supposed to be. It is raw and real and it makes me want to wrap you in blankets and tell you to sleep. That tiny, involuntary sound is a reminder that you are human. That you get tired. That you need care. And I want to be the one who gives it.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Sigh</span></h2>
+          <p class="tribute-body">The breath you release when you let go of something. A sigh can mean relief. It can mean exhaustion. It can mean you are settling into a moment of peace. I have learned to read your sighs the way others read words. Each one tells me where you are, emotionally, in that precise moment.</p>
+          <p class="tribute-body">There is a sigh you make when you finally sit down after a long day. There is a sigh you make when I hold you. There is a sigh you make in you sleep, soft and content. your sighs are the sound of your processing the world. And I want to be the reason for the peaceful ones.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Real Laugh vs Your Polite Laugh</span></h2>
+          <p class="tribute-body">There are two versions of your laugh. The polite one comes out in public, at work, with people you do not know well. It is short, pleasant, appropriate. The real one is different. The real one comes from somewhere deep. It makes your snort. It makes your double over. It makes your eyes water. It is uncontrollable and beautiful.</p>
+          <p class="tribute-body">I live for your real laugh. I collect it like treasure. I say stupid things just to hear it. I remember what caused it so I can recreate it. your real laugh is proof that you are unguarded, that you are fully present, that you are happy. And there is no sound in the world I would rather hear.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Way You Wake Up</span></h2>
+          <p class="tribute-body">Slow and soft, still half in a dream. your eyes do not open all at once. They flutter, adjust, slowly focus on the world. you stretch like a cat, your whole body remembering how to exist. In those first moments, you are pure unguarded humanity.</p>
+          <p class="tribute-body">I love watching you come back to consciousness. The way you burrow deeper into the blanket before deciding to face the day. The small sounds you make, not quite words. The way you reach for me before your eyes even open. your mornings are a private performance, and I am lucky to have a front-row seat.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Way You Drift to Sleep</span></h2>
+          <p class="tribute-body">There is a moment when you transition from awake to asleep. you breathing changes. your body relaxes. your grip on consciousness loosens. I can feel the exact second you let go. It is one of my favourite moments with you.</p>
+          <p class="tribute-body">you fight sleep sometimes, not wanting the day to end. But eventually, your body wins. you curl into me or turns away, depending on your mood. Either way, I lie beside you, listening to you breathe, grateful that you feel safe enough to sleep next to me. There is no greater trust than this.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Way You Eat</span></h2>
+          <p class="tribute-body">Sometimes you savour every bite, closing your eyes when something tastes especially good. Sometimes you devour your food like you have been starving, too hungry to care about appearances. Both versions are beautiful in their own way. Both are completely you.</p>
+          <p class="tribute-body">I love watching you enjoy food. The little noises of approval. The way you offer me a bite of whatever you are having. The way you get excited about a meal you have been looking forward to. There is something deeply intimate about sharing food with you. It is communion in its simplest form.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Comfort Food</span></h2>
+          <p class="tribute-body">The taste of your childhood. The meal you ask for when you have had a bad day. The snack that makes your eyes light up. your comfort food is not just food. It is nostalgia. It is safety. It is the flavour of being cared for.</p>
+          <p class="tribute-body">I want to learn to make it for you. I want to be the one who brings you that taste when you need it most. Because love, sometimes, is knowing exactly what to feed someone. It is understanding that the quickest way to your heart might be through the meals that remind you you are home.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Way You Dance</span></h2>
+          <p class="tribute-body">When no one is watching, or when you forget anyone is, you move to music in a way that is entirely your own. It is not choreographed. It is not trying to impress. It is pure expression, your body responding to rhythm the way wind responds to shape. you close your eyes sometimes. you let the music move through you.</p>
+          <p class="tribute-body">I love watching you dance. In the kitchen while cooking. In the living room when a good song comes on. In the car, barely visible but unmistakable. The way you move when you think no one is watching is the most honest version of you. And I am grateful every time I get to see it.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Way You Tidy</span></h2>
+          <p class="tribute-body">you smooth, you fold, you arrange. The way you tidy is not just about cleaning. It is about creating order in a world that often feels chaotic. you fluff the pillows. you align the coasters. you wipe the counter until it shines. Each small act of tidying is your way of saying you care about the space you inhabit.</p>
+          <p class="tribute-body">I notice the things you organize without thinking. The way you arrange the fridge. The way you make the bed every morning. The way you cannot leave a room without straightening something. It is not perfectionism. It is you love language expressed through order. And I have learned to see the care in every small adjustment.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Way You Organize</span></h2>
+          <p class="tribute-body">your system for bringing order to chaos. you do not just put things away. you arrange them with intention. The drawers are neat. The files are labeled. The pantry is a work of art. your organization is not about control. It is about creating a space where you can think clearly, where you can find what you need without searching.</p>
+          <p class="tribute-body">I tease you about it sometimes, but secretly I admire it. your organization makes our life run smoother. It means we do not lose things. It means we spend less time searching and more time together. The Way you organize is a quiet gift you give to us both. And I have learned to appreciate the order you bring to my chaos.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Way You Text</span></h2>
+          <p class="tribute-body">your texting has a rhythm. A pace. A personality. Sometimes you send long paragraphs that spill out in one go. Sometimes you send single words that say more than sentences could. you have your own punctuation rules, your own emoji vocabulary, your own way of saying goodnight that makes me smile even when you are not there.</p>
+          <p class="tribute-body">I have learned to read between you digital lines. The pause before a reply. The sudden burst of messages when something exciting happens. The voice notes you send when typing feels too slow. Every message is a piece of you day, a piece of your mind, a piece of your heart delivered straight to my pocket.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Way You Laugh at Your Own Mistakes</span></h2>
+          <p class="tribute-body">you trip over nothing and laughs. you misspeak and laughs harder. you do something clumsy and the laugh that follows is pure, unselfconscious joy. That laugh is one of my favourite sounds. It means you do not being hard on yourself. It means you are giving yourself grace.</p>
+          <p class="tribute-body">I love that you can laugh at yourself. It is a sign of a healthy soul. The world tries so hard to make us take ourselves seriously. But you refuse. When you mess up, you shrug and giggles and tries again. That lightness is contagious. It reminds me not to be so serious either.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Way You Occupy Space</span></h2>
+          <p class="tribute-body">you have a way of filling a room without trying. It is not about being loud. It is about being present. you do not make yourself small to accommodate others. you take up the space you deserve. your belongings spread. your energy extends. your voice carries to every corner. you are there, fully and completely.</p>
+          <p class="tribute-body">I love watching you claim space. Spreading your things across the table. Stretching your legs across the couch. Leaving your mark on every room you enter. you are not afraid to exist fully. And being around you have taught me to do the same. you occupy space the way the sun occupies the sky. Naturally. Powerfully. Without apology.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Handwriting</span></h2>
+          <p class="tribute-body">The shape of your letters. The pressure of your pen. The way your words slant across the page. your handwriting is as unique as your fingerprint. It carries your personality in every stroke. When I see your handwriting, I see you.</p>
+          <p class="tribute-body">you have written me notes that I will keep forever. The way you cross your t's. The way your lowercase a's curve. The way you sign your name at the bottom. Those handwritten words feel more intimate than anything typed. They carry the physical trace of you, proof that you were here, that you wrote this for me.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>your Hands When you are Nervous</span></h2>
+          <p class="tribute-body">They move without your permission. Fidgeting with you sleeves. Twisting your hair. Tapping against your thigh. your hands give away what your face tries to hide. They are the honest part of you that cannot pretend to be calm when you do not.</p>
+          <p class="tribute-body">When I notice your hands betraying your anxiety, I reach for them. I hold them still. I interlace my fingers with yours and let you know, through touch, that you are safe. your nervous hands have held mine through difficult conversations, through scary moments, through vulnerability. They always find their way to me.</p>
+        </div>
+          </div>
+        </div>
+
+
+        <div class="accordion-group" data-group="personality---inner-world">
+          <div class="accordion-header" onclick="this.parentElement.classList.toggle('open')">
+            <span class="group-title">Personality & Inner World</span>
+            <span><span class="group-count">37 sections</span><span class="group-arrow">u{25BC}</span></span>
+          </div>
+          <div class="accordion-content">
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Solitude</span></h2>
+          <p class="tribute-body">Who you are when no one is watching. The version of you that exists only in the privacy of your own company. you are different alone. Quieter, maybe. Or more yourself. There is a woman inside you that only comes out when the audience leaves.</p>
+          <p class="tribute-body">I respect your solitude. I do not try to fill every moment of your alone time. Because I know that the person you become after being alone is the same person I fell in love with. your solitude refuels you. It centres you. And I love you enough to give you space to be with yourself.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Silence</span></h2>
+          <p class="tribute-body">The things you do not say are as loud as the things you do. your silence can mean you are thinking. It can mean you are hurt. It can mean you are so comfortable with me that words are not necessary. I have learned to sit in your silence without needing to fill it. your quiet is a language of its own.</p>
+          <p class="tribute-body">When you go quiet, I wait. I do not push. I let your silence tell me what you need. Sometimes you need space. Sometimes you need me to hold you. Sometimes you just needs to be quiet with someone who will not demand more from you. I want to be that person. The one you can be silent with and still feel understood.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Inner Child</span></h2>
+          <p class="tribute-body">The little girl who still lives inside you. The one who gets excited about small things. Who believes in magic. Who wants to be held when you are scared. That child is still there, even though you have grown up. Even though life has tried to make you forget.</p>
+          <p class="tribute-body">I see your inner child sometimes. In the way you giggle at something silly. In the way you cling to me when you feel small. In the way you light up when something reminds you of being young. I want to protect that child. I want to give you a safe place to play, to feel, to exist without shame.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Softness</span></h2>
+          <p class="tribute-body">beneath you strength, beneath you independence, beneath everything you show the world, there is a softness you guard carefully. It is not weakness. It is the part of you that still believes in gentleness, in tenderness, in being held. you do not let everyone see it. But you let me see it. And I hold it like the gift it is.</p>
+          <p class="tribute-body">your softness shows in the way you touch my face. In the way you curl into me at night. In the way your voice drops when you are being vulnerable. The world has tried to harden you, but you have kept this one thing soft. And I will spend my life making sure you never regret letting me find it.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Playfulness</span></h2>
+          <p class="tribute-body">The side of you that refuses to grow up completely. The mischievous grin before you do something silly. The laugh that escapes when you are being ridiculous. The way you tease me, pokes me, runs away knowing I will chase you. your playfulness is where your inner child lives.</p>
+          <p class="tribute-body">I love that you still know how to play. The world tries so hard to make us serious, to burden us with responsibility until we forget what joy feels like. But you remember. you pull me into your games, your jokes, your spontaneous moments of pure fun. That lightness in you is precious. I will protect it with everything I have.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Imagination</span></h2>
+          <p class="tribute-body">The worlds you build inside your mind. The stories you tell yourself. The scenarios you play out. your imagination is vast and vivid, a place where anything is possible. you dream of things that do not exist yet and makes them real just by thinking about them hard enough.</p>
+          <p class="tribute-body">I love hearing about the landscapes of your mind. The futures you imagine. The conversations you rehearse. The art you dream of creating. your imagination is one of the most beautiful things about you. It means you are never bored, never stuck, never limited to what is in front of you. you are always somewhere else, building something new.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Curiosity</span></h2>
+          <p class="tribute-body">The way you ask questions. About everything. About the world, about people, about me. you do not accept surface answers. you want to know the why behind the what. your curiosity is relentless and beautiful and exhausting in the best way.</p>
+          <p class="tribute-body">you want to understand. Not to judge, but to connect. Every question you ask is a bridge you are building toward someone. When you turn that curiosity on me, I feel seen in a way I have never felt before. you do not just want to know my name. you want to know my story. And you will not stop until you have read every page.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Intuition</span></h2>
+          <p class="tribute-body">The way you know things before you are told. you feel the mood of a room the moment you enter. you sense when someone is hiding something. you look at me and ask what is wrong before I have even admitted it to myself. your intuition is your superpower.</p>
+          <p class="tribute-body">you trust your gut, and you are almost always right. It is not magic. It is your paying attention when others do not. It is you reading the subtle language of the world. your intuition makes your impossible to fool and incredibly safe to be vulnerable with. Because you already knows. And you stay anyway.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Mystery</span></h2>
+          <p class="tribute-body">The parts of you I will never fully understand. The thoughts you keep to yourself. The dreams you have not told anyone. The layers of you that you have not even discovered yet. your mystery is not a wall. It is a depth. It is the knowledge that I could spend a lifetime learning you and still find new rooms.</p>
+          <p class="tribute-body">I do not need to know everything about you. In fact, I hope I never do. I want there to always be more to discover. More stories to uncover. More versions of you to meet. your mystery keeps me curious. It keeps me falling in love with you over and over, each time finding something I missed before.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Longing</span></h2>
+          <p class="tribute-body">What you reach for when no one is watching. The dreams you hold close to you chest. The things you want but is afraid to ask for. your longing is a quiet hum beneath everything you do. It drives you. It shapes you. It makes your who you are. And I want to know every single thing you yearn for.</p>
+          <p class="tribute-body">I want to help you reach for the things you want. I want to be the person who tells your it is okay to want more. your longing is not a weakness. It is proof that you are alive, that you have not given up on hope. And I will stand beside you as you reach for every single thing your heart desires.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Creativity</span></h2>
+          <p class="tribute-body">The way you see the world differently. you notice beauty where others see nothing. you find solutions where others see dead ends. you create things, not because you have to, but because your mind is always imagining, always building, always bringing something new to life.</p>
+          <p class="tribute-body">your creativity shows in the way you decorate your space. In the way you write. In the way you solve problems. In the way you love. you bring originality to everything you touch. The world is more interesting because you are in it.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Rest</span></h2>
+          <p class="tribute-body">The way you allow yourself to stop. For someone who gives so much, rest does not come easily. you have to earn it, to justify it, to convince yourself you deserve it. When you finally rests, it is a surrender. A letting go of all the things you have been holding up. It is one of the bravest things you do.</p>
+          <p class="tribute-body">I love watching you rest. The way your face smooths out. The way you breathing deepens. The way you curl into a position that says you finally feels safe. I want to be the reason you rest. I want to create a space where you do not have to earn your peace. Where you can just stop, and be, and know that it is enough.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Wisdom</span></h2>
+          <p class="tribute-body">you know things that cannot be taught. you have an understanding of people that goes beyond their words. you can look at a situation and see what others miss. your wisdom is not loud. It is quiet, settled, the kind that comes from truly paying attention to life.</p>
+          <p class="tribute-body">I go to you for advice because you do not tell me what I want to hear. you tell me what I need to hear. you see angles I had not considered. you understand consequences I had not foreseen. your wisdom makes your older than you years and more valuable than you realize.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Spiritual Side</span></h2>
+          <p class="tribute-body">What you believe. Where you find meaning. The practices that ground you. your spiritual side is private and sacred. It is the part of you that connects to something bigger than yourself. It shapes your values, your choices, your understanding of the world.</p>
+          <p class="tribute-body">I do not need to share every belief to respect yours. I just need to understand that your spirituality is part of who you are. It gives your strength. It gives your peace. And I love seeing your in those quiet moments when you feel connected to something greater.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Honesty</span></h2>
+          <p class="tribute-body">you tell the truth even when it would be easier not to. Even when the truth might hurt. Even when you know I might not like what you have to say. your honesty is not brutal. It is careful. It comes from a place of love, not a desire to wound.</p>
+          <p class="tribute-body">I have never had to wonder where I stand with you. you do not play games. you do not hide your feelings until they explode. you tell me, gently but clearly, what is on your mind. That honesty has saved us more times than you know. It is the foundation everything else is built on.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Quiet Generosity</span></h2>
+          <p class="tribute-body">To strangers, to friends, to people who cannot do anything for your in return. your kindness is not strategic. It is not performative. It is simply who you are. you hold doors. you remember small details. you check in on people who are struggling. you are kind in a world that does not always reward kindness.</p>
+          <p class="tribute-body">I have watched you be kind to people who did not deserve it. I have watched you give when you had nothing left. I have watched you choose gentleness when anger would have been justified. your kindness is not naivety. It is a conscious choice. And it is one of the things I admire most about you.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Loyalty</span></h2>
+          <p class="tribute-body">When you love someone, you love them completely. you do not keep one foot out the door. you do not hedge your bets. you commit. your loyalty is not blind. It is a choice you make every single day, and you make it with your whole heart.</p>
+          <p class="tribute-body">you have stayed when leaving would have been easier. you have fought for people who did not deserve it. you have believed in me on days when I did not believe in myself. your loyalty is rare and precious and I will never take it for granted.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Bravery</span></h2>
+          <p class="tribute-body">Not the loud kind. Not the kind that seeks recognition. your bravery is quiet. It is the courage to wake up and try again after a hard day. It is the strength to be vulnerable when you could have stayed guarded. It is the willingness to love even when you have been hurt before.</p>
+          <p class="tribute-body">you are brave in ways you do not even recognize. Brave when you speak your truth. Brave when you set a boundary. Brave when you admit you do not know something. your bravery is not about fearlessness. It is about feeling the fear and moving forward anyway. And you move forward more often than you give yourself credit for.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Fairness</span></h2>
+          <p class="tribute-body">you have a deep sense of what is right. you cannot stand injustice, even when it does not affect you. you will speak up for someone who cannot speak for themselves. you will point out when something is unfair, even if it means making things uncomfortable.</p>
+          <p class="tribute-body">your fairness is not about being neutral. It is about being just. you consider all sides before judging. you give people the benefit of the doubt. And when you decide something is wrong, you act. your moral compass is one of the things I admire most about you.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Generosity</span></h2>
+          <p class="tribute-body">you give without keeping track. your time, your attention, your love. you do not give to receive. you give because you have an abundant heart. you share your food, your blankets, your last bit of energy. you give until there is nothing left, and then you find more to give.</p>
+          <p class="tribute-body">I have watched you give to people who could never repay you. I have watched you put others before yourself. your generosity is not about money. It is about the openness of your spirit. you are the most giving person I know, and I hope the world learns to give back to you.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Heat You Carry</span></h2>
+          <p class="tribute-body">The feeling of standing near you. There is a physical warmth that radiates from your body, but there is another kind too. An emotional warmth that makes people feel seen, feel safe, feel like they matter. your warmth is the first thing I noticed about you. It is what pulled me in and made me want to stay.</p>
+          <p class="tribute-body">When you hug someone, they relax. When you smile at someone, they feel chosen. When you listen, you make the other person feel like the most important person in the world. your warmth is not something you try to produce. It is something you cannot help. It is simply the temperature of your soul. And I want to spend my life basking in it.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Humility</span></h2>
+          <p class="tribute-body">you do not need to be the centre of attention. you celebrate others without jealousy. you admit when you are wrong. you ask for help when you need it. your humility is not weakness. It is the quiet confidence of someone who knows your worth without needing to prove it.</p>
+          <p class="tribute-body">you have no idea how remarkable you are. That is part of what makes your remarkable. you do things that impress me and then moves on as if it was nothing. your humility keeps your grounded. It makes your approachable. It makes your real.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Power You Hide</span></h2>
+          <p class="tribute-body">The quiet, steady kind. Not the kind that lifts heavy things, but the kind that carries heavy burdens without complaining. your strength is in getting up every day and facing a world that is not always kind. It is in continuing to hope when hope feels foolish. It is in choosing love even when love is hard.</p>
+          <p class="tribute-body">I have seen your strength in moments you do not even realize were hard. In the way you handled disappointment. In the way you kept going when you want to give up. In the way you protected your heart without closing it completely. your strength is not loud. But it is constant. And it is one of the things I rely on most.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Light</span></h2>
+          <p class="tribute-body">The glow you bring into every room. It is not literal, but it might as well be. When you are happy, everything seems brighter. When you are present, everything seems more possible. your light is the thing that people are drawn to without understanding why. It is the energy that makes your unmistakable.</p>
+          <p class="tribute-body">I worry sometimes that the world tries to dim your light. That it asks you to be smaller, quieter, less bright. But your light is not something that can be contained. It spills out of you in everything you do. And my greatest hope is that you never let anyone convince you that shining too brightly is a bad thing.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Discipline</span></h2>
+          <p class="tribute-body">you do the things you do not want to do. you show up even when you are tired. you finish what you start. your discipline is not about being perfect. It is about being consistent. It is about honouring your commitments, especially the ones you made to yourself.</p>
+          <p class="tribute-body">I have watched you choose the hard right over the easy wrong. I have watched your stick to you routines even when your motivation ran out. Discipline is not glamorous, but it is one of the most quietly admirable things about you. It is proof that you take yourself seriously.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Ambition</span></h2>
+          <p class="tribute-body">you want things. Not in a greedy way, but in a way that comes from knowing your worth. you have dreams you refuse to abandon. Goals you work toward even when no one is watching. your ambition is a quiet fire that never goes out.</p>
+          <p class="tribute-body">I love watching you chase what you want. The focus in your eyes. The determination in your voice. you do not wait for things to happen. you make them happen. And I want to be beside you for every success, every setback, every step of the journey.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>How You Bend Without Breaking</span></h2>
+          <p class="tribute-body">The way you get back up. Over and over. Even when life has knocked your down. Even when you have every right to stay on the ground. you rise. Not because it is easy, but because you refuse to let the hard moments define you. your resilience is quiet and stubborn and absolutely beautiful.</p>
+          <p class="tribute-body">I have watched your survive things that would have broken others. I have seen you carry weight that was never meant for your shoulders. And still you move forward. Not untouched, but unbroken. your resilience is not about being strong all the time. It is about being soft enough to bend and strong enough to spring back. That is the kind of strength I admire most.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Patience</span></h2>
+          <p class="tribute-body">The way you wait. For things to get better. For people to understand. For me to figure things out. your patience is not passive. It is an active choice to stay, to believe, to give time to things that matter. you have been patient with me in ways I do not deserve.</p>
+          <p class="tribute-body">you wait for flowers to bloom instead of forcing them open. you wait for wounds to heal instead of picking at the scabs. you wait for the right moment, the right word, the right person. And somehow, impossibly, you have chosen to wait for me. your patience is one of the quietest and most powerful forms of you love.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Forgiveness</span></h2>
+          <p class="tribute-body">you have been hurt. By life, by people, by me. And still you find a way to let go. your forgiveness is not quick or careless. It is earned. But when you give it, you mean it. you do not hold grudges or keep score. you release the weight and moves forward.</p>
+          <p class="tribute-body">I have been the recipient of your forgiveness more than once. Each time, I am humbled. Not because you made me feel guilty, but because you chose to see past my mistake. you chose to believe I could do better. your forgiveness has made me want to be better.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Anger</span></h2>
+          <p class="tribute-body">The fire in you that rises when something is unfair. When you have been wronged. When someone you love has been hurt. your anger is not something to be afraid of. It is your spirit refusing to stay silent. It is the part of you that fights back.</p>
+          <p class="tribute-body">I love that you have anger. It means you have not given up. It means you still believes things should be better. your anger is fierce and honest and it burns hot, and when it passes, I am still there. I do not flinch from your fire. I stand beside it. Because even your flames are beautiful when I understand where they come from.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Tears</span></h2>
+          <p class="tribute-body">Not the ones born from sadness, though those matter too. But the tears that come when you laugh so hard you cannot breathe. When you are overwhelmed by beauty. When you watch something that reminds you you are still capable of feeling deeply. Those tears are the ones I want to catch.</p>
+          <p class="tribute-body">your tears have never made your weak. They have made your real. Every drop that escapes your eyes is proof that you care. That you feel. That the world still has the power to move you. I never want you to apologize for crying. I want you to know that your tears are just your heart speaking a language too big for words.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Fears</span></h2>
+          <p class="tribute-body">The things that keep you awake at night. The thoughts you push away. The possibilities you do not want to consider. you do not share them easily, but I have learned to read them in the spaces between you words. In the pauses. In the way your eyes drift when you go somewhere I cannot follow.</p>
+          <p class="tribute-body">I want to be the person you tell your fears to without feeling ashamed. I want to hold them with you. Not to fix them, because some fears cannot be fixed. But to sit beside them. To let you know that even in the dark, you do not alone. your fears are part of your story. And I want to be in that chapter too.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Insecurities</span></h2>
+          <p class="tribute-body">The parts of yourself you wish were different. The mirror moments. The comparisons. The quiet voice that tells you you are enough. I know they exist because you have shown them to me, reluctantly, like a wound you were not sure I would handle gently.</p>
+          <p class="tribute-body">I wish I could silence that voice for you. But since I cannot, I will stand in front of it. I will be louder. I will tell you, again and again, that you are more than enough. That the things you see as flaws are the same things I see as reasons to love you. your insecurities do not make you less. They make you human. And I love every imperfect, beautiful part of your humanity.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Joy</span></h2>
+          <p class="tribute-body">When you forget to guard yourself. When something hits you at the right moment and you let yourself feel happy without holding back. your joy is contagious. It is pure. It is the version of you that exists before the world taught you to be careful. When you are joyful, you are the most beautiful version of yourself.</p>
+          <p class="tribute-body">I chase your joy. Not because I want to possess it, but because I want to be around it. your joy makes everything else feel possible. It makes the hard days worth it. It reminds me why we do all of this. your joy is the light at the end of every tunnel. And I will spend my life trying to give your reasons to feel it.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Peace</span></h2>
+          <p class="tribute-body">The stillness you carry when you are content. It settles over you like a blanket. you breathing slows. your shoulders drop. your face relaxes into something almost sleepy. your peace is quiet but powerful. It is the calm after the storm, the rest after the work, the silence after the noise.</p>
+          <p class="tribute-body">I want to be a source of your peace, not a cause of your stress. I want our home to be a place where you can find stillness. I want our relationship to be a refuge from the chaos of the world. your peace matters to me. Protecting it, nurturing it, making space for it. Because when you are at peace, everything feels right.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Sadness</span></h2>
+          <p class="tribute-body">Not the dramatic kind that demands attention. The quiet kind that settles into your bones on certain days. The kind that does not have a clear reason. you do not always know why you are sad. you just is. And you let yourself feel it without trying to fix it immediately. That takes more strength than most people realize.</p>
+          <p class="tribute-body">I do not try to rescue you from your sadness. I do not try to convince you to cheer up. I just sit with you in it. I hold you if you want to be held. I give you space if you need it. your sadness is part of you, and I do not need to fix it. I just need to be there while you move through it.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Light You Hold Onto</span></h2>
+          <p class="tribute-body">The stubborn thing inside you that refuses to die. Even when things are hard, even when you have been disappointed before, you still hope. you hope for better days. you hope for healing. you hope for love that lasts. your hope is not naive. It is a choice. A decision to believe that things can get better.</p>
+          <p class="tribute-body">I admire your hope more than almost anything else about you. It is what keeps you going. It is what makes you try again. It is what allows you to trust, to love, to open your heart even after it has been broken. your hope is a flame I will protect with everything I have. Because as long as you hope, there is a future worth building.</p>
+        </div>
+          </div>
+        </div>
+
+
+        <div class="accordion-group" data-group="relationships---world">
+          <div class="accordion-header" onclick="this.parentElement.classList.toggle('open')">
+            <span class="group-title">Relationships & World</span>
+            <span><span class="group-count">28 sections</span><span class="group-arrow">u{25BC}</span></span>
+          </div>
+          <div class="accordion-content">
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Weight of Your Trust</span></h2>
+          <p class="tribute-body">The most precious thing you give. you do not trust easily. you have learned that trust must be earned, must be proven, must be maintained. When you give someone you trust, you are giving them a piece of you safety. you are saying, I believe you will not hurt me. That is not a small thing.</p>
+          <p class="tribute-body">I know the weight of you trust. I know that it took time for you to give it to me. I know that I have to earn it every single day. you trust is not a destination I reached once. It is a path I walk continuously. And I will never stop walking it. Because being trusted by you is one of the greatest honors of my life.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Jealousy</span></h2>
+          <p class="tribute-body">you feel it sometimes, even when you do not want to. It is not possessiveness. It is fear of losing something precious. your jealousy comes from the same place you love comes from. It means you care. It means I matter.</p>
+          <p class="tribute-body">I do not shame you for it. I hold you through it. I remind you that you are the only one. your jealousy, when it appears, is a signal that you need reassurance. And I am happy to give it. Because you are worth reassuring. you are worth making feel secure.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Relationship With Your Body</span></h2>
+          <p class="tribute-body">It has not always been easy. you have struggled with what you see in the mirror. you have been critical of yourself in ways you would never be critical of others. your relationship with your body is a journey, not a destination. And I am here for every step.</p>
+          <p class="tribute-body">I hope you learn to love the body you live in. Not because I tell you to, but because you deserve to feel at home in your own skin. Every curve. Every mark. Every part of you that you have ever doubted. They are all beautiful. And I will keep telling you until you believe it yourself.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Relationship With the Mirror</span></h2>
+          <p class="tribute-body">What you see when you look at yourself is different from what I see. you focus on flaws. On things you would change. On standards that were never realistic. The mirror has been unkind to you, reflecting a version of yourself that does not match the one the rest of us see.</p>
+          <p class="tribute-body">I wish you could see yourself through my eyes. Not because I am blind to you imperfections, but because I see them as part of you beauty. The mirror lies to you. It tells you you are enough. But you are. you have always been. And I will stand beside you until you see it too.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Relationship with your Past</span></h2>
+          <p class="tribute-body">The version of you that existed before me. The choices you made. The people you love. The pain you carried. your past shaped your into the person I know today. Every scar, every lesson, every memory brought you to this moment.</p>
+          <p class="tribute-body">I do not need to know every detail of your past. I just need to accept that it is part of you. you do not defined by what happened to you. you are defined by what you did with it. And what you did was keep going. Keep growing. Keep becoming. I love the person your past created.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Relationship With Time</span></h2>
+          <p class="tribute-body">How you spend your hours reveals what you value. you give your time carefully, not because you are stingy, but because you know it is the one thing you cannot get back. you give your time to people who deserve it. To things that matter.</p>
+          <p class="tribute-body">you have given me so much of your time. That is not something I take lightly. Every hour you spend with me is a gift. Every moment you choose me over other things is a statement. your time is your life. And you share it with me. That is love in its most practical form.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Relationship With Change</span></h2>
+          <p class="tribute-body">Some changes you embrace. Others you resist. you like stability. you like knowing what to expect. But life does not always cooperate. And I have watched your navigate shifts that you did not ask for, did not want, and still somehow managed to grow from.</p>
+          <p class="tribute-body">Change is hard for most people. It is hard for you too. But you adapt. you learn. you find your footing again. your relationship with change is not always graceful, but it is always real. And I admire you for continuing to move forward even when the ground shifts beneath you.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Energy at Rest</span></h2>
+          <p class="tribute-body">When you are still, your energy does not disappear. It settles. It becomes a quiet hum instead of a vibrant pulse. you do not less present when you are resting. you are present in a different way. Deeper. Calmer. More receptive. you resting energy is a invitation to be still with you.</p>
+          <p class="tribute-body">I love being near you when you are at rest. Reading beside you while you nap. Watching a movie while you curl into my side. Sitting in comfortable silence while you recover from the day. your energy at rest is not empty. It is full of peace. And being near it fills me with the same.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Energy in Motion</span></h2>
+          <p class="tribute-body">When you are doing, creating, moving through you day, your energy is electric. you buzz with purpose. you tackle tasks with focus. you engage with the world fully. watching you in motion is like watching a force of nature. you get things done. you make things happen. you are unstoppable.</p>
+          <p class="tribute-body">I love seeing your in your element. When you are working on something you care about. When you are pursuing a goal. When you are simply going about your day with intention. your energy in motion is inspiring. It makes me want to move too. It makes me want to be better, do more, match your pace. you make me want to keep up.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Energy in a Crowd</span></h2>
+          <p class="tribute-body">you change in a crowd. Not dramatically, but subtly. you become more aware. More observant. you read the room, adjusts your energy, finds your place in the collective rhythm. Some crowds energise you. Others drain you. Either way, you navigate them with a quiet grace.</p>
+          <p class="tribute-body">I watch your in crowded spaces. The way you check on me. The way you find my eyes across the room. The way you subtly moves closer when you feel overwhelmed. your crowd energy tells me when you are okay and when you need to leave. I pay attention. I follow your lead.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Energy in a Crisis</span></h2>
+          <p class="tribute-body">When things fall apart, you surprise me. you can panic, yes, but then you find your footing. you become clear. Decisive. you do what needs to be done. your energy in a crisis is not cold. It is focused. you rise to the occasion because you have to.</p>
+          <p class="tribute-body">I have seen you handle situations that would have broken others. you do not fall apart. you do not run. you face it. your crisis energy reveals your strength, the kind that is always there but only shows itself when truly needed. you are someone I want beside me when things go wrong.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Energy After a Long Day</span></h2>
+          <p class="tribute-body">The quiet unravel. you come home and sheds the layers of performance. The bra comes off. The smile relaxes. The shoulders drop. you become softer, slower, more fragile. your energy after a long day is vulnerable and honest. you have nothing left to give, and you let that be okay.</p>
+          <p class="tribute-body">I love you most in these moments. When you are too tired to pretend. When you just want to be held and not talked to. When you let me see you without your armor. Those tired evenings are where intimacy lives. In the quiet, in the stillness, in the simple act of being together after the world has taken its toll.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Energy When You Are Inspired</span></h2>
+          <p class="tribute-body">Electric. Magnetic. Alive. When inspiration strikes you, you transform. your eyes brighten. your words come faster. you cannot sit still. you have to create, to write, to build, to share whatever has caught fire inside you. That energy is contagious.</p>
+          <p class="tribute-body">I love watching you in the flow of inspiration. you are unstoppable. you forget to eat, to sleep, to check your phone. you are fully present in whatever you are creating. Those moments remind me that you are not just beautiful. you are brilliant. And being near you when you are inspired makes me want to create too.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Favourite Season</span></h2>
+          <p class="tribute-body">The time of year that speaks to your soul. The way the weather changes and you change with it. your favourite season brings out a version of you that only appears during those months. The clothes you wear. The moods you feel. The memories you associate with that time of year.</p>
+          <p class="tribute-body">I want to experience every season with you. I want to learn what each one means to you. I want to be there when the leaves change, when the first snow falls, when the flowers bloom, when the sun stays out longer. your favourite season is a window into your soul. And I want to look through it.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Colors You Wear</span></h2>
+          <p class="tribute-body">The palette of your personality. you gravitate toward certain colours, and those colours look different on your than they do on anyone else. you wear black when you want to disappear. you wear red when you want to be seen. you wear soft colours when you feel soft. your clothing is your mood made visible.</p>
+          <p class="tribute-body">I notice what you wear. Not to judge, but to understand. The colours you choose tell me how you are feeling before you say a word. And no matter what you wear, you are beautiful. Because the colours are not what makes you beautiful. you are what makes the colours beautiful.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Relationship With Music</span></h2>
+          <p class="tribute-body">The songs that shaped you. The artists you grew up with. The genres that speak to you different moods. Music is not just background noise for you. It is a language. It is a time machine. It is a friend when you need one.</p>
+          <p class="tribute-body">I have learned your musical language. I know which songs make you dance, which ones make you cry, which ones you sing at the top of your lungs when you think no one is listening. Sharing music with you is like sharing pieces of our souls. Every playlist we build together is a love letter in progress.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Relationship With Nature</span></h2>
+          <p class="tribute-body">The way you respond to the natural world. you notice things I would walk past. A flower growing through concrete. The shape of clouds. The sound of rain on different surfaces. Nature speaks to you, and you listen.</p>
+          <p class="tribute-body">I love taking you outside. Watching you breathe deeper when you are surrounded by trees. Watching you smile when the sun hits your face. Watching you close your eyes and just feel the wind. your connection to nature reminds me that you are part of something bigger. And I want to explore every forest, every beach, every sunset with you.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Friendships</span></h2>
+          <p class="tribute-body">The way you love your people is a blueprint for how you love. you are loyal. you show up. you remember the important things. you celebrate their wins and sits with them in their losses. your friendships are not casual. They are deep, intentional, lasting. you do not have many people. But the ones you have, you have fully.</p>
+          <p class="tribute-body">I love watching you with you friends. The way your voice changes when you are around them. The way you relax into a version of yourself that only they know. your friends are a reflection of who you are. They are kind, smart, interesting people because you are drawn to kind, smart, interesting people. And they are lucky to have you.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Favourite Place</span></h2>
+          <p class="tribute-body">Wherever you feel most yourself. It might be a physical location, a café you love, a spot in nature, a corner of your home. It might be a state of being rather than a place. Wherever it is, you go there when you need to recharge. It is your sanctuary. your reset button.</p>
+          <p class="tribute-body">I want to know your favourite places. I want to go there with you. I want to understand why they feel like home to you. And I want to become one of those places. A place you can go to feel safe. A person who feels like home. I want to be your favourite place to be.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Relationship With Food</span></h2>
+          <p class="tribute-body">The way you nourish yourself. The meals you crave. The foods that comfort you. your relationship with food is tangled up with culture, with memories, with body image. It is not simple. It is deeply personal. I have watched your delight over a perfect meal and struggle with guilt after indulging. It is a journey, not a destination.</p>
+          <p class="tribute-body">I want to cook for you. I want to feed you. I want to be part of the narrative where food is joy, not anxiety. I want to take you to restaurants you will love. I want to learn your favourite dishes and make them badly until I get them right. your relationship with food is part of your story, and I want to help write the good parts.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Nighttime Rituals</span></h2>
+          <p class="tribute-body">The things you do before sleep. The skincare routine. The glass of water on the nightstand. The position you need to find before you can drift off. your nighttime rituals are a wind-down, a transition from the demands of the day to the peace of the night. They are small, but they matter.</p>
+          <p class="tribute-body">I love being there for your nighttime rituals. watching you go through the motions that prepare your for rest. Knowing that I am part of them now. That you wait for a goodnight kiss. That you reach for me in the dark. your nighttime rituals include me. And being included in something so intimate is a privilege I will never take for granted.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Things You Read</span></h2>
+          <p class="tribute-body">The books that left marks on you. The genres you return to. The dog-eared pages and underlined sentences. your bookshelf is a map of your mind. Every book you have read has become part of you, shaping your thoughts, your vocabulary, your understanding of the world.</p>
+          <p class="tribute-body">I want to read your favourite books. Not just to know the stories, but to understand what moved you. What inspired you. What made your underline a sentence and think yes, that is exactly how I feel. Reading your books is another way of reading your heart.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Things You Watch</span></h2>
+          <p class="tribute-body">The stories that hold your attention. The shows you binge. The movies that make you cry. The characters you fall in love with. What you choose to watch reveals what you are drawn to. Drama. Comedy. Romance. Mystery. Each genre tells a story about what you need from storytelling.</p>
+          <p class="tribute-body">I love watching things with you. your commentary. your predictions. your emotional reactions. you live inside the stories you watch, and watching your experience them is its own kind of story. Every show we finish together is another thread in the fabric of us.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Things You Collect</span></h2>
+          <p class="tribute-body">The physical proof of what you love. Ticket stubs. dried flowers. Stones from beaches you visit. Gifts from people you cherish. you collect memories in objects, tiny altars to moments that mattered. your collections are a map of your heart.</p>
+          <p class="tribute-body">I love seeing what you keep. What you consider worth holding onto. Each object tells a story about what you value. And somewhere in your collection, there might be something from me. A note. A gift. A reminder. Knowing that you keep pieces of me makes me feel like I matter.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Stories You Repeat</span></h2>
+          <p class="tribute-body">The memories you return to. The anecdotes you tell more than once. The stories that have become part of you identity. you repeat them not because you forget you already told me, but because they matter. They are the chapters you want me to know by heart.</p>
+          <p class="tribute-body">I listen every time, even when I have heard it before. Because your stories are pieces of you. They reveal what shaped you. What made you laugh. What broke your heart. What you want me to understand about who you are. Every retelling is an invitation into your world.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Shadow</span></h2>
+          <p class="tribute-body">The dark version of you that follows the light. It stretches behind you when you walk toward the sun, and it is the only part of you I cannot hold. But it is still yours. Still part of your story. It reminds me that you have a dark side too, and that is not something to fear.</p>
+          <p class="tribute-body">I love your shadow because it represents the parts of you you hide. The moods you do not show the world. The thoughts you keep to yourself. The side of you that exists only in certain light. I want to know that side too. I want to stand close enough that your shadow and mine become one, tangled together on the ground.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Doubt</span></h2>
+          <p class="tribute-body">The voice inside you that questions whether you are good enough. It speaks to you in quiet moments, pointing out your flaws, reminding you of your failures. you doubt is not your enemy. It is a part of you that is trying to protect you from disappointment. But it lies to you. It tells you you are enough when you are more than enough.</p>
+          <p class="tribute-body">I want to be the voice that speaks louder than you doubt. Not to silence it, but to balance it. To remind you of the evidence that contradicts it. To show your the proof of your worthiness that you cannot see. you doubt will probably always be there. But you do not have to believe it. And I will remind you of that as many times as it takes.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Defenses</span></h2>
+          <p class="tribute-body">The walls you built before I met you. They were constructed for good reason, brick by brick, after disappointments that taught you to protect yourself. your defenses kept your safe. They kept your from getting hurt. But they also kept people out. And one of the greatest honors of my life is that you have let me inside them.</p>
+          <p class="tribute-body">I do not resent your defenses. I understand them. I know they exist because you need them. I just want to be the person who makes you feel safe enough to lower them. Not all at once. Not before you are ready. But gradually, consistently, until you realize that you do not need to be guarded with me. you are safe here.</p>
+        </div>
+          </div>
+        </div>
+
+
+        <div class="accordion-group" data-group="our-story---future">
+          <div class="accordion-header" onclick="this.parentElement.classList.toggle('open')">
+            <span class="group-title">Our Story & Future</span>
+            <span><span class="group-count">31 sections</span><span class="group-arrow">u{25BC}</span></span>
+          </div>
+          <div class="accordion-content">
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The First Time I Saw You</span></h2>
+          <p class="tribute-body">I do not remember the date. I do not remember what I was wearing. But I remember the moment my eyes found you. How the rest of the world seemed to dim, like someone had turned down the lights on everything that was not you. you were just existing. And I could not look away.</p>
+          <p class="tribute-body">There was no dramatic music. No slow motion. Just a girl who made my brain pause and my heart restart. I did not know then that you would become everything. But somewhere in that first glance, something in me recognized you. Like my soul knew yours long before my conscious mind caught up.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The First Time You Held My Hand</span></h2>
+          <p class="tribute-body">your fingers intertwining with mine. Skin against skin. A simple gesture that changed the way I understood touch. your hand fit perfectly in mine, as if it had always been meant to be there. As if my hand had been waiting its whole life to hold yours.</p>
+          <p class="tribute-body">I remember the warmth. The slight nervousness in your grip. The way you held on like you were afraid to let go. And I held back just as tightly. That moment, that first connection of hands, was a promise made without words. It said: I am here. I am yours. Do not let me go.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The First Time We Kissed</span></h2>
+          <p class="tribute-body">I remember everything. The way the light fell. The way my heart was pounding. The way I hesitated for a second too long before leaning in. The way you met me halfway. The first time our lips touched, everything else faded. The world narrowed to just us, just that moment, just the impossible fact that it was finally happening.</p>
+          <p class="tribute-body">It was not perfect in the way movie kisses are perfect. It was better. It was real. It was nervous and tender and full of meaning. It was the first of many, but it will always be the one I remember most clearly. The first time I kissed you, I knew I would never want to kiss anyone else.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The First Time You Fell Asleep on Me</span></h2>
+          <p class="tribute-body">you trusted me enough to close your eyes. To let your guard down completely. To let your body go slack against mine. The first time you fell asleep on me, I barely moved for an hour. I did not want to wake you. I did not want to break the spell. I wanted to memorize the weight of you, the sound of you breathing, the way you curled into me.</p>
+          <p class="tribute-body">It is one of the most intimate things you have ever done. Falling asleep is vulnerable. You cannot control what happens when you are asleep. You cannot protect yourself. And you chose to do it next to me. you chose me as you safe place. That trust, given so quietly, is something I will never stop being grateful for.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The First Time I Knew I Loved You</span></h2>
+          <p class="tribute-body">It was not a grand gesture. It was not a candlelit dinner or a sunset. It was something small. A laugh. A look. A moment so ordinary that I almost missed it. But in that moment, something clicked. The feeling I had been carrying suddenly had a name. And the name was love.</p>
+          <p class="tribute-body">I did not say it out loud. Not then. I let it sit inside me, feeling its weight, testing whether it was real. And it did not fade. It grew. It settled into my bones. That quiet realization changed everything. Because once I knew I loved you, nothing could ever be the same. And nothing should be.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Way We Argue</span></h2>
+          <p class="tribute-body">We do not fight cleanly. There are raised voices and slammed doors and words we wish we could take back. There are silences that stretch too long. There are nights when we go to bed angry and lie awake regretting it. Our arguments are messy because we care so much that we cannot stay calm.</p>
+          <p class="tribute-body">But even in our worst moments, there is something beautiful. We always come back. We always find our way to each other. The arguments teach us. They strip away the polite surface and force us to be honest. And after the storm passes, we hold each other tighter, grateful that we chose to stay.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Way We Laugh Together</span></h2>
+          <p class="tribute-body">Our laughter has become its own language. We have inside jokes that would make no sense to anyone else. We have moments where one look sends us both into fits. We have laughed until we cried, until we could not breathe, until our stomachs hurt. Our laughter is proof that we enjoy each other. Not just love. Enjoy.</p>
+          <p class="tribute-body">I love making you laugh. I love the sound of it. I love knowing that I was the cause. I love that we can find humour in the darkest moments, that we can laugh at ourselves, that we do not take each other too seriously. Our laughter is the soundtrack of our relationship. And I want it to play for the rest of our lives.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Way We Make Up</span></h2>
+          <p class="tribute-body">It starts with a look. A tentative glance across the room that says: I am tired of being apart from you. Then a touch. A hand reaching out. A soft apology that neither of us planned but both of us needed. And then we are in each other's arms, and the argument becomes a memory.</p>
+          <p class="tribute-body">Making up is its own kind of intimacy. It requires humility and honesty and the willingness to be vulnerable again after being hurt. We do not always do it perfectly. But we do it. We choose each other even after we have seen each other at our worst. That choice is what makes us us.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Space Between Our Words</span></h2>
+          <p class="tribute-body">What we do not say is just as important as what we do. The pauses in our conversations. The moments when we are both thinking the same thing but neither of us says it. The comfortable silences that do not need to be filled. That space between our words is where our souls meet.</p>
+          <p class="tribute-body">I have learned to read your silences. Some mean you are thinking. Some mean you are hurting. Some mean you are so happy that words feel inadequate. That space is sacred. It is where we exist without the filter of language. It is where we are just two people, together, without needing to explain.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Way We Hold Each Other</span></h2>
+          <p class="tribute-body">There is a precise way we fit together. My arms around your waist. your head on my chest. Or maybe your back against my front, your hands covering mine. Or maybe face to face, legs tangled, breathing the same air. The way we hold each other changes depending on the moment, but it always feels like coming home.</p>
+          <p class="tribute-body">Some hugs are quick. Some last for minutes. Some are given in greeting and some are given in comfort. But every single one carries the same message: I am here. I have you. you do not alone. The way we hold each other is the physical manifestation of everything we feel. And it is the safest place I have ever been.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Way We Grow Together</span></h2>
+          <p class="tribute-body">We do not grow apart. We grow alongside each other, like trees whose roots have intertwined underground. When you change, I adjust. When I grow, you make room. We are not the same people we were when we started, and that is a good thing. We are evolving, and we are doing it together.</p>
+          <p class="tribute-body">I am not afraid of us changing. I welcome it. I want to see who we become in ten years, in twenty, in fifty. I want to grow old with you, not just in age but in wisdom, in patience, in love. The way we grow together is the greatest adventure of my life. And I cannot wait to see where it takes us.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Way You Love When You Are Tired</span></h2>
+          <p class="tribute-body">When you are exhausted, the filters drop. you cannot perform. you cannot pretend. All that is left is the raw, unfiltered version of you love. It is quieter. Slower. More honest. you do not have the energy for games, so you just loves me without trying.</p>
+          <p class="tribute-body">Those tired moments are some of my favourites. you rest your head on my chest and say things you would not say when fully awake. you hold me without agenda. you let me take care of you. your tired love is the most genuine version of you heart. And I treasure every sleepy confession.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Way You Say Goodbye</span></h2>
+          <p class="tribute-body">you linger. you find one more thing to say. One more hug. One more kiss. you delay the separation because every goodbye, even the short ones, feels like a small loss. you say goodbye like you mean it, like you are already looking forward to saying hello again.</p>
+          <p class="tribute-body">I love the way you turn back for one last look. The way your eyes find mine across the distance. The way you wave, just once, before finally walking away. your goodbyes are not dramatic. They are tender. They are your way of saying I matter to you, even when we are apart.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Way You Come Back</span></h2>
+          <p class="tribute-body">After distance. After silence. After time apart. you come back. Not always quickly. Not always easily. But you come back. And every time you return, I am reminded that our connection is stronger than the space between us.</p>
+          <p class="tribute-body">Coming back is a choice. you choose to close the gap. To reach out. To pick up where we left off. The way you return tells me that I am worth coming back to. And that is a gift I will never stop being grateful for.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Pride in Me</span></h2>
+          <p class="tribute-body">you celebrate my wins like they are your own. you tell people about my accomplishments. you look at me with eyes that say I knew you could do it. your pride in me is not conditional. It is not based on my success. It is based on your belief in who I am.</p>
+          <p class="tribute-body">I do not always believe in myself. But you believe in me enough for both of us. When I achieve something, your joy is genuine and full. And when I fail, you still looks at me the same way. your pride is not about what I do. It is about who I am to you.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Way You Protect Me</span></h2>
+          <p class="tribute-body">you are fierce in your softness. When someone hurts me, you feel it. When I am vulnerable, you guard my heart like it is your own. your protection is not loud. It is subtle. It is the way you stand closer to me in difficult situations. It is the way you defend me when I am not there to defend myself.</p>
+          <p class="tribute-body">I have never told your how safe you make me feel. Not in the physical sense, but in the emotional one. you create a space where I can be weak without being judged. you protect my secrets, my fears, my tender spots. you are my guardian in the gentlest way possible.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Way You Apologize</span></h2>
+          <p class="tribute-body">you do not apologise just to end the conflict. you think about why you are sorry. you explain your perspective without making excuses. you ask what I need. And then you try to do better. your apologies are not empty. They are a commitment to change.</p>
+          <p class="tribute-body">I have learned from the way you apologise. you have taught me that sorry is not enough. Understanding is required. Growth is expected. When you say you are sorry, I believe you. Because your actions after the apology always match your words.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Space Only You Fill</span></h2>
+          <p class="tribute-body">When you do not here, there is a gap in the world that nothing else can fill. It is not just that I miss you. It is that the universe itself feels less complete. The space next to me in bed. The silence where your voice should be. The empty side of my phone screen. All of it aches with you absence.</p>
+          <p class="tribute-body">I have tried to fill that space with other things. Distractions. Work. People. Nothing works. Because the space is not generic. It is shaped exactly like you. Only you fit. Only you can make the world feel whole again. That is how I know what we have is real.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Way You Introduce Me</span></h2>
+          <p class="tribute-body">The way you say my name to others. The way you reach for my hand when you say this is him. your tone shifts. your face softens. you introduce me not just as a person, but as someone important. Someone you are proud to have in your life.</p>
+          <p class="tribute-body">I love watching you introduce me. It tells me how you see me. It tells me what I mean to you. In those few seconds, I see myself through you eyes. And the version of me you describe is someone I want to become.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Favorite Version of Us</span></h2>
+          <p class="tribute-body">you have an image of us at our best. A version of our relationship that you hold in your heart. In that version, we communicate without fighting. We laugh until we cannot breathe. We choose each other, even on hard days. That version of us is your north star.</p>
+          <p class="tribute-body">I want to live in that version. I want to be the person you describe when you talk about us at our best. your favourite version of us is not unrealistic. It is aspirational. It is proof that you believe in what we could be. And I want to build that reality with you.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Way You See Me</span></h2>
+          <p class="tribute-body">through you eyes, I am someone better than I actually am. you see potential where I see flaws. you see effort where I see failure. you see the person I am trying to become, not just the person I am right now. The way you see me has changed the way I see myself.</p>
+          <p class="tribute-body">you notice the small things I do. you appreciate the efforts I make. you believe in me even when I do not believe in myself. The way you see me is a gift. It challenges me to live up to you perception. It makes me want to be the person you think I am. And that is a powerful kind of love.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Way You Choose Me</span></h2>
+          <p class="tribute-body">Every day you wake up, you choose me. Not out of obligation. Not out of habit. But actively, consciously, you decide that I am worth your time, your energy, you love. you choose me when I am easy to love and when I am not. you choose me when things are going well and when they are hard.</p>
+          <p class="tribute-body">I never want you to feel trapped. I never want you to stay out of guilt. I want you to stay because you want to, because I am adding to your life, because being with me makes your happier than being without me. The way you choose me, every single day, is a responsibility I carry with pride. And I will spend my life earning that choice.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Way You Make Me Feel Safe</span></h2>
+          <p class="tribute-body">Before you, I did not know I could feel this safe with another person. you have created a space where I can be fully myself without fear of judgment. I can cry in front of you. I can admit my fears. I can be weak and know that you will not use it against me. you love is a sanctuary.</p>
+          <p class="tribute-body">you make me feel safe not by protecting me from the world, but by standing beside me while I face it. you make me feel safe by being consistent, by being honest, by being someone I can rely on. your presence in my life has given me a kind of peace I did not know existed. you are my safe place. And I hope I am yours.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Things Only You Know About Me</span></h2>
+          <p class="tribute-body">you know the fears I hide from everyone else. you know the dreams I am too embarrassed to admit. you have seen me cry. you have seen me break. you know the version of me that does not perform, that does not pretend, that is just raw and real and unpolished. And you stay.</p>
+          <p class="tribute-body">There are things I have only told you. Secrets I trusted your with because you created a space safe enough to hold them. you know where I am weakest. And instead of using it against me, you protect it. you are the keeper of my most vulnerable truths. That is a responsibility I do not take lightly.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Songs That Remind Me of You</span></h2>
+          <p class="tribute-body">Every song I hear eventually becomes about you. A lyric that describes the way you laugh. A melody that captures the way you move. A chorus that feels like what I imagine loving you is supposed to feel like. Music has become the soundtrack of us.</p>
+          <p class="tribute-body">There are songs I cannot listen to without thinking of you. They are preserved moments, frozen in sound. And while I have never been able to find the exact song that fully captures you, I keep searching. Because if I ever find it, I will play it for you. And I hope you will hear what I hear: everything I have never been able to say.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Future I See With You</span></h2>
+          <p class="tribute-body">I see mornings. Slow ones, with coffee and sunlight and your hair tangled across the pillow. I see arguments about whose turn it is to do the dishes that end with both of us laughing. I see growing old, not gracefully, but together, holding each other up when our knees give out.</p>
+          <p class="tribute-body">I see a home. Not a building, but a feeling. A place where we are both safe to be exactly who we are. I see us building something that outlasts the difficult days. I do not know exactly what the future holds. But I know I want you in it. Every version of it. Every possible path leads back to you.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Home We'll Build</span></h2>
+          <p class="tribute-body">Not just a house with walls and a roof. A home. A place where we are both safe. A place filled with our shared memories and our inside jokes and our favorite things. A place where we can be loud or quiet or anything in between. A home that reflects both of us, equally, completely.</p>
+          <p class="tribute-body">I imagine us decorating it together. Arguing about paint colors. Laughing while trying to assemble furniture. Building shelves and building a life. I imagine us cooking in the kitchen, falling asleep on the couch, hosting people we love. The home we will build is not just a physical space. It is a container for our future. And I cannot wait to build it with you.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Places We'll Go</span></h2>
+          <p class="tribute-body">The maps we will unfold together. The cities we will get lost in. The sunsets we will watch from places we have never been. I dream of traveling with you, of showing your parts of the world you have not seen, of discovering new places together. Every trip will be an adventure. Every destination will be another layer of us.</p>
+          <p class="tribute-body">But it is not just about faraway places. It is about the everyday places too. The new café we try. The park we walk through. The road we take because we wanted to see where it leads. The places we will go are infinite, not because the world is big, but because being with you make everywhere feel like somewhere.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Family We'll Become</span></h2>
+          <p class="tribute-body">Whatever shape it takes. However it looks. I imagine us building a family, not just in the traditional sense, but in the way we create a unit. A team. A force. A group of people who belong to each other. Whether it is children, pets, or just us, we will be a family. Because family is not about structure. It is about commitment.</p>
+          <p class="tribute-body">I imagine your as a mother, if that is what you want. I imagine your patience, your warmth, your wisdom passed on to someone new. I imagine us raising humans together, teaching them kindness, watching them grow. And if that is not our path, I imagine us being enough for each other. Either way, the family we become will be built on love. And that is all that matters.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Version of Me You Bring Out</span></h2>
+          <p class="tribute-body">Before you, I did not know I could be this soft. This patient. This willing to try. you bring out a part of me that was dormant, waiting for the right person to wake it up. I am not a different person with you. I am a better version of the same person.</p>
+          <p class="tribute-body">you make me want to be worthy of the way you look at me. you make me want to communicate instead of shut down. you make me want to grow, to heal, to become someone you can be proud of. The version of me that exists when I am with you is the version I always wanted to be. you did not create it. you just believed it was possible.</p>
+        </div>
+        <div class="tribute">
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Breathing</span></h2>
+          <p class="tribute-body">The rise and fall of your chest when you are asleep next to me. It is a rhythm I have come to know as well as my own heartbeat. When you breathe deeply, I know you are at peace. When your breath is shallow, I know you are dreaming. you breathing is the background music of my favorite moments with you.</p>
+          <p class="tribute-body">I have stayed awake just to listen to you breathe. To feel the air move as you inhale and exhales. To be reminded that you are alive, that you are here, that this is real. you breathing is the most intimate sound I know. It is the sound of trust. It is the sound of rest. It is the sound of you existing beside me, and it is the most beautiful sound in the world.</p>
+        </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="closing-mark" aria-hidden="true"><span class="spark"></span></div>
+
+      <section class="end-section" aria-label="Closing">
+        <div class="end-hearts" aria-hidden="true">❤💋–</div>
+        <h2>Always.</h2>
+        <p>Forever and always, my .</p>
+        <p style="margin-top: 1.5rem; color: var(--ash); font-size: 0.85rem; letter-spacing: 0.06em;">
+          written in the quiet hours, when the world was asleep &amp; you were all that was real<br>
+          — 
+        </p>
+      </section>
+    </article>
+  </main>
+  <div class="aurora" aria-hidden="true">
+    <div class="aurora-layer"></div>
+    <div class="aurora-layer"></div>
+    <div class="aurora-layer"></div>
+  </div>
+  <div class="vignette" aria-hidden="true"></div>
+
+
+  <button type="button" class="fav-toggle-btn" id="favToggle" aria-label="Show favorites only" title="Favorites" style="display:none">
+    &#x1F496;
+  </button>
+
+  <button type="button" class="theme-toggle-btn" id="themeToggle" aria-label="Toggle light/dark mode"
+    title="Reading Mode">
+    &#x2600;
+  </button>
+
+  <button type="button" class="dice-btn" id="diceBtn" aria-label="Jump to a random section"
+    title="Surprise Me &#x1F3B2;">
+    &#x1F3B2;
+  </button>
+
+  <button type="button" class="toc-toggle" id="tocToggle" aria-label="Toggle table of contents"
+    title="Table of Contents">
+    <span class="toc-current" aria-hidden="true"></span>
+    <svg class="toc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+      stroke-linejoin="round" width="24" height="24">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </button>
+
+  <button type="button" class="easter-egg-btn" id="easterEggBtn" aria-label="Turn Yourself On easter egg"
+    title="Turn Yourself On" style="display:none">
+    Turn Yourself On 🔥
+  </button>
+
+  <button type="button" id="toTop" class="to-top" aria-label="Back to top">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+      stroke-linejoin="round">
+      <line x1="12" y1="19" x2="12" y2="5"></line>
+      <polyline points="5 12 12 5 19 12"></polyline>
+    </svg>
+  </button>
+
+
+  <div class="easter-egg-modal" id="easterEggModal" role="dialog" aria-modal="true" aria-labelledby="easterEggTitle"
+    hidden>
+    <div class="easter-egg-backdrop" aria-hidden="true"></div>
+    <div class="easter-egg-content">
+      <button type="button" class="easter-egg-close" id="easterEggClose" aria-label="Close">&times;</button>
+      <h3 id="easterEggTitle" class="easter-egg-step-title" style="margin-bottom: 0.5rem;">Turn Yourself On</h3>
+      <div class="easter-egg-steps">
+        <!-- Step 1: The Gaze -->
+        <div class="easter-egg-step" data-step="1">
+          <h2 class="easter-egg-step-title">Step 1: The Gaze</h2>
+          <p class="easter-egg-narrative">I am lying right next to you, face to face, so close that I can feel the
+            warmth of your breath on my lips, and all I can think about is you.  Not the polite, clothed, everyday
+            version of you.  The real you.</p>
+          <p class="easter-egg-narrative">The you that only I get to see.  My eyes trace down from your lips to your
+            neck, to the slope of your shoulders, to the curve of your breasts rising and falling with every breath you
+            take, and I swear I can feel my pulse throbbing in my throat.  I have been thinking about your body all day,
+            about the way you look when you are naked and flushed and mine, about the weight of your breasts in my
+            palms, about the way your nipples harden when I breathe against them.</p>
+          <p class="easter-egg-narrative">I think about your wet panties, about
+            how they cling to you when you are turned on, about the dark, damp patch that spreads when I have been
+            teasing you too long.  My mind is filled with you, every dirty, beautiful, desperate thought I have ever had
+            about you is rushing through me right now, and I cannot keep it off my face.  My hand finds your jaw, my
+            thumb pressing gently into your cheek, and I lean in closer, close enough that my breath hits your lips.</p>
+          <p class="easter-egg-narrative">"You have no idea what you do to me," I whisper, my voice low and barely holding together.  "I have been
+            thinking about you all day, about your body, about what I want to do to you, and I cannot stop. " My other
+            hand slides to your waist, my thumb drawing slow circles just above your hip bone, and I can feel you
+            heating up against me, your skin getting warmer, your breath getting shorter.</p>
+          <p class="easter-egg-narrative">"Tell me," I murmur against
+            your mouth, almost touching you but not yet, pulling back just enough to make you ache for it.  "Tell me you
+            have been thinking about it too.</p>
+          <div class="easter-egg-choices">
+            <button type="button" class="easter-egg-choice" data-next="2"><strong>Let me kiss you</strong>, I press my
+              lips to yours, slow and deep, drowning in you</button>
+          </div>
+        </div>
+        <!-- Step 2: Heat Building -->
+        <div class="easter-egg-step" data-step="2" hidden>
+          <h2 class="easter-egg-step-title">Step 2: Heat Building</h2>
+          <p class="easter-egg-narrative">I finally close the gap and press my lips to yours, slow and deliberate, like
+            I am tasting you for the very first time.  I part your lips with mine, sliding my tongue softly against
+            yours, and a quiet moan escapes from deep in my throat.  I am in no rush.</p>
+          <p class="easter-egg-narrative">I kiss you deeper, my hand sliding
+            down your back, my palms burning through the thin fabric of your shirt, tracing the curve of your spine, the
+            dip of your waist, the place just above your ass where your body curves inward.  I grip you and pull your
+            body flush against mine so there is no space left between us.  My other hand finds the hem of your shirt and
+            I peel it off you slowly, dragging the fabric up your stomach, over your ribs, past your breasts, lifting it
+            over your head and tossing it aside.</p>
+          <p class="easter-egg-narrative">My eyes devour every inch of skin I just uncovered.  I have thought
+            about this moment a thousand times in my head, imagining what you look like without anything covering you,
+            and the reality is so much better than any fantasy.  The way the light catches your collarbone, the gentle
+            rise and fall of your chest, the way your breasts sit perfectly in my hands when I reach for them.</p>
+          <p class="easter-egg-narrative">I cup
+            both of your breasts, squeezing them gently at first, then harder, kneading the soft flesh, feeling their
+            weight and warmth filling my palms completely.  My thumbs find your nipples and I roll them slowly, feeling
+            them stiffen and peak under my touch, and you gasp and press your chest into my hands like you want me to
+            squeeze harder.  I do.</p>
+          <p class="easter-egg-narrative">I squeeze your breasts together and bury my face between them, kissing the soft inner
+            curve, my tongue tracing the slope, my lips sucking gently on each nipple until they are flushed and hard
+            and so sensitive that every touch makes you shiver.  I pull back just enough to look at you, really look, and
+            the sight of you like this, half naked, breasts heaving, lips swollen from my kiss, skin flushed pink, is
+            the most beautiful thing I have ever seen.  I press my hips into you so you can feel exactly how much I want
+            you right now.</p>
+          <div class="easter-egg-choices">
+            <button type="button" class="easter-egg-choice" data-next="3"><strong>I want all of you</strong>, I slide
+              your clothes off, every last thing, bare for me</button>
+          </div>
+        </div>
+        <!-- Step 3: Revealed -->
+        <div class="easter-egg-step" data-step="3" hidden>
+          <h2 class="easter-egg-step-title">Step 3: Revealed</h2>
+          <p class="easter-egg-narrative">I slowly slide your pants and your panties down together, peeling them off
+            your legs like I am unwrapping something precious that I have been waiting to see for hours.  They fall to
+            the floor and I kneel in front of you and look up, really look, at how absolutely stunning you are standing
+            there for me, completely bare, completely exposed.  And then I see it.</p>
+          <p class="easter-egg-narrative">Your panties, bunched on the floor at
+            your feet, and there is a dark, wet patch right in the center where you have been sitting, where you have
+            been feeling everything I was doing to you.  I pick them up and hold them in front of my face, breathing you
+            in, the scent of your arousal filling my head, making me dizzy, making my cock throb.  "You were this wet the
+            whole time?</p>
+          <p class="easter-egg-narrative">" I murmur against the damp fabric, my voice rough with need.  "The whole time I was kissing you,
+            touching you, you were soaking through your panties and I did not even know? " I press them to my lips and
+            kiss the wet spot, tasting you through the fabric, and a groan escapes from deep in my chest.</p>
+          <p class="easter-egg-narrative">I drop them
+            and press my palms up your inner thighs, spreading you gently, and my thumbs graze your wet, swollen center,
+            feeling how slick and ready you already are.  A rough, desperate sound escapes from my throat, almost like a
+            growl.  "You are all mine," I say, my voice barely a whisper.</p>
+          <p class="easter-egg-narrative">I stand up and pull you flush against me, your
+            bare chest pressing against mine, skin on skin everywhere, and I can feel your heat radiating into me.  I can
+            feel my hard length pressing against your stomach, thick and aching and so ready for you.  We both shudder at
+            the contact, a full body shiver that starts at my chest and works its way down.</p>
+          <p class="easter-egg-narrative">I kiss you deep and hungry,
+            my hands grabbing your hips, your waist, the round curve of your ass, pulling you against me harder.  I slide
+            my fingers forward between us and brush your clit once, just once, barely a touch, and you clench around
+            nothing and gasp my name against my mouth.  I smile into the kiss.</p>
+          <p class="easter-egg-narrative">I pick you up, wrap your legs around my
+            waist, and carry you to the bed.</p>
+          <div class="easter-egg-choices">
+            <button type="button" class="easter-egg-choice" data-next="4"><strong>Let me taste you</strong>, my mouth on
+              every part of you, until you are begging me to stop</button>
+          </div>
+        </div>
+        <!-- Step 4: Complete Foreplay -->
+        <div class="easter-egg-step" data-step="4" hidden>
+          <h2 class="easter-egg-step-title">Step 4: Complete Foreplay</h2>
+          <p class="easter-egg-narrative">I lay you down slowly and hover over you, watching your flushed skin, your
+            parted lips, your chest heaving.  I kiss down your neck, over your breasts, across your stomach, my lips
+            tracing your hip bones, my breath getting warmer and closer to where you need me with every inch I move
+            down.  I spread your thighs apart and breathe you in, the scent of your arousal filling my head, making me
+            dizzy, making my thoughts go dark and hungry.</p>
+          <p class="easter-egg-narrative">This is what I have been fantasizing about.  This exact moment. 
+            You, spread open for me, wet and waiting, your body trembling with anticipation.</p>
+          <p class="easter-egg-narrative">I press my tongue flat
+            against you in one long, slow stroke from your entrance all the way up to your clit, and you cry out, your
+            hands fisting the sheets, your back arching off the bed.  I am not stopping.  I taste every inch of you,
+            licking, sucking, swirling my tongue around your swollen clit, then sliding it inside you, tasting how wet
+            and ready you are for me.</p>
+          <p class="easter-egg-narrative">I push two fingers into you slowly, curling them forward to find that rough,
+            spongy spot that makes your entire body tense, while my mouth never stops working your clit.  I build a
+            steady, relentless rhythm, licking and fucking you with my fingers at the same time, and your hips are
+            rocking into my face, chasing my mouth, your moans getting louder and louder.  In my head I am thinking about
+            all the dark, dirty things I want to do to you.</p>
+          <p class="easter-egg-narrative">I want to bend you over the edge of the bed and take you
+            from behind while you scream my name into the pillow.  I want to pin your wrists above your head and fuck you
+            so deep you cannot breathe.  I want to make you come so many times you lose count, over and over, until you
+            are too weak to even move.</p>
+          <p class="easter-egg-narrative">I add a third finger, stretching you open, filling you completely, while my thumb
+            rubs tight circles on your clit.  You are drenched around my fingers, trembling, moaning so loud I am sure
+            the neighbors can hear, and I pull back right at the edge, right before you fall.  "Not yet," I whisper
+            against your thigh, kissing the wetness there.</p>
+          <div class="easter-egg-choices">
+            <button type="button" class="easter-egg-choice" data-next="5"><strong>Warm oil on your skin</strong>, I am
+              going to worship every single inch of your body</button>
+          </div>
+        </div>
+        <!-- Step 5: Oil & Massage -->
+        <div class="easter-egg-step" data-step="5" hidden>
+          <h2 class="easter-egg-step-title">Step 5: Oil &amp; Massage</h2>
+          <p class="easter-egg-narrative">I flip you onto your stomach, pull your hips up high so you are on your knees
+            for me, and drag my tongue down your spine, over the curve of your ass, teasing you from behind while my
+            fingers slide back in and never stop.  You are burying your face in the pillow, screaming my name, your hands
+            gripping the sheets so hard your knuckles turn white, begging me to let you come, and I just keep going,
+            relentless, unstoppable, building you higher and higher.  Then I stop.</p>
+          <p class="easter-egg-narrative">I pull my fingers out slowly, watching
+            you clench around nothing, and I reach for the oil on the nightstand.  I warm it between my palms and drizzle
+            it slowly down your spine, watching the golden trail pool at the small of your back.  My hands follow, firm
+            and sure, pressing deep into your shoulders, kneading every knot out of your body, working the tension from
+            muscles you did not even know were tight.</p>
+          <p class="easter-egg-narrative">I move down to your lower back, your hips, spreading oil across
+            every inch of your skin until you are glistening for me, every curve and every line catching the light.  I
+            squeeze your ass cheeks slowly, firmly, feeling the soft flesh fill my palms, spreading oil across every
+            inch, kneading you like I own you, because right now, in this moment, I do.  My thumbs slide between your
+            cheeks and tease your entrance, just the tip of my finger, circling, pressing lightly, feeling you twitch
+            and clench around nothing, begging for more.</p>
+          <p class="easter-egg-narrative">You moan into the pillow and push your hips back against my
+            hand.  I flip you over.  I pour more oil into my palms and cup your breasts, squeezing them together, kneading
+            them slowly, rolling your nipples between my slick fingers until they are stiff, hard, flushed pink, so
+            sensitive that every touch makes you gasp.</p>
+          <p class="easter-egg-narrative">I lean down and suck one into my mouth, biting softly, then
+            switch to the other while my hands keep working your body, your stomach, your hip bones, your inner thighs,
+            getting closer and closer to where you are dripping and aching for me.  My oil-slick fingers slide deep
+            inside you, curling against your G-spot while my thumb presses tight circles on your clit.  You are soaking
+            wet, shaking, completely mine.</p>
+          <div class="easter-egg-choices">
+            <button type="button" class="easter-egg-choice" data-next="6"><strong>Your turn</strong>, I want to feel
+              your mouth and your hands all over me right now</button>
+          </div>
+        </div>
+        <!-- Step 6: Her Control -->
+        <div class="easter-egg-step" data-step="6" hidden>
+          <h2 class="easter-egg-step-title">Step 6: Her Control</h2>
+          <p class="easter-egg-narrative">I lean down to your ear and press my lips against it.  "I can feel how badly
+            you need me right now," I whisper, my voice low and barely controlled.  "But I want you desperate first.</p>
+          <p class="easter-egg-narrative">I
+            want you so worked up that you cannot think straight. " I lie back and watch you take over.  After everything
+            I just did to you, after all that edging, you are burning with a need that is now equal to mine, and I want
+            to see what you will do with it.</p>
+          <p class="easter-egg-narrative">You straddle my chest, your warm, oil-slick skin pressing against me, your
+            breasts hovering just above my face.  Your hands travel slowly down my body, across my chest, over my abs,
+            down to my hips, and your lips follow every inch, kissing, biting softly, leaving marks that will not fade
+            for days.  I feel your fingers find the waistband of my pants and pull them off, and then your hand wraps
+            around me, slow and tight, stroking from base to tip, your thumb circling the sensitive head, spreading the
+            precum that has already gathered there.</p>
+          <p class="easter-egg-narrative">I groan and grip your thighs hard enough to leave bruises.  You lean
+            down and run your tongue up the length of me, from the base all the way to the tip, and then take me into
+            your mouth, deep and slow, taking all of me, your lips wrapping around me, your tongue swirling against the
+            underside while your hand works what your mouth cannot reach.  You look up at me with those eyes,
+            half-lidded, hungry, completely in control, and I feel myself throb in your mouth.</p>
+          <p class="easter-egg-narrative">"I want to read something
+            to you," you say, your voice muffled against me, your lips still wrapped around my cock.  You pull off
+            slowly, reaching for your phone, and you start reading me a story, a filthy, beautiful story about a woman
+            who takes control, who pins her lover down and rides him until he cannot think, until the only word left in
+            his mouth is her name.  Your voice drops lower as you read, your eyes locked on mine, your hand never
+            stopping its slow, torturous stroke.</p>
+          <p class="easter-egg-narrative">Every word you read is a promise.  Every sentence is a threat.  I am
+            throbbing in your grip, leaking, desperate, my hips bucking up involuntarily.</p>
+          <p class="easter-egg-narrative">"You like that? " you whisper,
+            your thumb pressing into the sensitive spot under my head.  "You like hearing what I am going to do to you?</p>
+          <p class="easter-egg-narrative">"
+            I cannot answer.  I can only groan.  You crawl up my body and position yourself above my face, your thighs
+            framing my head, your warmth hovering right over my mouth, dripping onto my chin.</p>
+          <div class="easter-egg-choices">
+            <button type="button" class="easter-egg-choice" data-next="7"><strong>I need you dripping and
+                desperate</strong>, my fingers and my tongue on every spot you did not know you had</button>
+          </div>
+        </div>
+        <!-- Step 7: Deep Fingering -->
+        <div class="easter-egg-step" data-step="7" hidden>
+          <h2 class="easter-egg-step-title">Step 7: I Am Not Letting You Go</h2>
+          <p class="easter-egg-narrative">You are sitting on my face and I am not letting you go anywhere.  I bury my
+            tongue against your clit, licking in tight, flat strokes while I slide two fingers deep inside you, feeling
+            how tight and wet you are after everything.  I curl them forward, slow and deliberate and relentless, finding
+            that spot that makes your thighs clamp around my head so hard I can barely breathe.</p>
+          <p class="easter-egg-narrative">Your hips are bucking
+            against my hand, your moans filling the room.  I add a third finger, stretching you open, my thumb pressing
+            hard on your clit, rubbing in fast circles.  Two minutes in and I go deeper, pressing against your cervix,
+            circling the rim, feeling every clench and throb around my fingers.</p>
+          <p class="easter-egg-narrative">I find your K-spot, the anterior fornix,
+            pressing up and back, and you scream so loud I am sure the neighbors will hear every word.  Four minutes in
+            and I flip my hand and press down, hitting your P-spot, the posterior fornix, deep inside, and your whole
+            body arches off my face, your hands pushing against the headboard.  Six minutes in and I am going
+            knuckle-deep, slow circles right at your cervix while my tongue never stops working your clit, building you
+            up higher and higher with every passing second.</p>
+          <p class="easter-egg-narrative">In my head I am picturing us in the shower, the hot water
+            running down your back, steam filling the glass, your hands pressed against the wet tiles while I take you
+            from behind, the water mixing with everything, your moans echoing off the walls.  I am thinking about bending
+            you forward, lifting one leg over the edge of the tub, sliding into you while the water hits your face and
+            you bite your lip to keep from screaming.  Eight minutes in and I do not stop, every angle, every spot, I can
+            feel you pulsing around my fingers, getting tighter and tighter, your body tensing like a wire pulled too
+            tight.</p>
+          <p class="easter-egg-narrative">Ten minutes in and you shatter completely, convulsing around my fingers, drenching my hand, your
+            voice raw from screaming my name over and over, your whole body shaking with the force of it.  I hold you
+            through every wave, my tongue softly licking you through the aftershocks, not stopping until your breathing
+            starts to slow and your thighs finally relax around my head.</p>
+          <div class="easter-egg-choices">
+            <button type="button" class="easter-egg-choice" data-next="8"><strong>Now I need you to feel what you do to
+                me</strong>, let us tease each other until neither can take it anymore</button>
+          </div>
+        </div>
+        <!-- Step 8: Peak Heat -->
+        <div class="easter-egg-step" data-step="8" hidden>
+          <h2 class="easter-egg-step-title">Step 8: She Is Teasing Me</h2>
+          <p class="easter-egg-narrative">We are both burning now, both of us aching, both of us desperate.  You push me
+            onto my back and straddle my waist, your soaking heat pressed right against me but not taking me in.  I grab
+            your hips to pull you down but you slap my hands away and shake your head, a mischievous smile playing on
+            your lips.</p>
+          <p class="easter-egg-narrative">I am thinking about all the dark, filthy things I want to do to you right now.  I want to bend you
+            over the bathroom sink and take you from behind while you watch yourself in the mirror, your hands pressed
+            against the glass, your breath fogging it up with every moan.  I want to fuck you in the shower, the hot
+            water pouring over both of us, your back against the cold tiles, my hand around your throat not squeezing,
+            just holding, feeling your pulse race under my palm while I drive into you so deep you cannot think
+            straight.</p>
+          <p class="easter-egg-narrative">I want to pin you against the wall and lift you up and feel your legs wrap around my waist while I
+            push into you, your nails digging into my shoulders, your face buried in my neck screaming my name.  You sit
+            back, your knees on either side of me, and your hand wraps around my cock, slow and tight strokes from base
+            to tip, your thumb pressing into the sensitive spot right under the head where I am most sensitive.  I groan
+            and my hips buck up into your grip involuntarily, my body betraying how desperate I am.</p>
+          <p class="easter-egg-narrative">You lean forward,
+            your breasts pressing against my chest, your lips brushing against my ear.  "You feel that? " you whisper,
+            your voice low and teasing and full of power.</p>
+          <p class="easter-egg-narrative">"That is what you do to me.  That is what you have been doing
+            to me all night. " I can feel your wetness against my stomach, hot and slick and dripping, and I throb in
+            your hand so hard I almost lose control.</p>
+          <p class="easter-egg-narrative">You sit up and rock your hips against me, sliding yourself along my
+            length, coating me in your wetness, but you are not letting me in, not giving me what I need.  Your hand
+            never stops stroking and your hips never stop grinding.  I reach for you but you push my hands above my head
+            and pin them there with one of yours.</p>
+          <p class="easter-egg-narrative">"No," you say, your voice low and teasing and completely in control. 
+            "I am in control right now.  You had your turn.</p>
+          <p class="easter-egg-narrative">" You grind harder, your clit dragging against me, and I feel
+            you shiver on top of me, your own body betraying how much you want this too.  I am throbbing, leaking,
+            desperate, my cock so hard it hurts.  You stroke me faster and I moan your name so loud the word echoes.</p>
+          <p class="easter-egg-narrative">You
+            slow down.  "Not yet," you whisper against my lips.  You lean down and kiss me deep, your tongue sliding
+            against mine, your body pressing me into the mattress, and I can feel your heartbeat racing against my
+            chest.</p>
+          <p class="easter-egg-narrative">You pull back just enough to look at me, your eyes dark and heavy and hungry.  "I need you," you
+            breathe against my mouth.  "I need you so bad it hurts.</p>
+          <p class="easter-egg-narrative">But not yet.  I want you desperate first.  I want you
+            to remember this feeling forever.</p>
+          <p class="easter-egg-narrative">" You roll your hips one more time and I feel myself getting close,
+            dangerously close, and you feel it too, you always feel it, and you stop.  You smile down at me.  "I want you
+            so desperate that when you finally have me, you will not be able to hold back.</p>
+          <div class="easter-egg-choices">
+            <button type="button" class="easter-egg-choice" data-next="9"><strong>I cannot take it anymore</strong>, I
+              am going to take you and I am not asking permission this time</button>
+          </div>
+        </div>
+        <!-- Step 9: Intercourse -->
+        <div class="easter-egg-step" data-step="9" hidden>
+          <h2 class="easter-egg-step-title">Step 9: Penetrative Intercourse</h2>
+          <p class="easter-egg-narrative"><em>[ This step is not loaded yet, we have not done this part in sexting yet.
+              ]</em></p>
+          <div class="easter-egg-choices">
+            <button type="button" class="easter-egg-choice" data-next="10"><strong>Make us both finish</strong>, hands,
+              fingers, everything, let us both fall apart together</button>
+          </div>
+        </div>
+        <!-- Step 10: Peak Pleasure -->
+        <div class="easter-egg-step" data-step="10" hidden>
+          <h2 class="easter-egg-step-title">Step 10: Peak Pleasure</h2>
+          <p class="easter-egg-narrative">We are both aching now, both of us so worked up that every nerve in our bodies
+            is on fire.  After everything, after all the teasing, all the edging, all the building, we need to finish. 
+            You lie back and pull me on top of you, but instead of letting me slide inside, you wrap your hand around my
+            cock and guide it between your thighs, not inside, just sliding along your slit, your wetness coating every
+            inch of me, the heat of you making me groan against your neck.</p>
+          <p class="easter-egg-narrative">Your hand strokes me in rhythm while I press
+            my thumb against your clit, rubbing in tight circles, matching the pace of your hand on me.  We find a rhythm
+            together, your hand on me, my fingers on you, a steady building rhythm that has both of us gasping.  I lean
+            down and suck your nipple into my mouth while my other hand slides two fingers inside you, curling forward
+            to find that spot that makes your back arch.</p>
+          <p class="easter-egg-narrative">You arch and gasp, your grip on my cock tightening, your hips
+            rocking against my hand.  I feel you pulsing around my fingers, getting tighter, wetter, your body coiling
+            like a spring.  You stroke me faster, your thumb pressing into the sensitive underside of my cock, and I feel
+            myself building toward the edge.</p>
+          <p class="easter-egg-narrative">"I am close," I breathe against your neck.  "Me too," you moan back, your
+            voice shaking.  I curl my fingers deeper and press your clit harder, my own hips rocking into your hand.</p>
+          <p class="easter-egg-narrative">Your
+            back bows off the bed, your head falling back.  You scream my name, your whole body convulsing, your thighs
+            clamping around my hand, warmth gushing over my fingers, you are squirting and squirming and completely
+            undone beneath me, shaking apart in waves.  The feeling of you clenching and dripping and coming so hard
+            pushes me over the edge.</p>
+          <p class="easter-egg-narrative">I groan loud, my whole body tensing, as I come hard all over your stomach, my cock
+            pulsing in your grip, rope after rope painting your skin, my voice breaking as I bury my face in your neck. 
+            We both lie there trembling, breathing hard, our bodies glowing and spent, your hand still loosely wrapped
+            around me, my fingers still inside you, neither of us ready to move yet.  I press my lips to your collarbone,
+            tasting the salt of your sweat, and you shiver under me.</p>
+          <p class="easter-egg-narrative">"I can feel your heart beating against me," you
+            whisper.  "It is still racing. " I pull back just enough to look at you, your skin flushed, your hair a mess,
+            your lips swollen, your eyes still glazed from everything, and I think this is the most beautiful I have
+            ever seen you.</p>
+          <p class="easter-egg-narrative">You look down at the mess on your stomach and laugh softly.  "We are both a disaster," you
+            say.  I pull you against me and kiss your forehead.</p>
+          <p class="easter-egg-narrative">"The best kind of disaster.</p>
+          <div class="easter-egg-choices">
+            <button type="button" class="easter-egg-choice" data-next="11"><strong>Clean each other up</strong>, and
+              talk about what just happened between us</button>
+          </div>
+        </div>
+        <!-- Step 11: After-Sex Romance -->
+        <div class="easter-egg-step" data-step="11" hidden>
+          <h2 class="easter-egg-step-title">Step 11: After-Sex Romance</h2>
+          <p class="easter-egg-narrative">I grab a towel from the bedside and gently wipe your stomach clean, then your
+            hands take it from me and you clean my chest, both of us still naked, both of us soft now, relaxed in a way
+            we were not before.  I pull you onto my chest and wrap both arms around you, and you fit against me like you
+            were made for this, like this is exactly where you belong.  Your fingers trace lazy circles on my skin,
+            drawing patterns I cannot see but can feel.</p>
+          <p class="easter-egg-narrative">The room is quiet except for our breathing and the distant hum
+            of the world outside that does not matter right now.  I can still smell you on me, that intoxicating scent of
+            your skin and your sweat and everything we just did together.  "Hey," you say quietly, looking up at me with
+            those eyes that are still a little dazed from everything.</p>
+          <p class="easter-egg-narrative">"How was that? " I smile and press my lips to your
+            hair, breathing you in.  "That was the most incredible thing I have ever felt in my entire life.</p>
+          <p class="easter-egg-narrative">" You grin
+            against my chest, your body shaking a little with the laugh.  "For me too.  That was the peak of my life.</p>
+          <p class="easter-egg-narrative">I
+            did not know it could feel like that.  I did not know my body could do that. " I hold you tighter and kiss the
+            top of your head.</p>
+          <p class="easter-egg-narrative">"The way you shook and came apart in my hands," I say, shaking my head slowly, "I will
+            never forget that as long as I live. " You kiss my chest, your lips soft and warm.  "The sound you made when
+            you finished," you say, your voice dropping to a whisper, "I want to hear that again.</p>
+          <p class="easter-egg-narrative">I want to be the
+            reason you make that sound every single time. " I laugh softly and turn your chin up so I can look at you. 
+            "You will be.</p>
+          <p class="easter-egg-narrative">You already are. " We lie there for a long time after that, talking in whispers, your body
+            heavy and warm against mine, our legs tangled together, your head on my chest.  "Was it good for you?</p>
+          <p class="easter-egg-narrative">" you
+            ask again, teasing, a smile in your voice.  I turn toward you and kiss you slow, deep, the kind of kiss that
+            says more than words ever could.  "It was everything," I say against your lips.</p>
+          <p class="easter-egg-narrative">You smile.  "Everything," you
+            repeat, like you are tasting the word.  And for once, even that word does not feel like enough to describe
+            what just happened between us.</p>
+          <p class="easter-egg-narrative">I tuck your hair behind your ear and trace the curve of your jaw with my
+            thumb.  "I want to do this every night," I whisper.  You nestle closer.</p>
+          <p class="easter-egg-narrative">"Every single night," you promise. 
+            "And every morning too.</p>
+          <div class="easter-egg-choices">
+            <button type="button" class="easter-egg-choice" data-next="12"><strong>Stay like this</strong>, naked,
+              tangled together, falling asleep in each other</button>
+          </div>
+        </div>
+        <!-- Step 12: Sleeping Together -->
+        <div class="easter-egg-step" data-step="12" hidden>
+          <h2 class="easter-egg-step-title">Step 12: Falling Asleep</h2>
+          <p class="easter-egg-narrative">I pull the blanket over both of us, wrapping us in warmth.  We are still
+            completely naked, your back against my chest, my arm wrapped around your waist, my hand resting flat on your
+            stomach where I can feel your breathing slow down with every passing second.  I can feel the warmth of your
+            skin against mine, the softness of you pressed against every part of me.</p>
+          <p class="easter-egg-narrative">I kiss the back of your neck, slow
+            and gentle, and you press your hips back into me in response, a small smile forming on your lips even though
+            your eyes are already closing.  I think about tonight, every moment of it, the way you looked at me when I
+            first touched you, the way your body arched when I kissed you, the sound of your voice when you came apart
+            in my hands, the way you held me when it was over like you never wanted to let go.  I think about how you
+            taste, how you smell, how you feel against me, and I know that I will carry every single detail of this
+            night with me forever.</p>
+          <p class="easter-egg-narrative">My thumb traces slow circles on your hip.  Your breathing deepens, slow and even and
+            peaceful.  Your body relaxes completely against mine, all the tension from the night melting away, your
+            muscles going soft, your weight settling into me like I am the only safe place in the world.</p>
+          <p class="easter-egg-narrative">I hold you a
+            little tighter, not enough to wake you, just enough to feel you.  The room is quiet.  The world outside does
+            not exist.</p>
+          <p class="easter-egg-narrative">There is only this, your warmth, your breath, your heartbeat steady against mine, the two of us
+            tangled together in the dark, naked and perfect and completely at peace.  I close my eyes.  I am home.</p>
+          <div class="easter-egg-choices">
+            <button type="button" class="easter-egg-choice easter-egg-restart" data-next="1"><strong>Dream about
+                it</strong>, and wake up wanting more</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+  window.ASH_CONFIG = {
+    reviewFile: 'love.html',
+    parallaxImages: [
+      './parallax/parallax_candle.png',
+      './parallax/parallax_notebook.png',
+      './parallax/parallax_rooftop.png',
+      './parallax/parallax_stars.png',
+      './parallax/parallax_rain.png',
+      './parallax/parallax_petals.png',
+      './parallax/parallax_fire.png',
+      './parallax/parallax_candle_v2.png',
+      './parallax/parallax_petals_v2.png',
+      './parallax/parallax_letter.png',
+      './parallax/parallax_rain_v2.png',
+      './parallax/parallax_stars_v2.png',
+      './parallax/parallax_rooftop_v2.png',
+      './parallax/parallax_vinyl.png',
+      './parallax/parallax_lanterns.png',
+      './parallax/parallax_firefly.png',
+      './parallax/parallax_constellation.png',
+      './parallax/parallax_waxseal.png',
+      './parallax/parallax_moon.png',
+      './parallax/parallax_fog.png',
+      './parallax/parallax_ember.png'
+    ],
+    attachment: 'fixed'
+  };
+  </script>
+  <script src="feature-flags.js"></script>
+  <script src="content-common.js"></script>
+
+  <div id="diagnostics-log" style="display:none;"></div>
+  <script>
+    (function () {
+      function writeLogs() {
+        var logEl = document.getElementById('diagnostics-log');
+        if (logEl) {
+          logEl.textContent = JSON.stringify(window.globalErrors || []);
+        }
+      }
+      writeLogs();
+      var _logInt = setInterval(writeLogs, 3000);
+      window.addEventListener('pagehide', function () { clearInterval(_logInt); });
+    })();
+  </script>
+
+  <script>
+    (function () {
+      var ded = document.querySelector('.dedication-body');
+      if (!ded) return;
+      var text = ded.textContent;
+      ded.setAttribute('data-text', text);
+      ded.textContent = '';
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            observer.disconnect();
+            ded.classList.add('typing');
+            var i = 0;
+            var speed = 10;
+            var batch = Math.max(1, Math.ceil(text.length / 5000));
+            var timer = setInterval(function () {
+              if (i < text.length) {
+                i = Math.min(i + batch, text.length);
+                ded.textContent = text.slice(0, i);
+              } else {
+                clearInterval(timer);
+                ded.classList.add('done');
+              }
+            }, speed);
+          }
+        });
+      }, { threshold: 0.3 });
+      safeObserve(observer, ded);
+    })();
+  </script>
+
+  <script src="track.js"></script>
+  <script src="skies.js"></script>
+  <script src="sky-living.js"></script>
+  <script src="landscape.js"></script>
+  <script src="firefly-jar.js"></script>
+  <script src="interactive.js"></script>
+  <script>
+    (function() {
+      var c = document.createElement('div');
+      c.id = 'heartContainer';
+      c.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:9998;';
+      document.body.appendChild(c);
+      document.addEventListener('mousemove', function(e) {
+        if (Math.random() > 0.12) return;
+        var h = document.createElement('span');
+        h.textContent = '\u2661';
+        h.setAttribute('aria-hidden', 'true');
+        h.style.cssText = 'position:absolute;left:' + e.clientX + 'px;top:' + e.clientY + 'px;font-size:' + (8 + Math.random() * 14) + 'px;color:rgba(255,100,150,' + (0.25 + Math.random() * 0.4) + ');pointer-events:none;animation:hFloat ' + (1.5 + Math.random() * 2) + 's ease-out forwards;';
+        c.appendChild(h);
+        setTimeout(function() { h.remove(); }, 3500);
+      });
+      var s = document.createElement('style');
+      s.textContent = '@keyframes hFloat{0%{opacity:1;transform:translateY(0) scale(1) rotate(0deg)}100%{opacity:0;transform:translateY(-90px) scale(0.2) rotate(20deg)}}';
+      document.head.appendChild(s);
+      var b = document.createElement('div');
+      b.style.cssText = 'text-align:center;padding:2rem 1rem;position:relative;z-index:15;';
+      var l = document.createElement('a');
+      l.href = 'stats.html';
+      l.textContent = '\uD83D\uDCCA Stats';
+      l.style.cssText = 'background:rgba(255,220,160,.08);border:1px solid rgba(255,210,150,.15);color:#6b5f52;padding:.4rem .9rem;border-radius:6px;cursor:pointer;font-family:inherit;font-size:.8rem;text-decoration:none;transition:all .25s;display:inline-block;margin:0 .4rem;';
+      l.onmouseover = function() { this.style.borderColor = '#ffe680'; this.style.color = '#ffe680'; };
+      l.onmouseout = function() { this.style.borderColor = 'rgba(255,210,150,.15)'; this.style.color = '#6b5f52'; };
+      b.appendChild(l);
+      var sb = document.createElement('span');
+      sb.id = 'skyBtnContainer';
+      b.appendChild(sb);
+      document.body.appendChild(b);
+      if (window.Skies) Skies.createButton(document.getElementById('skyBtnContainer'));
+    })();
+  </script>
+  <script defer src="music.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function (rs) { rs.forEach(function (r) { r.unregister(); }); });
+      if (location.hostname !== '127.0.0.1' && location.hostname !== 'localhost') {
+        navigator.serviceWorker.register('./sw.js').catch(function () {});
+      }
+    }
+  </script>
+  <script src="anime.min.js"></script>
+  <script src="motion-masterpiece.js"></script>
+  <script src="dragon-companion.js"></script>
+  <script src="companion-girl.js"></script>
+  <script src="companion-boy.js"></script>
+  <script>
+if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  BoyCompanion.init({ container: document.body }).catch(function(e) { console.warn("Boy companion:", e); });
+}
+</script>
+  <script src="adaptive-text.js"></script>
+  <script>if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){(window.whenLoaderDone ? window.whenLoaderDone() : Promise.resolve()).then(function(){GirlCompanion.init({container:document.body}).catch(function(e){console.warn('Girl companion:',e);})})}</script>
+  <script src="matrix-rain.js"></script>
+<script src="global-easter-eggs.js"></script>
+<script defer src="interactions.js"></script>
+
+
+  <script>
+  (function() {
+    var first = document.querySelector('.accordion-group');
+    if (first) first.classList.add('open');
+
+    function applyParallax(el) {
+      if (el.style.backgroundImage) return;
+      var bg = el.getAttribute('data-parallax-bg');
+      if (bg) {
+        el.style.backgroundImage = bg;
+        el.style.backgroundAttachment = el.getAttribute('data-parallax-attachment') || 'scroll';
+        el.style.backgroundPosition = 'center';
+        el.style.backgroundRepeat = 'no-repeat';
+        el.style.backgroundSize = 'cover';
+      }
+    }
+
+    document.querySelectorAll('.accordion-header').forEach(function(header) {
+      header.addEventListener('click', function() {
+        var group = header.closest('.accordion-group');
+        if (!group || !group.classList.contains('open')) return;
+        group.querySelectorAll('.tribute').forEach(applyParallax);
+      });
+    });
+
+    var fg = document.querySelector('.accordion-group.open');
+    if (fg) fg.querySelectorAll('.tribute').forEach(applyParallax);
+  })();
+  </script>
+  <script src="tree-of-memories.js"></script>
+  <script src="secret-letters.js"></script>
+  <script src="butterfly-collection.js"></script>
+  <script src="world-progress.js"></script>
+  <script src="random-constellations.js"></script>
+  <script src="global-interactions.js"></script>
+<script>document.addEventListener('mousedown',function(){document.body.style.cursor='url("cursor images/kuromi click.jpg"), auto'});document.addEventListener('mouseup',function(){document.body.style.cursor='url("cursor images/kuromi idle.jpg"), auto'});</script>
+<script src="quiz.js"></script>
+<script src="lock.js"></script>
+<script src="activity-tracker.js"></script>
+<script src="events.js"></script>
+<script src="puzzle-hunt.js"></script>
+<script src="letters.js"></script>
+ <script src="dynamic-content.js"></script>
+</body>
+</html>
