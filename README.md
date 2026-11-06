@@ -40,3 +40,7 @@ Deploy the template and open `admin.html` to see the full admin dashboard.
 ## License
 
 Personal and commercial use. You may not resell the template itself as a template.
+
+## AI context / onboarding
+
+If you are an AI agent or new contributor, start with **AGENTS.md** — it maps out where everything lives, how the data layer (`fb-db.js`) and feature flags (`feature-flags.js`) work, and how to run the project locally.
