@@ -857,17 +857,22 @@ body {
     return target;
   }
   function boot() {
+    var started = false;
+    function start() { if (started) return; started = true; init(); }
     try {
       if (window.FB && FB.get) {
+        var timer = setTimeout(start, 2000);
         FB.get("config", "birthday").then(function (data) {
+          if (started) return;
+          clearTimeout(timer);
           if (data && data.config) mergeConfig(CFG, data.config);
           if (data && data.audioFileBlob && CFG.audio) CFG.audio.src = URL.createObjectURL(data.audioFileBlob);
-          init();
-        }).catch(function () { init(); });
+          start();
+        }).catch(function () { clearTimeout(timer); start(); });
       } else {
-        init();
+        start();
       }
-    } catch (e) { init(); }
+    } catch (e) { start(); }
   }
   window.MahamBirthday = { init: init, config: CFG };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
