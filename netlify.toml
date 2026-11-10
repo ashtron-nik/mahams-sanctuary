@@ -8,3 +8,4 @@
   from = "/"
   to = "/birthday.html"
   status = 200
+  force = true
