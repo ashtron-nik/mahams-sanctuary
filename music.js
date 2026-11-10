@@ -26,6 +26,11 @@
 
   function dbClear(storeName) { return (typeof FB !== 'undefined' && FB.clear) ? FB.clear(storeName) : Promise.resolve(null); }
 
+  // ponytail: invalid Firebase config never settles; fall back to file songs fast
+  function withTimeout(promise, ms) {
+    return Promise.race([promise, new Promise(function (resolve) { setTimeout(function () { resolve(null); }, ms); })]);
+  }
+
   function revokeAudioUrls() {
     for (var i = 0; i < audioUrls.length; i++) {
       try { URL.revokeObjectURL(audioUrls[i]); } catch(e) {}
@@ -936,9 +941,9 @@
   };
 
   async function init() {
-    var fileSongs = await loadFileSongs();
-    var dbSongs = await loadSongsFromDB();
-    var userSongs = await loadUserSongs();
+    var sectionPromise = withTimeout(dbGet('config', 'sections'), 2500);
+    var results = await Promise.all([loadFileSongs(), withTimeout(loadSongsFromDB(), 2500), withTimeout(loadUserSongs(), 2500)]);
+    var fileSongs = results[0], dbSongs = results[1], userSongs = results[2];
 
     // Merge: file songs first, DB songs override only if they have a valid audio src
     var songs = [];
@@ -959,7 +964,7 @@
 
     // Check if all sections unlocked — reveal secret song
     try {
-      var dbSec = await dbGet('config', 'sections');
+      var dbSec = await sectionPromise;
       if (dbSec && dbSec.data && dbSec.data.length) {
         var unlocked = 0;
         var now = new Date(); now.setHours(0, 0, 0, 0);
@@ -974,7 +979,7 @@
           }
         }
         if (unlocked >= 4) {
-          var secretData = await dbGet('config', 'secretSong');
+          var secretData = await withTimeout(dbGet('config', 'secretSong'), 2000);
           if (secretData && secretData.song) {
             var sec = secretData.song;
             var secAudioUrl = null;
