@@ -1,4 +1,4 @@
-var CACHE = 'ash-v57'; // ponytail: bump version when adding/renaming cached files
+var CACHE = 'ash-v58'; // ponytail: bump version when adding/renaming cached files
 var urlsToCache = [
   '/',
   '/index.html',
