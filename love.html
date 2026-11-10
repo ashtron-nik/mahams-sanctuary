@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <link rel="preload" href="girl-assets/atlas.png" as="image">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Qualities I Admire</title>
+  <style>body{cursor:url('cursor images/kuromi idle.jpg'),auto}</style>
+  <!-- Fifty qualities, five sections. -->
+  <meta name="description" content="The Qualities I Admire">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500;1,9..144,600&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap"
+    rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%99%A1%3C/text%3E%3C/svg%3E">
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+  <script src="fb-db.js"></script>
+  <script src="section-lock.js"></script>
+  <script>sectionLock('love');</script>
+  <style>.mood-btn:hover{background:rgba(255,255,255,0.12)!important}</style>
+</head>
+
+<body data-page="love">
+  <div class="loader">
+
+    <h1>Qualities</h1>
+
+    <p>Loading Qualities...</p>
+
+  </div>
+
+  <div class="cursorLight"></div>
+
+  <div class="petals"></div>
+
+  <div class="toc"></div>
+  <div class="hearts">
+
+    <span>≡ƒñì</span>
+    <span>≡ƒñì</span>
+    <span>≡ƒñì</span>
+    <span>≡ƒñì</span>
+    <span>≡ƒñì</span>
+    <span>≡ƒñì</span>
+    <span>≡ƒÆ£</span>
+    <span>≡ƒÆ£</span>
+    <span>≡ƒÆ£</span>
+    <span>≡ƒÆ£</span>
+    <span>≡ƒÆ£</span>
+    <span>≡ƒÆ£</span>
+
+  </div>
+  <div class="progress-track" aria-hidden="true">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
+
+  <main>
+    <header class="hero">
+      <h1 class="hero-title">Qualities</h1>
+      <p class="hero-subtitle">The Warmest Qualities I Admire</p>
+      <div class="hero-ornament" aria-hidden="true"></div>
+    </header>
+
+    <article class="page">
+      <section class="dedication">
+        <p class="dedication-kicker">Still</p>
+        <p class="dedication-body">Some people are easy to admire from a distance. You are not one of them.
+
+          The closer you get, the more there is to notice: the gentleness, the honesty, the quiet strength, the way you make a room feel like home. This is not a list of perfect things. It is a record of the qualities that make you who you are, written one small truth at a time.
+
+          Fifty qualities.
+          Fifty reasons.
+          One person I keep choosing.</p>
+      </section>
+
+      <div class="parallax-divider" style="background-image: url('./parallax/parallax_moon.png');">
+        <div class="parallax-overlay"></div>
+        <div class="parallax-text">A single light in the dark...</div>
+      </div>
+
+      <div class="flow">
+<!-- Mood filter bar -->
+<div class="mood-filter-bar" style="display:flex;flex-wrap:wrap;gap:8px;padding:1rem 0 2rem;justify-content:center;border-bottom:1px solid rgba(255,230,128,0.12);margin-bottom:2rem;background:rgba(255,255,255,0.03);border-radius:12px;">
+  <button class="mood-btn active" data-mood="all" style="background:linear-gradient(135deg, rgba(232,93,58,0.3) 0%, rgba(255,200,100,0.2) 100%);border:1px solid rgba(232,93,58,0.5);color:#ffebd2;padding:6px 16px;border-radius:20px;cursor:pointer;font-family:inherit;font-size:0.85rem;transition:all 0.3s;font-weight:500;">All</button>
+  <button class="mood-btn" data-mood="romantic" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#ffebd2;padding:6px 16px;border-radius:20px;cursor:pointer;font-family:inherit;font-size:0.85rem;transition:all 0.3s;">Romantic</button>
+  <button class="mood-btn" data-mood="playful" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#ffebd2;padding:6px 16px;border-radius:20px;cursor:pointer;font-family:inherit;font-size:0.85rem;transition:all 0.3s;">Playful</button>
+  <button class="mood-btn" data-mood="grateful" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#ffebd2;padding:6px 16px;border-radius:20px;cursor:pointer;font-family:inherit;font-size:0.85rem;transition:all 0.3s;">Grateful</button>
+  <button class="mood-btn" data-mood="longing" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#ffebd2;padding:6px 16px;border-radius:20px;cursor:pointer;font-family:inherit;font-size:0.85rem;transition:all 0.3s;">Longing</button>
+</div>
+
+
+        <div class="accordion-group" data-group="who-you-are">
+          <div class="accordion-header" onclick="this.parentElement.classList.toggle('open')">
+            <span class="group-title">Who You Are</span>
+            <span><span class="group-count">10 sections</span><span class="group-arrow">&#9660;</span></span>
+          </div>
+          <div class="accordion-content">
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Gentleness</span></h2>
+              <p class="tribute-body">You are gentle in a way that makes everyone around you feel safe.</p>
+              <p class="tribute-body">Gentleness is not weakness. It is the kind of calm that tells people they can exhale. You have that gift. You make the room softer just by being in it, and that kind of presence changes the way people feel about themselves.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Honesty</span></h2>
+              <p class="tribute-body">You are honest without ever making people feel small.</p>
+              <p class="tribute-body">Your honesty is direct, but never cruel. You tell the truth in a way that leaves room for dignity, and that makes your integrity even more beautiful. You do not hide to be liked; you speak with care and clarity.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Warmth</span></h2>
+              <p class="tribute-body">You carry warmth so naturally that you make a room feel like home.</p>
+              <p class="tribute-body">There is a warmth in you that people feel before they can explain it. It lives in your voice, your attention, your posture, the way you make people feel welcome without trying. You make life feel softer, kinder, and more lived in.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Patience</span></h2>
+              <p class="tribute-body">You are patient in the moments that matter most.</p>
+              <p class="tribute-body">Patience is not just waiting. It is how you hold space for someone without demanding they become faster, easier, or more polished. You are slow where it matters, and it makes people feel safe to be exactly as they are.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Quiet Strength</span></h2>
+              <p class="tribute-body">You are strong without needing to be loud about it.</p>
+              <p class="tribute-body">Your strength is quiet, steady, and real. You carry hard things without making them your whole identity. That kind of resilience is powerful because it is grounded, not performative.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Humility</span></h2>
+              <p class="tribute-body">You are humble in a way that makes your beauty even deeper.</p>
+              <p class="tribute-body">You do not need to announce your worth. You live it quietly, and that makes people trust you more. Humility is part of your charm because it makes you approachable and deeply sincere.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Curiosity</span></h2>
+              <p class="tribute-body">You are curious about life and genuinely interested in people.</p>
+              <p class="tribute-body">You ask questions because you want to understand. You pay attention to what people say, the way they feel, the stories beneath their words. That curiosity makes you thoughtful, present, and unforgettable.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Bravery</span></h2>
+              <p class="tribute-body">You are brave enough to feel deeply and still keep moving forward.</p>
+              <p class="tribute-body">Feeling deeply is a strength, not a weakness. You let yourself care, grieve, hope, and love without turning off your heart. That bravery is rare and beautiful.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Loyalty</span></h2>
+              <p class="tribute-body">You are loyal in ways that feel steady and real.</p>
+              <p class="tribute-body">Loyalty is one of your clearest qualities. When you care, you stay present. You do not do it casually or half-heartedly. You show up, and that consistency is one of the reasons people trust you.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Kindness</span></h2>
+              <p class="tribute-body">You are kind without performing kindness for anyone.</p>
+              <p class="tribute-body">Your kindness is instinctive. It is not for show, not for validation, not for points. It simply comes from a generous heart, and that makes it deeply trustworthy.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-group" data-group="how-you-carry-yourself">
+          <div class="accordion-header" onclick="this.parentElement.classList.toggle('open')">
+            <span class="group-title">How You Carry Yourself</span>
+            <span><span class="group-count">10 sections</span><span class="group-arrow">&#9660;</span></span>
+          </div>
+          <div class="accordion-content">
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Softness</span></h2>
+              <p class="tribute-body">You are soft in the places that matter most.</p>
+              <p class="tribute-body">There is a softness in you that is not weakness; it is tenderness, receptiveness, and emotional intelligence. It is in the way you listen, the way you hold space, and the way you make people feel safe.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Playfulness</span></h2>
+              <p class="tribute-body">You are playful enough to make ordinary days feel bright.</p>
+              <p class="tribute-body">You know how to bring light into a moment without forcing it. Your playfulness is a sign of joy, creativity, and a mind that still knows how to be delighted by small things.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Groundedness</span></h2>
+              <p class="tribute-body">You are grounded even when life gets messy.</p>
+              <p class="tribute-body">When things become chaotic, you do not fall apart in a way that destroys your sense of self. You anchor. You keep moving. That steadiness is one of the deepest forms of strength you carry.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Quiet Wisdom</span></h2>
+              <p class="tribute-body">You have a quiet wisdom that makes you easy to trust.</p>
+              <p class="tribute-body">Your wisdom does not always sound loud. Sometimes it is a calm sentence, a quiet truth, or a perspective that suddenly makes everything make sense. People lean on that clarity without realizing it.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Creativity</span></h2>
+              <p class="tribute-body">You are creative in a way that makes the world feel richer.</p>
+              <p class="tribute-body">You see beauty and possibility where others miss them. Your creativity is not only artistic; it is how you think, how you love, how you imagine a better version of the ordinary.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Little Things You Notice</span></h2>
+              <p class="tribute-body">You notice the small things and make them feel meaningful.</p>
+              <p class="tribute-body">That attention to detail is one of your sweetest qualities. You remember what matters. You notice what other people miss, and with that habit you make life feel more personal and more loved.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Generosity</span></h2>
+              <p class="tribute-body">You are generous with your time, your attention, and your heart.</p>
+              <p class="tribute-body">Generosity is not only spending money or doing favors. It is how you give your attention, your patience, and your care. You make people feel important just by being present with them.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Intuition</span></h2>
+              <p class="tribute-body">You are intuitive in a way that makes people feel understood.</p>
+              <p class="tribute-body">You sense what is happening beneath the surface. You can tell when someone is tired, guarded, hurt, or quietly hopeful. That instinct makes you deeply compassionate.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Authenticity</span></h2>
+              <p class="tribute-body">You are authentic in the truest sense of the word.</p>
+              <p class="tribute-body">There is no performance in you. What you feel is visible in your sincerity, and that kind of authenticity is rare. People trust you because you do not pretend to be someone else.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Resilience</span></h2>
+              <p class="tribute-body">You are resilient without losing your softness.</p>
+              <p class="tribute-body">A resilient person can become hard. You did not. You kept your tenderness while learning how to survive hard things, and that balance is one of the most beautiful things about you.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-group" data-group="the-way-you-love">
+          <div class="accordion-header" onclick="this.parentElement.classList.toggle('open')">
+            <span class="group-title">The Way You Love</span>
+            <span><span class="group-count">10 sections</span><span class="group-arrow">&#9660;</span></span>
+          </div>
+          <div class="accordion-content">
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Joy</span></h2>
+              <p class="tribute-body">You carry joy in a way that is impossible to ignore.</p>
+              <p class="tribute-body">Your joy does not have to be loud to be real. It is something that lights up the room, changes the atmosphere, and reminds people what happiness looks like when it is genuine.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Compassion</span></h2>
+              <p class="tribute-body">You are compassionate in a way that changes people for the better.</p>
+              <p class="tribute-body">Compassion is not only feeling for someone; it is meeting them without turning away. You do that naturally, and because of it people feel less alone when they are near you.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Way You Care</span></h2>
+              <p class="tribute-body">You care in the most natural, effortless way.</p>
+              <p class="tribute-body">The way you care is not performative. It is practical, warm, attentive, and deeply felt. You remember the little things, and people feel that effort in their bones.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Elegance</span></h2>
+              <p class="tribute-body">You are elegant without ever trying too hard.</p>
+              <p class="tribute-body">Elegance is in how you carry yourself, how you speak, how you move through the world. You do not force it; it is just part of your grace.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Independence</span></h2>
+              <p class="tribute-body">You are independent, but still deeply loving.</p>
+              <p class="tribute-body">You know who you are, and that is part of your beauty. You are not fragile or dependent, but you still know how to love deeply and fully. That balance is rare and admirable.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Courage</span></h2>
+              <p class="tribute-body">You have the courage to want something real.</p>
+              <p class="tribute-body">You do not settle for emptiness. You want something honest, meaningful, and lasting. That kind of courage is beautiful because it asks for real love, not comfort.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Presence</span></h2>
+              <p class="tribute-body">You are present in a way that makes people feel seen.</p>
+              <p class="tribute-body">When you are with someone, you are really with them. That sense of being witnessed and understood is one of the most powerful gifts a person can offer.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Real You</span></h2>
+              <p class="tribute-body">You are real in the most beautiful possible way.</p>
+              <p class="tribute-body">You do not hide behind masks or manufactured versions of yourself. What you offer is honest, warm, and deeply human. That kind of authenticity is rare and deeply magnetic.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Empathy</span></h2>
+              <p class="tribute-body">You are empathetic enough to feel what others hide.</p>
+              <p class="tribute-body">You pick up on things people do not say. You notice the tension in a room, the sadness behind a smile, the fear masked as calm. That sensitivity makes you deeply kind.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Confidence</span></h2>
+              <p class="tribute-body">You are confident without ever becoming arrogant.</p>
+              <p class="tribute-body">There is strength in your self-possession without ego. You know your worth without needing to make others feel small. That is real confidence.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-group" data-group="how-you-make-people-feel">
+          <div class="accordion-header" onclick="this.parentElement.classList.toggle('open')">
+            <span class="group-title">How You Make People Feel</span>
+            <span><span class="group-count">10 sections</span><span class="group-arrow">&#9660;</span></span>
+          </div>
+          <div class="accordion-content">
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Grace</span></h2>
+              <p class="tribute-body">You are graceful in your strength and in your quiet moments.</p>
+              <p class="tribute-body">Grace is how you hold yourself even in difficult moments. It is calm under pressure, kindness in chaos, and softness in the middle of hard days. That is a rare kind of beauty.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Tenderness</span></h2>
+              <p class="tribute-body">You are tender with the people who matter most.</p>
+              <p class="tribute-body">Your tenderness is not obvious in a dramatic way. It is seen in the care, the gentle words, the quiet effort you give to the people you love. That tenderness is one of your deepest gifts.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Spark</span></h2>
+              <p class="tribute-body">You have a spark that keeps life interesting.</p>
+              <p class="tribute-body">You bring freshness to moments. You keep life from becoming flat. Even in ordinary days, your energy has a way of making the world feel more alive and more color-filled.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Balance</span></h2>
+              <p class="tribute-body">You know when to be strong and when to be soft.</p>
+              <p class="tribute-body">Emotional balance is a gift. You do not force yourself into one mode all the time. You understand when to stand firm and when to soften, and that makes your presence feel deeply safe.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Open Heart</span></h2>
+              <p class="tribute-body">You are open-hearted in a world that often hardens people.</p>
+              <p class="tribute-body">There is courage in loving openly. You still choose warmth even in a world that often rewards bitterness. That openness is one of your most admirable qualities.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Way You Inspire</span></h2>
+              <p class="tribute-body">You inspire people without trying to.</p>
+              <p class="tribute-body">People look at the way you live and feel motivated to be more honest, more gentle, more brave. You do not need to preach. Your example is enough.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Peace</span></h2>
+              <p class="tribute-body">You carry peace in a way that calms the people around you.</p>
+              <p class="tribute-body">Your peace is not silence or avoidance. It is the kind of calm that invites trust, slows the room down, and makes difficult moments feel manageable simply because you are there.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Depth</span></h2>
+              <p class="tribute-body">You are deep enough to make every conversation feel honest and meaningful.</p>
+              <p class="tribute-body">You do not speak at the surface. You think, feel, and listen in a way that makes conversations become real. That depth is rare and deeply attractive.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Dreaminess</span></h2>
+              <p class="tribute-body">You are dreamy without losing your footing in reality.</p>
+              <p class="tribute-body">You have imagination, but not in a careless way. You dream beautifully while still knowing how to live. That balance between wonder and maturity is one of your most beautiful traits.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Determination</span></h2>
+              <p class="tribute-body">You are determined in ways that make me believe in your future.</p>
+              <p class="tribute-body">You do not drift aimlessly. You work toward what matters, and there is an integrity in that determination. You deserve everything you are trying to build.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-group" data-group="why-i-choose-you">
+          <div class="accordion-header" onclick="this.parentElement.classList.toggle('open')">
+            <span class="group-title">Why I Choose You</span>
+            <span><span class="group-count">10 sections</span><span class="group-arrow">&#9660;</span></span>
+          </div>
+          <div class="accordion-content">
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Simplicity</span></h2>
+              <p class="tribute-body">You are uncomplicated in the best, most comforting way.</p>
+              <p class="tribute-body">There is a soothing clarity in you. You do not make life harder than it has to be. You carry sincerity without unnecessary confusion, and that brings ease to the people around you.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Quiet Light</span></h2>
+              <p class="tribute-body">You shine quietly, but your light is impossible to miss.</p>
+              <p class="tribute-body">You do not need to announce your brilliance. It is simply there, reflected in your presence, your thoughts, and the way other people feel around you. That kind of light is lasting.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Trustworthiness</span></h2>
+              <p class="tribute-body">You are trustworthy in ways that make people feel safe.</p>
+              <p class="tribute-body">Trust is the quiet product of consistency, honesty, and care. You give that kind of trust naturally, and people feel it without needing to be told.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Beauty of Spirit</span></h2>
+              <p class="tribute-body">You are beautiful in spirit before anyone even notices your face.</p>
+              <p class="tribute-body">Your beauty is not only what people see. It is the way you move through the world, the way you care, the way you think, and the way your presence feels. That is the kind of beauty that lasts.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Comfort</span></h2>
+              <p class="tribute-body">You feel like honesty, care, and comfort all at once.</p>
+              <p class="tribute-body">You are the person who makes other people feel relieved just by existing near them. You combine sincerity and warmth in a way that makes life feel easier, kinder, and more human.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Safety You Bring</span></h2>
+              <p class="tribute-body">You make people feel safer just by being near them.</p>
+              <p class="tribute-body">There is a sense of calm in your presence that people respond to instinctively. You make people feel less alone, less afraid, and more able to breathe.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Calm</span></h2>
+              <p class="tribute-body">You stay calm in the moments when everyone else is rushing.</p>
+              <p class="tribute-body">Your calm is not numbness. It is groundedness. It is the ability to steady a situation without losing tenderness, and that makes you deeply reassuring to the people who love you.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Magnetism</span></h2>
+              <p class="tribute-body">You are magnetic not because you try, but because you are real.</p>
+              <p class="tribute-body">Your presence leaves a mark because it is not fabricated. People notice your warmth, your intelligence, your steadiness, and the quiet honesty in everything you do.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Way You Lift a Room</span></h2>
+              <p class="tribute-body">You are the kind of person whose presence lifts the room.</p>
+              <p class="tribute-body">You change the atmosphere by simply being there. There is a gentleness, a clarity, and a warmth in your presence that makes people calmer, lighter, and more themselves.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>The Love I Keep Choosing</span></h2>
+              <p class="tribute-body">You are the kind of love I want to keep choosing, every single day.</p>
+              <p class="tribute-body">The final thing I admire most is that you are not just beautiful to think about; you are beautiful to choose. Every day, you feel like a reason to stay present, to love more honestly, and to keep building something real.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="closing-mark" aria-hidden="true"><span class="spark"></span></div>
+
+      <section class="end-section" aria-label="Closing">
+        <div class="end-hearts" aria-hidden="true">&#x1F496;&#x2728;</div>
+        <h2>Always.</h2>
+        <p>Still you. Still us. Still becoming.</p>
+        <p style="margin-top: 1.5rem; color: var(--ash); font-size: 0.85rem; letter-spacing: 0.06em;">
+          written in the quiet hours, when the world was asleep &amp; you were all that was real<br>
+          &mdash; always, in every version of forever.
+        </p>
+      </section>
+    </article>
+  </main>
+  <div class="aurora" aria-hidden="true">
+    <div class="aurora-layer"></div>
+    <div class="aurora-layer"></div>
+    <div class="aurora-layer"></div>
+  </div>
+  <div class="vignette" aria-hidden="true"></div>
+
+
+  <button type="button" class="fav-toggle-btn" id="favToggle" aria-label="Show favorites only" title="Favorites" style="display:none">
+    &#x1F496;
+  </button>
+
+  <button type="button" class="theme-toggle-btn" id="themeToggle" aria-label="Toggle light/dark mode"
+    title="Reading Mode">
+    &#x2600;
+  </button>
+
+  <button type="button" class="dice-btn" id="diceBtn" aria-label="Jump to a random section"
+    title="Surprise Me &#x1F3B2;">
+    &#x1F3B2;
+  </button>
+
+  <button type="button" class="toc-toggle" id="tocToggle" aria-label="Toggle table of contents"
+    title="Table of Contents">
+    <span class="toc-current" aria-hidden="true"></span>
+    <svg class="toc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+      stroke-linejoin="round" width="24" height="24">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </button>
+
+  <button type="button" class="easter-egg-btn" id="easterEggBtn" aria-label="Warm Moment easter egg"
+    title="Warm Moment" style="display:none">
+    Warm Moment &#x1F90D;
+  </button>
+
+  <button type="button" id="toTop" class="to-top" aria-label="Back to top">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+      stroke-linejoin="round">
+      <line x1="12" y1="19" x2="12" y2="5"></line>
+      <polyline points="5 12 12 5 19 12"></polyline>
+    </svg>
+  </button>
+
+  <div class="easter-egg-modal" id="easterEggModal" role="dialog" aria-modal="true" aria-labelledby="easterEggTitle"
+    hidden>
+    <div class="easter-egg-backdrop" aria-hidden="true"></div>
+    <div class="easter-egg-content">
+      <button type="button" class="easter-egg-close" id="easterEggClose" aria-label="Close">&times;</button>
+      <h3 id="easterEggTitle" class="easter-egg-step-title" style="margin-bottom: 0.5rem;">Warm Moment</h3>
+      <div class="easter-egg-steps">
+        <div class="easter-egg-step" data-step="1">
+          <h2 class="easter-egg-step-title">Step 1: The Gaze</h2>
+          <p class="easter-egg-narrative">I am lying right next to you, close enough to notice the way your breath changes when you are comfortable and the way your eyes soften when you are listening. It is the kind of quiet closeness that makes the whole world feel a little less loud.</p>
+          <p class="easter-egg-narrative">The real version of you is the one I love most: the thoughtful one, the gentle one, the warm one who makes ordinary moments feel unforgettable simply by being present in them.</p>
+          <p class="easter-egg-narrative">There is no rush in it, no performance, just a feeling that settles in and stays. I look at you, and I feel grateful for the steadiness, the humor, the gentleness, and the way your presence makes everything feel a little kinder.</p>
+          <div class="easter-egg-choices">
+            <button type="button" class="easter-egg-choice" data-next="2"><strong>Stay close with me</strong>, I want to keep this moment exactly as it is</button>
+          </div>
+        </div>
+        <div class="easter-egg-step" data-step="2" hidden>
+          <h2 class="easter-egg-step-title">Step 2: Warmth Building</h2>
+          <p class="easter-egg-narrative">I rest a hand against yours and feel how easy it is to be still with you. There is comfort in the way you hold my attention, in the way your laughter changes the mood of a room, and in the way even silence feels gentle when we are near each other.</p>
+          <p class="easter-egg-narrative">I think about the little details that make you unmistakably you: the way your expression changes with a thought, the kindness in your voice, the patience in the way you move through the world. It makes me want to slow down, listen better, and stay a little longer.</p>
+          <p class="easter-egg-narrative">Everything about you seems to invite sincerity, and I realize that is one of the reasons I treasure your presence so much. You make the ordinary feel beautifully alive.</p>
+          <div class="easter-egg-choices">
+            <button type="button" class="easter-egg-choice" data-next="3"><strong>I want to keep noticing you</strong>, every small thing becomes a reason to smile</button>
+          </div>
+        </div>
+        <div class="easter-egg-step" data-step="3" hidden>
+          <h2 class="easter-egg-step-title">Step 3: The Quiet Promise</h2>
+          <p class="easter-egg-narrative">I have learned that the most beautiful thing about being near you is not spectacle or intensity &mdash; it is the quiet sense that you are safe to be yourself around. That kind of warmth is rare, and it is one of the greatest gifts I have ever known.</p>
+          <p class="easter-egg-narrative">So I lean in and say what I have been feeling in all the simple, honest ways I know how: I want to keep learning you, keep listening to you, keep making room for your joy, and keep choosing the quiet honesty of being near you.</p>
+          <p class="easter-egg-narrative">And in that moment, I realize the most intimate part of all is not a secret or a fantasy &mdash; it is the trust of being truly seen, deeply cared for, and gently loved for exactly who you are.</p>
+          <div class="easter-egg-choices">
+            <button type="button" class="easter-egg-choice" data-next="4"><strong>I want this to stay</strong>, I want the quiet warmth of us to last</button>
+          </div>
+        </div>
+        <div class="easter-egg-step" data-step="4" hidden>
+          <h2 class="easter-egg-step-title">Step 4: The Beautiful Details</h2>
+          <p class="easter-egg-narrative">I love the small things that make you unmistakably you: the way your expression changes when you are thinking, the gentleness in your voice, the warmth in the way you listen, and the calm confidence that makes everyone around you feel a little more at ease.</p>
+          <p class="easter-egg-narrative">There is a kind of quiet magic in being near someone who makes ordinary moments feel treasured simply by being in them. I feel that with you, and it makes me want to stay present, slow down, and pay attention to every detail.</p>
+          <p class="easter-egg-narrative">You make room for sincerity without needing anything dramatic. You make softness feel safe. You make being genuine feel easy. And that is one of the most beautiful things I have ever known.</p>
+          <div class="easter-egg-choices">
+            <button type="button" class="easter-egg-choice easter-egg-restart" data-next="1"><strong>Hold this moment</strong>, and carry it with me</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+  window.ASH_CONFIG = {
+    reviewFile: 'love.html',
+    parallaxImages: [
+      './parallax/parallax_candle.png',
+      './parallax/parallax_notebook.png',
+      './parallax/parallax_rooftop.png',
+      './parallax/parallax_stars.png',
+      './parallax/parallax_rain.png',
+      './parallax/parallax_petals.png',
+      './parallax/parallax_fire.png',
+      './parallax/parallax_candle_v2.png',
+      './parallax/parallax_petals_v2.png',
+      './parallax/parallax_letter.png',
+      './parallax/parallax_rain_v2.png',
+      './parallax/parallax_stars_v2.png',
+      './parallax/parallax_rooftop_v2.png',
+      './parallax/parallax_vinyl.png',
+      './parallax/parallax_lanterns.png',
+      './parallax/parallax_firefly.png',
+      './parallax/parallax_constellation.png',
+      './parallax/parallax_waxseal.png',
+      './parallax/parallax_moon.png',
+      './parallax/parallax_fog.png',
+      './parallax/parallax_ember.png',
+      './mahams-images/memory-01.jpeg',
+      './mahams-images/memory-02.jpeg',
+      './mahams-images/memory-03.jpeg',
+      './mahams-images/memory-04.jpeg',
+      './mahams-images/memory-05.jpeg',
+      './mahams-images/memory-06.jpeg',
+      './mahams-images/memory-07.jpeg',
+      './mahams-images/memory-08.jpeg',
+      './mahams-images/memory-09.jpeg',
+      './mahams-images/memory-10.jpeg',
+      './mahams-images/memory-11.jpeg',
+      './mahams-images/memory-12.jpeg',
+      './mahams-images/memory-13.jpeg',
+      './mahams-images/memory-14.jpeg',
+      './mahams-images/memory-15.jpeg',
+      './mahams-images/memory-16.jpeg',
+      './mahams-images/memory-17.jpeg',
+      './mahams-images/memory-18.jpeg'
+    ],
+    attachment: 'fixed'
+  };
+  </script>
+  <script src="feature-flags.js"></script>
+  <script src="content-common.js"></script>
+
+  <div id="diagnostics-log" style="display:none;"></div>
+  <script>
+    (function () {
+      function writeLogs() {
+        var logEl = document.getElementById('diagnostics-log');
+        if (logEl) {
+          logEl.textContent = JSON.stringify(window.globalErrors || []);
+        }
+      }
+      writeLogs();
+      var _logInt = setInterval(writeLogs, 3000);
+      window.addEventListener('pagehide', function () { clearInterval(_logInt); });
+    })();
+  </script>
+
+  <script>
+    (function () {
+      var ded = document.querySelector('.dedication-body');
+      if (!ded) return;
+      var text = ded.textContent;
+      ded.setAttribute('data-text', text);
+      ded.textContent = '';
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            observer.disconnect();
+            ded.classList.add('typing');
+            var i = 0;
+            var speed = 10;
+            var batch = Math.max(1, Math.ceil(text.length / 5000));
+            var timer = setInterval(function () {
+              if (i < text.length) {
+                i = Math.min(i + batch, text.length);
+                ded.textContent = text.slice(0, i);
+              } else {
+                clearInterval(timer);
+                ded.classList.add('done');
+              }
+            }, speed);
+          }
+        });
+      }, { threshold: 0.3 });
+      safeObserve(observer, ded);
+    })();
+  </script>
+
+  <script src="track.js"></script>
+  <script src="skies.js"></script>
+  <script src="sky-living.js"></script>
+  <script src="landscape.js"></script>
+  <script src="firefly-jar.js"></script>
+  <script src="interactive.js"></script>
+  <script>
+    (function() {
+      var c = document.createElement('div');
+      c.id = 'heartContainer';
+      c.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:9998;';
+      document.body.appendChild(c);
+      document.addEventListener('mousemove', function(e) {
+        if (Math.random() > 0.12) return;
+        var h = document.createElement('span');
+        h.textContent = '\u2661';
+        h.setAttribute('aria-hidden', 'true');
+        h.style.cssText = 'position:absolute;left:' + e.clientX + 'px;top:' + e.clientY + 'px;font-size:' + (8 + Math.random() * 14) + 'px;color:rgba(255,100,150,' + (0.25 + Math.random() * 0.4) + ');pointer-events:none;animation:hFloat ' + (1.5 + Math.random() * 2) + 's ease-out forwards;';
+        c.appendChild(h);
+        setTimeout(function() { h.remove(); }, 3500);
+      });
+      var s = document.createElement('style');
+      s.textContent = '@keyframes hFloat{0%{opacity:1;transform:translateY(0) scale(1) rotate(0deg)}100%{opacity:0;transform:translateY(-90px) scale(0.2) rotate(20deg)}}';
+      document.head.appendChild(s);
+      var b = document.createElement('div');
+      b.style.cssText = 'text-align:center;padding:2rem 1rem;position:relative;z-index:15;';
+      var l = document.createElement('a');
+      l.href = 'stats.html';
+      l.textContent = '\uD83D\uDCCA Stats';
+      l.style.cssText = 'background:rgba(255,220,160,.08);border:1px solid rgba(255,210,150,.15);color:#6b5f52;padding:.4rem .9rem;border-radius:6px;cursor:pointer;font-family:inherit;font-size:.8rem;text-decoration:none;transition:all .25s;display:inline-block;margin:0 .4rem;';
+      l.onmouseover = function() { this.style.borderColor = '#ffe680'; this.style.color = '#ffe680'; };
+      l.onmouseout = function() { this.style.borderColor = 'rgba(255,210,150,.15)'; this.style.color = '#6b5f52'; };
+      b.appendChild(l);
+      var sb = document.createElement('span');
+      sb.id = 'skyBtnContainer';
+      b.appendChild(sb);
+      document.body.appendChild(b);
+      if (window.Skies) Skies.createButton(document.getElementById('skyBtnContainer'));
+    })();
+  </script>
+  <script defer src="music.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function (rs) { rs.forEach(function (r) { r.unregister(); }); });
+      if (location.hostname !== '127.0.0.1' && location.hostname !== 'localhost') {
+        navigator.serviceWorker.register('./sw.js').catch(function () {});
+      }
+    }
+  </script>
+  <script src="anime.min.js"></script>
+  <script src="motion-masterpiece.js"></script>
+  <script src="dragon-companion.js"></script>
+  <script src="companion-girl.js"></script>
+  <script src="companion-boy.js"></script>
+  <script>
+if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  BoyCompanion.init({ container: document.body }).catch(function(e) { console.warn("Boy companion:", e); });
+}
+</script>
+  <script src="adaptive-text.js"></script>
+  <script>if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){(window.whenLoaderDone ? window.whenLoaderDone() : Promise.resolve()).then(function(){GirlCompanion.init({container:document.body}).catch(function(e){console.warn('Girl companion:',e);})})}</script>
+  <script src="matrix-rain.js"></script>
+<script src="global-easter-eggs.js"></script>
+<script defer src="interactions.js"></script>
+
+
+  <script>
+  (function() {
+    var first = document.querySelector('.accordion-group');
+    if (first) first.classList.add('open');
+
+    function applyParallax(el) {
+      if (el.style.backgroundImage) return;
+      var bg = el.getAttribute('data-parallax-bg');
+      if (bg) {
+        el.style.backgroundImage = bg;
+        el.style.backgroundAttachment = el.getAttribute('data-parallax-attachment') || 'scroll';
+        el.style.backgroundPosition = 'center';
+        el.style.backgroundRepeat = 'no-repeat';
+        el.style.backgroundSize = 'cover';
+      }
+    }
+
+    document.querySelectorAll('.accordion-header').forEach(function(header) {
+      header.addEventListener('click', function() {
+        var group = header.closest('.accordion-group');
+        if (!group || !group.classList.contains('open')) return;
+        group.querySelectorAll('.tribute').forEach(applyParallax);
+      });
+    });
+
+    var fg = document.querySelector('.accordion-group.open');
+    if (fg) fg.querySelectorAll('.tribute').forEach(applyParallax);
+  })();
+  </script>
+  <script src="tree-of-memories.js"></script>
+  <script src="secret-letters.js"></script>
+  <script src="butterfly-collection.js"></script>
+  <script src="world-progress.js"></script>
+  <script src="random-constellations.js"></script>
+  <script src="global-interactions.js"></script>
+<script>document.addEventListener('mousedown',function(){document.body.style.cursor='url("cursor images/kuromi click.jpg"), auto'});document.addEventListener('mouseup',function(){document.body.style.cursor='url("cursor images/kuromi idle.jpg"), auto'});</script>
+<script src="quiz.js"></script>
+<script src="lock.js"></script>
+<script src="activity-tracker.js"></script>
+<script src="events.js"></script>
+<script src="puzzle-hunt.js"></script>
+<script src="letters.js"></script>
+ <script src="dynamic-content.js"></script>
+</body>
+</html>

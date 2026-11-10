@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <link rel="preload" href="girl-assets/atlas.png" as="image">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sky Observatory — Dreambox</title>
+  <meta name="description" content="A Story That Was Never Meant to Be Forgotten">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500;1,9..144,600&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%99%A1%3C/text%3E%3C/svg%3E">
+  <link rel="manifest" href="manifest.json">
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+  <script src="fb-db.js"></script>
+  <script src="section-lock.js"></script>
+  <script>sectionLock('sky-observatory');</script>
+  <style>
+    :root {
+      --ink: #17130f;
+      --ink-soft: #1e1811;
+      --ink-line: #33291e;
+      --parchment: #ffebd2;
+      --parchment-dim: #c7b8a1;
+      --ash: #6b5f52;
+      --gold: #ffe680;
+      --ember: #e85d3a;
+      --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+      --font-body: "Lora", Georgia, "Times New Roman", serif;
+      --pad-inline: clamp(1.25rem, 6vw, 2.25rem);
+      --glass: rgba(255, 220, 160, .08);
+      --glassBorder: rgba(255, 210, 150, .35);
+    }
+    * { box-sizing: border-box; }
+    body {
+      cursor: url('cursor images/imresizer-meme-pop-cat-pack.jpg'), auto;
+
+      margin: 0;
+      background-color: #181214;
+      color: var(--parchment);
+      font-family: var(--font-body);
+      font-size: 1rem;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      background-image:
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(160, 110, 60, 0.1), transparent 60%),
+        radial-gradient(ellipse 60% 40% at 50% 100%, rgba(130, 50, 40, 0.06), transparent 60%);
+    }
+    .page-header {
+      padding: clamp(2.5rem, 8vh, 4rem) var(--pad-inline) clamp(1rem, 3vh, 1.8rem);
+      text-align: center;
+    }
+    .obs-sky-card:hover {
+      border-color: var(--gold) !important;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(255,230,128,.12);
+    }
+    .obs-sky-card canvas {
+      transition: transform 0.4s ease;
+    }
+    .obs-sky-card:hover canvas {
+      transform: scale(1.05);
+    }
+    .obs-fav-btn:hover {
+      transform: scale(1.2);
+    }
+    .obs-recent-item:hover {
+      border-color: var(--gold) !important;
+    }
+    #obsSearch:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 12px rgba(255,230,128,.1);
+    }
+    #wishJournalPanel::-webkit-scrollbar { width: 4px; }
+    #wishJournalPanel::-webkit-scrollbar-track { background: transparent; }
+    #wishJournalPanel::-webkit-scrollbar-thumb { background: rgba(255,210,150,.15); border-radius: 2px; }
+    #wishJournalPanel .wish-entry:hover { background: rgba(255,220,160,.06); }
+    #lanternCanvas { display: block; }
+    @keyframes toastIn{from{opacity:0;transform:translate(-50%,50%) scale(0.9)}to{opacity:1;transform:translate(-50%,50%) scale(1)}}
+    #skyOverlay {
+      z-index: 0 !important;
+      opacity: 1 !important;
+    }
+    body {
+      cursor: url('cursor images/imresizer-meme-pop-cat-pack.jpg'), auto;
+
+      background: transparent !important;
+    }
+    .page-header, #observatory, .footer {
+      position: relative;
+      z-index: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <main>
+    <div class="page-header">
+      <h1 style="font-family:var(--font-display);font-weight:600;font-size:clamp(2rem,7vw,3.5rem);color:var(--parchment);margin:0 0 0.3rem;text-shadow:0 0 30px rgba(255,230,128,.3),0 2px 4px rgba(0,0,0,.6)">&#x1F52D; Sky Observatory</h1>
+      <p style="color:var(--parchment-dim);font-size:clamp(0.85rem,2vw,1rem);font-style:italic;margin:0">Browse every sky. Find your atmosphere.</p>
+    </div>
+
+    <div id="observatory"></div>
+
+    <div class="footer" style="text-align:center;padding:2rem var(--pad-inline);border-top:1px solid var(--ink-line);max-width:1200px;margin:0 auto;">
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap;justify-content:center;margin-bottom:1rem;">
+        <a href="index.html" style="background:rgba(255,220,160,.08);border:1px solid rgba(255,210,150,.15);color:#6b5f52;padding:.4rem .9rem;border-radius:6px;cursor:pointer;font-family:inherit;font-size:.8rem;text-decoration:none;transition:all .25s;" onmouseover="this.style.borderColor='#ffe680';this.style.color='#ffe680'" onmouseout="this.style.borderColor='rgba(255,210,150,.15)';this.style.color='#6b5f52'">&#x2190; Home</a>
+        <a href="admin.html" style="background:rgba(255,220,160,.08);border:1px solid rgba(255,210,150,.15);color:#6b5f52;padding:.4rem .9rem;border-radius:6px;cursor:pointer;font-family:inherit;font-size:.8rem;text-decoration:none;transition:all .25s;" onmouseover="this.style.borderColor='#ffe680';this.style.color='#ffe680'" onmouseout="this.style.borderColor='rgba(255,210,150,.15)';this.style.color='#6b5f52'">&#x2699; Admin</a>
+      </div>
+      <p style="color:var(--ash);font-size:0.85rem;margin:0;">for  &mdash; always</p>
+    </div>
+  </main>
+
+  <script src="feature-flags.js"></script>
+  <script src="skies.js"></script>
+  <script src="quiz.js"></script>
+  <script>
+    (function() {
+      var c = document.createElement('div');
+      c.id = 'heartContainer';
+      c.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:9998;';
+      document.body.appendChild(c);
+      document.addEventListener('mousemove', function(e) {
+        if (Math.random() > 0.12) return;
+        var h = document.createElement('span');
+        h.textContent = '\u2661';
+        h.setAttribute('aria-hidden', 'true');
+        h.style.cssText = 'position:absolute;left:' + e.clientX + 'px;top:' + e.clientY + 'px;font-size:' + (8 + Math.random() * 14) + 'px;color:rgba(255,100,150,' + (0.25 + Math.random() * 0.4) + ');pointer-events:none;animation:hFloat ' + (1.5 + Math.random() * 2) + 's ease-out forwards;';
+        c.appendChild(h);
+        setTimeout(function() { h.remove(); }, 3500);
+      });
+      var s = document.createElement('style');
+      s.textContent = '@keyframes hFloat{0%{opacity:1;transform:translateY(0) scale(1) rotate(0deg)}100%{opacity:0;transform:translateY(-90px) scale(0.2) rotate(20deg)}}';
+      document.head.appendChild(s);
+      var b = document.createElement('div');
+      b.style.cssText = 'text-align:center;padding:2rem 1rem;position:relative;z-index:15;';
+      var l = document.createElement('a');
+      l.href = 'stats.html';
+      l.textContent = '\uD83D\uDCCA Stats';
+      l.style.cssText = 'background:rgba(255,220,160,.08);border:1px solid rgba(255,210,150,.15);color:#6b5f52;padding:.4rem .9rem;border-radius:6px;cursor:pointer;font-family:inherit;font-size:.8rem;text-decoration:none;transition:all .25s;display:inline-block;margin:0 .4rem;';
+      l.onmouseover = function() { this.style.borderColor = '#ffe680'; this.style.color = '#ffe680'; };
+      l.onmouseout = function() { this.style.borderColor = 'rgba(255,210,150,.15)'; this.style.color = '#6b5f52'; };
+      b.appendChild(l);
+      var sb = document.createElement('span');
+      sb.id = 'skyBtnContainer';
+      b.appendChild(sb);
+      document.body.appendChild(b);
+      if (window.Skies) {
+        Skies.createButton(document.getElementById('skyBtnContainer'));
+        // Auto-apply saved sky on observatory page
+        if (!window.FeatureFlags || window.FeatureFlags.get('sky-auto-apply')) {
+          var idx = Skies.getCurrent();
+          if (idx >= 0 && Skies.SKIES[idx]) { Skies.apply(idx); }
+          else { Skies.apply(Skies.randomTimeAppropriate()); }
+        }
+      }
+    })();
+  </script>
+
+  <script src="sky-observatory.js"></script>
+  <script src="sky-living.js"></script>
+  <script src="landscape.js"></script>
+  <script src="interactive.js"></script>
+  <script defer src="music.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function (rs) { rs.forEach(function (r) { r.unregister(); }); });
+      if (location.hostname !== '127.0.0.1' && location.hostname !== 'localhost') {
+        navigator.serviceWorker.register('./sw.js').catch(function () {});
+      }
+    }
+  </script>
+
+  <script defer src="matrix-rain.js"></script>
+<script defer src="global-easter-eggs.js"></script>
+<script defer src="interactions.js"></script>
+
+  <script src="tree-of-memories.js"></script>
+  <script src="secret-letters.js"></script>
+  <script src="butterfly-collection.js"></script>
+  <script src="world-progress.js"></script>
+  <script src="random-constellations.js"></script>
+  <script src="global-interactions.js"></script>
+<script>document.addEventListener('mousedown',function(){document.body.style.cursor="url('cursor images/imresizer-meme-pop-cat-pack click.jpg'), auto"});document.addEventListener('mouseup',function(){document.body.style.cursor="url('cursor images/imresizer-meme-pop-cat-pack.jpg'), auto"});</script>
+<script src="activity-tracker.js"></script>
+<script src="events.js"></script>
+<script src="puzzle-hunt.js"></script>
+<script src="letters.js"></script>
+</body>
+</html>

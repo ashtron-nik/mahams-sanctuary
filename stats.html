@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="preload" href="girl-assets/atlas.png" as="image">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stats — Dreambox</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%99%A1%3C/text%3E%3C/svg%3E">
+  <link rel="manifest" href="manifest.json">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      cursor: url('cursor images/kuromi idle.jpg'), auto;
+
+      background: #181214; color: #ffebd2;
+      font-family: 'Lora', Georgia, serif; font-size: 15px; line-height: 1.6;
+      min-height: 100vh;
+    }
+    h1, h2 { font-family: 'Fraunces', Georgia, serif; font-weight: 500; color: #ffe680; }
+    a { color: #ffe680; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap { max-width: 600px; margin: 0 auto; padding: 3rem 1.5rem 4rem; position:relative; z-index:60; }
+    h1 { font-size: 1.6rem; margin-bottom: .25rem; }
+    .sub { color: #6b5f52; font-size: .85rem; margin-bottom: 2rem; font-style: italic; }
+    .stat-card {
+      background: rgba(255,220,160,.04); border: 1px solid rgba(255,210,150,.1);
+      border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: .75rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .stat-card .label { font-size: .9rem; }
+    .stat-card .label .icon { margin-right: .5rem; }
+    .stat-card .label .sub-label { font-size: .75rem; color: #6b5f52; display: block; }
+    .stat-card .count {
+      font-family: 'Fraunces', Georgia, serif; font-size: 1.4rem; color: #ffe680;
+    }
+    .total-row {
+      background: rgba(255,230,128,.06); border-color: rgba(255,230,128,.15);
+    }
+    .total-row .count { font-size: 1.7rem; }
+    .back { display: inline-block; margin-top: 2rem; color: #6b5f52; font-size: .85rem; }
+    .empty { text-align: center; color: #6b5f52; padding: 3rem 0; font-style: italic; }
+    .heart-divider { text-align: center; color: #e85d3a; font-size: 1.2rem; margin: 2rem 0; opacity: .4; }
+    .reset-btn {
+      display: block; margin: 1.5rem auto 0; padding: .5rem 1.2rem;
+      background: rgba(232,93,58,.1); border: 1px solid rgba(232,93,58,.3);
+      color: #e85d3a; border-radius: 8px; cursor: pointer;
+      font-family: 'Fraunces', Georgia, serif; font-size: .8rem; font-style: italic;
+      transition: all .3s;
+    }
+    .reset-btn:hover { background: rgba(232,93,58,.2); border-color: #e85d3a; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>&#x1F4CA; Our Story by the Numbers</h1>
+    <div class="sub">Every visit, every song — it all matters</div>
+    <div class="heart-divider">&#x2661;</div>
+    <div id="statsContainer">
+      <div class="empty">Loading...</div>
+    </div>
+    <div class="heart-divider">&#x2661;</div>
+    <a href="index.html" class="back">&#x2190; Back home</a>
+    <button class="reset-btn" onclick="if(confirm('Reset all visit & song stats?')){Track.resetAll().then(function(){location.reload();});}">Reset Stats</button>
+  </div>
+  <script src="track.js"></script>
+  <script>
+    (function () {
+      var PAGE_LABELS = {
+        'index.html': 'Home',
+        '100-organs.html': '100 Organs',
+        'love.html': 'Love'
+      };
+      var PAGE_ICONS = {
+        'index.html': '\uD83C\uDFD6\uFE0F',
+        '100-organs.html': '\uD83D\uDCD6',
+        'love.html': '\uD83D\uDC98'
+      };
+
+      var container = document.getElementById('statsContainer');
+
+      Track.getAll().then(function (counters) {
+        if (!counters || !counters.length) {
+          container.innerHTML = '<div class="empty">No visits recorded yet \u2014 go explore!</div>';
+          return;
+        }
+
+        var pageVisits = {};
+        var songPlays = {};
+        var totalVisits = 0;
+
+        for (var i = 0; i < counters.length; i++) {
+          var c = counters[i];
+          if (c.key.indexOf('visit_') === 0) {
+            pageVisits[c.key.replace('visit_', '')] = c.count;
+            totalVisits += c.count;
+          } else if (c.key.indexOf('song_') === 0) {
+            songPlays[c.key.replace('song_', '')] = c.count;
+          }
+        }
+
+        var html = '';
+
+        // Page visits
+        html += '<h2 style="font-size:1.1rem;margin-bottom:.75rem;color:#ffebd2;">\uD83D\uDCC4 Page Visits</h2>';
+        for (var page in PAGE_LABELS) {
+          var cnt = pageVisits[page] || 0;
+          html +=
+            '<div class="stat-card">' +
+              '<div class="label">' +
+                '<span class="icon">' + PAGE_ICONS[page] + '</span>' + PAGE_LABELS[page] +
+                '<span class="sub-label">' + page + '</span>' +
+              '</div>' +
+              '<div class="count">' + cnt + '</div>' +
+            '</div>';
+        }
+
+        // Total
+        html +=
+          '<div class="stat-card total-row">' +
+            '<div class="label"><span class="icon">\u2728</span>Total Visits</div>' +
+            '<div class="count">' + totalVisits + '</div>' +
+          '</div>';
+
+        // Song plays
+        var songCount = 0;
+        var songHtml = '';
+        for (var key in songPlays) {
+          songCount += songPlays[key];
+          songHtml +=
+            '<div class="stat-card">' +
+              '<div class="label"><span class="icon">\uD83C\uDFB5</span>' + key + '</div>' +
+              '<div class="count">' + songPlays[key] + '</div>' +
+            '</div>';
+        }
+
+        if (songHtml) {
+          html += '<h2 style="font-size:1.1rem;margin:.75rem 0;color:#ffebd2;">\uD83C\uDFB6 Song Plays</h2>' + songHtml;
+          html +=
+            '<div class="stat-card total-row">' +
+              '<div class="label"><span class="icon">\uD83C\uDFB5</span>Total Songs Played</div>' +
+              '<div class="count">' + songCount + '</div>' +
+            '</div>';
+        }
+
+        // Year in review — from local visit-day log + counters
+        var year = new Date().getFullYear();
+        var dayList = [];
+        try { dayList = JSON.parse(localStorage.getItem('ash-visit-days')) || []; } catch (e) {}
+        var yearDays = dayList.filter(function (k) { return k.indexOf(String(year)) === 0; });
+        yearDays.sort();
+        var curStreak = 0, longestStreak = 0, run = 0, prev = '';
+        for (var di = 0; di < yearDays.length; di++) {
+          var k = yearDays[di];
+          if (prev) {
+            var prevD = new Date(prev + 'T00:00:00'), curD = new Date(k + 'T00:00:00');
+            var gap = Math.round((curD - prevD) / 86400000);
+            run = gap === 1 ? run + 1 : 1;
+          } else {
+            run = 1;
+          }
+          prev = k;
+          if (run > longestStreak) longestStreak = run;
+        }
+        if (yearDays.length) {
+          var lastDay = new Date(yearDays[yearDays.length - 1] + 'T00:00:00');
+          var todayD = new Date(); todayD.setHours(0, 0, 0, 0);
+          var lastGap = Math.round((todayD - lastDay) / 86400000);
+          curStreak = lastGap <= 1 ? run : 0;
+        }
+        var firstVisitMs = 0;
+        try { firstVisitMs = parseInt(localStorage.getItem('ash-first-visit') || '0', 10) || 0; } catch (e) {}
+        var daysTogether = firstVisitMs ? Math.max(0, Math.floor((Date.now() - firstVisitMs) / 86400000)) : 0;
+        var topPage = '', topPageN = 0;
+        for (var pp in pageVisits) { if (pageVisits[pp] > topPageN) { topPageN = pageVisits[pp]; topPage = pp; } }
+        var topSong = '', topSongN = 0;
+        for (var sk in songPlays) { if (songPlays[sk] > topSongN) { topSongN = songPlays[sk]; topSong = sk; } }
+
+        html += '<div class="heart-divider">&#x2661;</div>';
+        html += '<h2 style="font-size:1.1rem;margin-bottom:.75rem;color:#ffebd2;">\uD83C\uDF19 ' + year + ', in Numbers</h2>';
+        html +=
+          '<div class="stat-card"><div class="label"><span class="icon">\uD83D\uDCC5</span>Days Visited This Year<span class="sub-label">of ' + year + '</span></div><div class="count">' + yearDays.length + '</div></div>' +
+          '<div class="stat-card"><div class="label"><span class="icon">\uD83D\uDD25</span>Current Streak<span class="sub-label">days in a row</span></div><div class="count">' + curStreak + '</div></div>' +
+          '<div class="stat-card"><div class="label"><span class="icon">\uD83C\uDFC6</span>Longest Streak<span class="sub-label">this year</span></div><div class="count">' + longestStreak + '</div></div>' +
+          '<div class="stat-card"><div class="label"><span class="icon">\uD83D\uDC97</span>Days Together<span class="sub-label">since first entry</span></div><div class="count">' + daysTogether + '</div></div>' +
+          (topPage ? '<div class="stat-card"><div class="label"><span class="icon">\uD83D\uDCD6</span>Most Visited Page<span class="sub-label">' + (PAGE_LABELS[topPage] || topPage) + '</span></div><div class="count">' + topPageN + '</div></div>' : '') +
+          (topSong ? '<div class="stat-card"><div class="label"><span class="icon">\uD83C\uDFB5</span>Most Played Song<span class="sub-label">' + topSong + '</span></div><div class="count">' + topSongN + '</div></div>' : '');
+
+        container.innerHTML = html;
+      }).catch(function () {
+        container.innerHTML = '<div class="empty">Could not load stats.</div>';
+      });
+    })();
+  </script>
+  <script src="feature-flags.js"></script>
+  <script>if ('serviceWorker' in navigator) { navigator.serviceWorker.getRegistrations().then(function(rs){rs.forEach(function(r){r.unregister()})}); if (location.hostname!=='127.0.0.1'&&location.hostname!=='localhost') { navigator.serviceWorker.register('./sw.js').catch(function(){}); } }</script>
+  <script defer src="matrix-rain.js"></script>
+<script defer src="global-easter-eggs.js"></script>
+<script defer src="interactions.js"></script>
+
+  <script src="world-progress.js"></script>
+<script>document.addEventListener('mousedown',function(){document.body.style.cursor="url('cursor images/kuromi click.jpg'), auto"});document.addEventListener('mouseup',function(){document.body.style.cursor="url('cursor images/kuromi idle.jpg'), auto"});</script>
+</body>
+</html>

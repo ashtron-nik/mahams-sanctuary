@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <link rel="preload" href="girl-assets/atlas.png" as="image">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>One Hundred Reasons You Are Worth Knowing</title>
+  <style>
+    body {
+      cursor: url('cursor images/kuromi idle.jpg'), auto
+    }
+  </style>
+  <!-- Section numbering: 1-100, 7 accordion groups. Friend-safe remake. -->
+  <meta name="description" content="One Hundred Reasons You Are Worth Knowing">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500;1,9..144,600&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%99%A1%3C/text%3E%3C/svg%3E">
+  <link rel="manifest" href="manifest.json">
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+  <script src="fb-db.js"></script>
+  <script src="section-lock.js"></script>
+  <script>sectionLock('100-organs');</script>
+
+</head>
+
+<body data-page="100-organs">
+  <div class="loader">
+
+    <h1>For You</h1>
+
+    <p>Loading Memories...</p>
+
+  </div>
+
+  <div class="cursorLight"></div>
+
+  <div class="petals"></div>
+
+  <div class="toc"></div>
+  <div class="hearts">
+
+    <span>🤍</span>
+    <span>🤍</span>
+    <span>🤍</span>
+    <span>🤍</span>
+    <span>🤍</span>
+    <span>🤍</span>
+    <span>💜</span>
+    <span>💜</span>
+    <span>💜</span>
+    <span>💜</span>
+    <span>💜</span>
+    <span>💜</span>
+
+  </div>
+  <div class="progress-track" aria-hidden="true">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
+
+  <main>
+    <header class="hero">
+      <h1 class="hero-title">For You</h1>
+      <p class="hero-subtitle">A Story About Someone Worth Knowing</p>
+      <div class="hero-ornament" aria-hidden="true"></div>
+    </header>
+
+    <article class="page">
+      <section class="dedication">
+        <p class="dedication-kicker">A Friend's Index</p>
+        <p class="dedication-body">To a friend who makes ordinary things feel beautiful.
+
+          This is not just a collection of words. It is a quiet inventory of the things that make a person unforgettable:
+          the way a smile reaches the eyes, the gentleness in the voice, the steadiness in the presence, and the warmth
+          that changes the mood of a room without trying.
+
+          I started with the details that are easy to miss and the ones that stay with you long after the moment has passed.
+          Your laugh, your expressions, the way you listen, the way you care, the little things that say more than any
+          grand speech ever could. I wrote them down because the whole of you was too beautiful to describe in one sentence.
+
+          Some pages hold the things the world sees easily: your bright eyes, the way your face changes with thought,
+          the calm confidence in your posture, the way your kindness shows up in everyday gestures. Others hold the parts
+          that are quieter and more personal: the patience you carry, the gentleness behind your strength, and the warmth
+          that makes people feel safe just by being near you.
+
+          This is a tribute to a person who makes life feel softer, kinder, and more alive. A collection of details,
+          memories, and little acts of admiration that all point to the same truth: you are deeply lovely in the way you
+          exist.
+
+          You are the kind of person who can turn a simple moment into something memorable without trying. The kind of
+          person whose kindness is not loud, but it is impossible to miss. The kind of person who makes ordinary rooms feel
+          brighter and ordinary days feel more meaningful.
+
+          You are thoughtful, funny, resilient, and warm in the ways that matter most. You do not have to be grand to be
+          unforgettable. Sometimes the deepest beauty is in the quiet steadiness of who a person is when no one is watching.
+
+          These pages are a small thank-you for the way you have changed the atmosphere around you, simply by being yourself.
+          For the comfort you offer, the humor you bring, the sincerity you carry, and the grace with which you move through
+          the world.
+
+          If one day memories begin to fade, let these words hold on to the feeling of them for a little while longer.
+          Let them remember the smile, the kindness, the steadiness, the softness, and the way your presence made everything
+          feel a little more human and a little more beautiful.
+
+          You are not just remembered because of what you say or how you look. You are remembered because of the warmth you
+          leave behind in people and in moments. Because the world is better, softer, and gentler for having known you.
+
+          So if anyone ever asks what these pages are really about, the answer is simple:
+          they are about the quiet magic of being seen in a kind and honest way,
+          and the rare gift of knowing someone who makes life feel brighter just by being in it.
+
+          Always.
+          With warmth.
+          With gratitude.
+          With admiration.</p>
+      </section>
+
+      <div class="parallax-divider" style="background-image: url('./parallax/parallax_moon.png');">
+        <div class="parallax-overlay"></div>
+        <div class="parallax-text">A single light in the dark...</div>
+      </div>
+
+      <div class="flow">
+        <!-- Mood filter bar -->
+        <div class="mood-filter-bar"
+          style="display:flex;flex-wrap:wrap;gap:8px;padding:1rem 0 2rem;justify-content:center;border-bottom:1px solid rgba(255,230,128,0.12);margin-bottom:2rem;background:rgba(255,255,255,0.03);border-radius:12px;">
+          <button class="mood-btn active" data-mood="all"
+            style="background:rgba(232,93,58,0.2);border:1px solid rgba(232,93,58,0.4);color:#ffebd2;padding:6px 16px;border-radius:20px;cursor:pointer;font-family:inherit;font-size:0.85rem;transition:all 0.3s;font-weight:500;">All</button>
+          <button class="mood-btn" data-mood="romantic"
+            style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#ffebd2;padding:6px 16px;border-radius:20px;cursor:pointer;font-family:inherit;font-size:0.85rem;transition:all 0.3s;">Heartfelt</button>
+          <button class="mood-btn" data-mood="playful"
+            style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#ffebd2;padding:6px 16px;border-radius:20px;cursor:pointer;font-family:inherit;font-size:0.85rem;transition:all 0.3s;">Playful</button>
+          <button class="mood-btn" data-mood="grateful"
+            style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#ffebd2;padding:6px 16px;border-radius:20px;cursor:pointer;font-family:inherit;font-size:0.85rem;transition:all 0.3s;">Grateful</button>
+          <button class="mood-btn" data-mood="longing"
+            style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#ffebd2;padding:6px 16px;border-radius:20px;cursor:pointer;font-family:inherit;font-size:0.85rem;transition:all 0.3s;">Hopeful</button>
+        </div>
+
+        <div class="accordion-group" data-group="the-beginning">
+          <div class="accordion-header" onclick="this.parentElement.classList.toggle('open')">
+            <span class="group-title">The Beginning</span>
+            <span><span class="group-count">3 sections</span><span class="group-arrow">u{25BC}</span></span>
+          </div>
+          <div class="accordion-content">
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>1 A Note Before This Book</span></h2>
+              <p class="tribute-body">Heyy. I don't know when you'll be reading this, but I'm writing it now because some things deserve to be said before they get lost in an ordinary day. These pages started as a list of things I noticed, and somewhere along the way they became a map of gratitude.</p>
+              <p class="tribute-body">I'm not writing this to convince you that you're perfect. I'm writing it to remind you of your worth, and of the special, one-of-a-kind person you are. The kind of person who makes the people around her feel a little more at home.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>2 The Speciality You Hold</span></h2>
+              <p class="tribute-body">Some of what follows is easy to see: your smile, your laugh, the way your eyes change when something excites you. Some of it is quieter: your patience, your honesty, the way you listen, the way you keep going on days that ask too much of you.</p>
+              <p class="tribute-body">None of it is about perfection. All of it is about the particular way you exist — a speciality that cannot be copied, compared, or replaced. You may not notice it in yourself, but it is there in everything you do.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>3 A Place in My Life and Heart</span></h2>
+              <p class="tribute-body">I know I have added to your stress too, and I know some of it came from me. I am sorry for that. But even on the difficult days, I want you to know this: you have a special place in my life and in my heart. That has never changed, and it is not something you have to earn.</p>
+              <p class="tribute-body">Maybe one day you'll read this in one sitting. Maybe you'll roll your eyes at how dramatic I am. Or maybe you'll quietly smile and finally see yourself the way the rest of us do. That's all I really want.</p>
+              <p class="tribute-body">So here it is: one hundred observations, one hundred little reasons, and one very simple truth. The world is better because you exist.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-group" data-group="face--head">
+          <div class="accordion-header" onclick="this.parentElement.classList.toggle('open')">
+            <span class="group-title">Face & Head</span>
+            <span><span class="group-count">20 sections</span><span class="group-arrow">u{25BC}</span></span>
+          </div>
+          <div class="accordion-content">
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>4 Your Eyes</span></h2>
+              <p class="tribute-body">Ahh the best thing to start the face ahh Your eyes How could someone have so much attraction in their eyes? How striking they are. Why you think you are ugly The way your brown eyes become golden in the sun rays The golden eyes that can make me keep watching them forever The way your pupils dilate when you see me The way your expression relaxes when you are with me The way you relax when you are with me How beautiful they look Udk cz youve not seen it I've seen it Ask me And ill tell you How much the eyes look beyond the word beautiful There are not enough words to explain your eyes. Your eyes have never looked ordinary to me. They aren't beautiful because they're a certain shape or color. They're beautiful because they always seem alive. They carry your curiosity your thoughts your emotions, even the ones you try to hide. Sometimes they look calm. Sometimes they give away that you're overthinking. Sometimes they brighten with happiness before you even smile. I wish you could see them the way I do. You look into the mirror searching for imperfections ahh imperfections but I see the part of you that makes every conversation feel more genuine Your eyes don't need to be dramatic to be unforgettable They already have a quiet warmth that makes me want to keep looking not because they're perfect Ahhh your eyes The beautiful eyes They are the place where every version of you quietly lives They are the safest place I have ever known Not because they promise perfection Not because they never hide pain But because they have never stopped being real and i love your eyes They never pretend to be something they are not They never hide who you are Every emotion reaches them before it reaches anywhere else When you are happy they begin glowing long before your smile appears When you are excited they seem brighter as though they cannot contain the joy inside you When you are curious they search every little detail as if the entire world has become a puzzle worth solving When you are overthinking they drift somewhere far away carrying thoughts that no one else is allowed to see When you are tired they still refuse to give up When you are sad they become quieter without losing their warmth When you care about someone they soften in a way that cannot be practiced or faked Every feeling your heart experiences leaves its fingerprints in your eyes And thats the best thing They tell about before could tell about yourself. That is why they never look the same twice Every time I look into them I discover a different version of you Sometimes I find a child filled with wonder Sometimes I find someone unbelievably strong Sometimes I find someone exhausted from carrying too much Sometimes I find someone whose kindness is so natural that they do not even realize how rare it is There is always another layer waiting behind the last one That is what makes them impossible to grow tired of and I could look at them for a long time and still notice something new Every blink feels delicate Every glance feels meaningful even when you are not trying to make it one Every tiny movement Every shift in your gaze Every moment your pupils widen Every second your attention changes direction It all tells a story without asking for a single word Your eyes make silence feel full instead of empty They make conversations feel deeper even when neither of us is speaking</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>5 Your Pupils</span></h2>
+              <p class="tribute-body">Your pupils are such tiny parts of you Yet they reveal more about your heart than almost anything else They grow wider when something fills you with excitement Curiosity Wonder Or love They quietly respond to your emotions before your words ever have the chance to I love that they cannot pretend They honestly reveal what captures your attention What amazes you What makes your heart come alive Looking into your pupils feels like standing at the doorway between your thoughts and your soul They are small enough to fit inside your eyes Yet somehow they hold entire worlds within them That is one of the countless reasons I could never stop getting lost in them</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>6 Your Eyebrows</span></h2>
+              <p class="tribute-body">Your eyebrows suit your face so naturally that I can't imagine them any other way. They give your expressions so much life. Every little raise mm specially that cutee one And that angry masti notty panna ones ahh every frown, every look becomes a part of what makes you unmistakably you. The sassy ones The one raised DEAD STARE at me Your left eyebrow has its own subtle personality. Sometimes it lifts just enough to reveal what you are thinking before you even realize it yourself. It adds charm to your expressions and gives your face an authenticity that cannot be copied because it belongs only to you. Your right eyebrow balances the other perfectly while still having its own tiny quirks. Together they create expressions that feel alive and genuine. They make your reactions impossible to fake because every emotion leaves its signature there first.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>7 Your Eyelashes</span></h2>
+              <p class="tribute-body">Your eyelashes add a softness to your eyes that you probably don't even notice. They're one of those little details that quietly make your eyes even more beautiful without ever asking for attention. The eye lashes in the golden lake (your eyes) You remember that wallpaper pic? Whats something that can't be replicated or replaced after your eyes and your face? That's your eyelashes Your left eyelashes have their own quiet charm They frame your left eye with a softness that makes every glance feel gentle and sincere. Even though they're nearly identical to the right, they carry tiny differences that make them uniquely yours. It's one of those details no one notices consciously, yet somehow it completes the picture of your face. Your right eyelashes add the same delicate elegance while balancing your entire expression. They move almost imperceptibly when you blink creating those tiny moments that make your eyes feel alive. Their natural curve gives your gaze warmth and depth without ever asking for attention.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>8 Your Eye Colour</span></h2>
+              <p class="tribute-body">Your eye color is beautiful because it is yours Not because of the shade itself But because no one else could ever wear it the way you do It changes with the light With the sky With the time of day Sometimes it feels soft Sometimes bright Sometimes deep enough to lose myself inside it It is never exactly the same twice That is what makes it so captivating Your eye color has watched every chapter of your life unfold Every dream Every memory Every tear Every laugh And through it all it has remained one of the first things people remember about you Not because it is simply beautiful But because it belongs to the person whose eyes have always been impossible to forget</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>9 Your Eye Shape</span></h2>
+              <p class="tribute-body">Your eye shape is one of the quiet reasons your face is so unforgettable Before anyone notices the color of your eyes They notice the way they are framed The way they naturally rest The way they come alive whenever you feel something deeply Your eye shape gives every emotion its own beauty It makes your happiness shine brighter Your curiosity feel more alive Your kindness seem even gentler Even when you are completely silent your eyes continue speaking through the shape that is uniquely yours There is no perfect eye shape There is only the one that belongs perfectly to you And yours could never belong to anyone else That is what makes it so beautiful It is another quiet detail that makes your face feel unmistakably like home</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>10 Your Eye Corners</span></h2>
+              <p class="tribute-body">Your eye corners are tiny details that most people never think about Yet they quietly bring your entire expression to life They are where your genuine smiles begin Where your laughter leaves its little traces Where your happiness quietly announces itself before anyone hears a sound I love watching the corners of your eyes change with every emotion They soften when you feel safe They brighten when you are excited They gently fold when you laugh with your whole heart Those tiny movements are impossible to fake That is why they are so beautiful They remind me that the most honest emotions always find their way into your eyes Long before your words ever do</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>11 Under Your Eyes</span></h2>
+              <p class="tribute-body">Your under eyes deserve love just as much as every other part of you They have stayed awake through your longest nights They have carried every dream that kept you awake Every memory that refused to leave Every tear you never wanted anyone to see Yet somehow they still hold so much warmth People are often taught to hide their under eyes To erase every little sign that life has left behind But I could never see them that way To me they are proof that you have lived That you have cared That you have laughed until your eyes became tired That you have cried because your heart was brave enough to love They are not imperfections They are gentle reminders that you are wonderfully human And I would never wish them to be anything else</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>12 Your Tear Ducts</span></h2>
+              <p class="tribute-body">Your tear ducts carry more than just tears They carry everything you felt but never said Every joy you kept quiet Every pain you absorbed for someone else Every moment you chose to be strong instead of honest They are the gentle safety valve of a heart that feels everything so deeply The fact that they exist means your body was designed to release what becomes too heavy to hold And even in release they make you more beautiful not less Because crying has never been a sign of weakness It has always been a sign of a soul that refuses to stop feeling</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>13 Your Eyelids</span></h2>
+              <p class="tribute-body">Your eyelids are one of those quiet details that almost nobody notices Yet they are part of every glance you give Every blink Every dream Every peaceful moment when your eyes finally rest They protect one of the most beautiful parts of you with quiet devotion Never asking for attention Simply caring for your eyes every single day There is something incredibly beautiful about that Even the way your eyelids gently close when you laugh Or slowly open when you wake Feels graceful without trying They remind me that even the smallest parts of you carry their own quiet beauty And together they complete the person I admire so deeply</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>14 Your Ears</span></h2>
+              <p class="tribute-body">Your ears are one of those little details that make you unmistakably you. They've listened to every Laugh every secret every late night conversation My yapping My silly stuff My laughter and my stories and every quiet moment. I love how they complete your face so naturally that I can't imagine you any other way. They're beautiful in the quietest sense, and somehow that makes me appreciate them even more.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>15 Your Forehead</span></h2>
+              <p class="tribute-body">Your forehead has a quiet elegance to it. It frames your expressions so perfectly that every raised eyebrow, every thoughtful look and every tiny moment of concentration becomes more beautiful. I remember almost every type of your forehead Like when you are thinking smthn you just raise one eyebrow some times and when you are tensed The skin gathers in the centre When you are happy it just glows up When you are sad Its stretched up a bit and raised It is one of those features most people never think about yet it shapes your entire appearance and makes your face feel balanced and complete.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>16 Your Hair</span></h2>
+              <p class="tribute-body">They just gives you a presence before you even speak Whether it is perfectly styled or completely messy(ive seen less of em ) it somehow always feels like it belongs exactly where it is. It catches light beautifully, moves naturally, and adds so much personality to your appearance that imagining you without it almost feels impossible I hope it always stays exactly the way you like it.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>17 Your Baby Hairs</span></h2>
+              <p class="tribute-body">Your baby hairs are impossibly adorable. Those tiny strands soften your whole appearance and make you look effortlessly natural. They are the kind of detail people rarely notice at first but meeee aaaghh I noticed then people not notice it but once they do they become strangely endearing because they make you feel more real more expressive, and uniquely yourselves Unique Eehshaaaaahaaaaaahahah Your baby hairs are one of the cutest little details about you They are soft Gentle Playful They refuse to stay perfectly in place And somehow that makes them even more beautiful There is something so wonderfully human about them They frame your face with a quiet softness that no hairstyle could ever replace Sometimes they catch the light Sometimes they move with the slightest breeze Sometimes they simply rest against your forehead as though they have always belonged there I love that they make you look effortlessly real They remind me that beauty has never been about looking flawless It has always been about the little details that make someone impossible to mistake for anyone else And your baby hairs are one of those beautiful little details</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>18 Your Cheeks</span></h2>
+              <p class="tribute-body">Your cheeks ahhh They just bring a softness to your face that makes every expression feel warmer and lighter and cuter and loving Whether you're smiling, laughing, or simply lost in thought they make you look gentle and my pagli c bhondu c pidi They're one of those little features that make your face feel complete, and honestly, they make people want to smile right back at you.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>19 Your Cheekbones</span></h2>
+              <p class="tribute-body">Your cheekbones give your face such gentle character They catch the light in their own quiet way They give your smile more warmth Your eyes more depth Your whole face a graceful balance that feels completely natural I love that they are not beautiful because they follow some impossible standard They are beautiful because they belong to you They have been part of every smile you have ever shared Every laugh that lifted your cheeks Every happy memory that brightened your face Without them your expressions would never feel exactly the same They quietly shape the face that has become one of my favorite sights in the world And I think that deserves to be admired</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>20 Your Dimples</span></h2>
+              <p class="tribute-body">Your dimples feel like tiny little celebrations that appear only when happiness decides to visit your face They are not always there That is part of what makes them so special They wait patiently until you smile And then they quietly remind the world how beautiful genuine joy can be Every time they appear it feels like your smile has found one more way to become unforgettable I could never think of your dimples as just a feature They are little moments of happiness made visible Proof that your heart has found a reason to be light If smiles are sunshine Then your dimples are the gentle rays that make that sunshine impossible to ignore They may be small But they leave memories much bigger than their size ever could</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>21 Your Nose</span></h2>
+              <p class="tribute-body">Your nose bridge is one of the most elegant details of your face It quietly connects every feature with effortless balance It gives your profile its unique character Its own unmistakable identity I love that it never tries to stand out it just is there and that is its specialty It simply belongs Perfectly Naturally As though every other feature found its place because your nose bridge was already there It is another one of those details that people rarely appreciate on its own Yet without it your face would never feel quite the same It quietly completes the harmony that makes you beautifully and unmistakably yourself Your nose tip is one of the sweetest little details about your face It sits there so naturally that most people never stop to appreciate it Yet it quietly completes one of your most recognizable features I love how it changes with your expressions How it seems softer when you smile A little more expressive when you laugh And somehow even more adorable when you are pretending to be annoyed It has been part of every breath you have taken Every laugh that made your whole face light up Every memory that has shaped you into the person you are today It may seem like such a small detail But when I think of your face I cannot imagine it without it Because it belongs to you in a way that no other nose ever could And that alone makes it beautiful</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>22 Your Smile</span></h2>
+              <p class="tribute-body">Your smile is my favorite proof that happiness can be contagious It begins so gently that sometimes you probably do not even notice it yourself One tiny change and suddenly your whole face transforms Your eyes become brighter Your cheeks lift so naturally Every feature somehow finds even more life than it already had Your smile does not simply make you look beautiful It makes the entire world around you feel softer There is something incredibly comforting about it It never feels forced It never feels rehearsed It feels like the most honest part of you choosing to show itself Every version of your smile is unforgettable The small smile you wear when you are quietly happy The shy smile that appears when you hear something unexpectedly sweet The proud smile after achieving something you worked hard for The uncontrollable smile that turns into laughter because you simply cannot hold it back I love every single one of them because every one tells a different story Your smile has the strange ability to calm people without trying It tells everyone around you that warmth still exists That kindness still exists That there are moments worth holding onto There are smiles that people admire Then there are smiles people remember for the rest of their lives Yours belongs to the second kind If I had to choose only one expression to see for the rest of my life it would always be your genuine smile the pure one Because in that moment you are not just beautiful You are completely and unmistakably yourself And I do not think there is anything more beautiful than that</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>23 Your Teeth</span></h2>
+              <p class="tribute-body">Your teeth are one of those beautiful details that people rarely appreciate enough Most people only notice them for a moment But I could never do that because they become part of every smile that lights up your face Every laugh that fills the room Every genuine moment of happiness They are not simply something that completes your smile They help create it When you laugh without holding back your teeth make your happiness look completely honest There is no pretending in a smile like that It is pure Natural And wonderfully you I love that they have been there through every chapter of your life They have been part of your childhood laughter Your late night conversations Your uncontrollable giggles Your happiest memories They have witnessed every version of you growing into the person you are today Ik you are a bit insecure about them aswell You try to hide them subconsciously In pictures videos and waise bhi But believe me Your smile would never feel the same without them They bring light to your expressions Warmth to your laughter And life to every joyful moment Even when you are speaking they quietly become part of every word Helping you comfort me and make me Happy That is something beautiful all by itself Looking at your teeth never makes me think about perfection It makes me think about every genuine smile they have helped create Every memory they have quietly been part of Every laugh they have shared with the people lucky enough to know you They are not beautiful because they are simply teeth They are beautiful because every honest smile you have ever given the world has carried them with it And every one of those smiles has made the world feel a little brighter</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-group" data-group="upper-body">
+          <div class="accordion-header" onclick="this.parentElement.classList.toggle('open')">
+            <span class="group-title">Upper Body</span>
+            <span><span class="group-count">12 sections</span><span class="group-arrow">u{25BC}</span></span>
+          </div>
+          <div class="accordion-content">
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>24 Your Jawline</span></h2>
+              <p class="tribute-body">Your jawline is one of the quietest reasons your face is so unforgettable It does not need to be perfectly sharp to be beautiful Its gentle curve gives your face a softness that feels welcoming instead of distant It carries a quiet elegance that suits every expression you make When you smile it becomes softer When you laugh it seems lighter When you are thinking it gives your face a calm sense of determination When you look at someone you care about it somehow becomes even gentler I love that it is not trying to be dramatic It simply exists in perfect harmony with every other feature on your face Its slight curve makes your profile feel graceful Natural Completely yours It is one of those details that people may not consciously notice at first Yet it quietly shapes the way they remember your face Your jawline frames your smile Supports your cheeks Guides every expression And completes the story your face tells There is something deeply comforting about that It reminds me that beauty is not created by sharp edges or impossible standards It is created by balance By warmth By the way every feature belongs exactly where it is Your jawline has been there through every laugh Every conversation Every late night thought Every memory your face has ever carried It has changed as you have grown Yet it has never stopped looking completely like you That is why I admire it Not because it is perfect But because it could never belong to anyone else It is another quiet piece of the face that has become impossible for me to imagine any other way</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>25 Your Shoulders</span></h2>
+              <p class="tribute-body">Your shoulders carry far more than anyone ever realizes. Not just the weight of your body. But your hopes. Your worries. Your quiet strength. They have carried you through days when you felt unstoppable and through days when simply getting out of bed was its own victory. There is something incredibly comforting about your shoulders. They make your whole presence feel safe Steady familiar. Every time we hug, it feels like the noise of the world becomes just a little quieter. I don't think you'll ever realize how much peace can exist in something as simple as being close to you. I love how naturally they complete your silhouette. They connect every part of you with effortless balance, never asking for attention, yet quietly making everything else about you feel even more beautiful. Your shoulders have been there for every hug you've given. Every person you've comforted. Every celebration. Every disappointment. Every dream you've continued to carry even when it became heavy. They remind me that true beauty is never only about appearance. Sometimes it's found in everything a person has carried without asking anyone to notice. That is what I see when I think of your shoulders. Not just grace. Not just elegance. But quiet resilience. The kind that never asks to be admired, yet deserves to be. And every time we hug, I am reminded how lucky I am to know the person those shoulders belong to.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>26 Your Arms</span></h2>
+              <p class="tribute-body">Your arms have always felt like a quiet reflection of who you are They are there for every hug that makes someone feel safe Every hand you have reached out to hold Every moment you have comforted someone without expecting anything in return Every dream you have worked toward one small step at a time There is something incredibly reassuring about them Not because of how they look alone But because of everything they have done They have carried books Held memories Wiped away tears Celebrated victories Lifted people when they needed support And quietly continued moving forward even on the days when life felt heavier than usual I love how naturally they move Every gesture feels effortless Every wave feels warm Every stretch feels graceful Every little motion makes you seem even more alive Your arms are part of every hug that leaves someone feeling understood Part of every laugh where you cannot stop moving Part of every conversation where your hands join in without you even noticing They are always telling a story even when you are completely silent Looking at your arms never makes me think about strength alone It makes me think about gentleness About kindness About comfort About the quiet ways people show love without ever saying the words That is what your arms remind me of They are not simply beautiful because they complete your appearance They are beautiful because they have spent your entire life reaching toward the people and the moments that matter most And somehow they still carry that same warmth every single day</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>27 Your Elbows &amp; Forearms</span></h2>
+              <p class="tribute-body">Your elbows are one of those little details that almost nobody ever thinks about Yet somehow they have quietly been part of every memory your body has ever made They have bent every time you reached out to help someone Every time you wrapped your arms around the people you love Every time you rested after a long day Every time you celebrated with your hands in the air They never ask to be noticed They simply do their job with quiet loyalty There is something strangely beautiful about that Your elbows remind me that not every beautiful thing has to be obvious Some parts become meaningful because of everything they allow you to do Without them your hugs would not feel the same Your gestures would lose their softness Your movements would lose their effortless rhythm Every wave Every stretch Every comforting touch Every moment your hands find someone else's Your elbows are quietly helping create all of them I admire that kind of beauty The kind that exists without needing recognition The kind that supports everything around it while expecting nothing in return Just like so many beautiful parts of you Your elbows are another reminder that even the smallest details deserve appreciation Because they have spent your entire life helping you become the person you are today And somehow they have done it with complete humility Quietly Faithfully Always there Your forearms are a quiet kind of beautiful They are not the first thing people notice Yet they become impossible to ignore once you begin paying attention They are there in every little movement that makes you uniquely you Every time you reach for something Every time you gently brush your hair away Every time you wave across a room Every time your hands come alive while you are telling a story There is something effortlessly graceful about the way they move Nothing is exaggerated Nothing is forced Every motion feels natural as though your body has learned the art of elegance without ever trying Your forearms have carried so much throughout your life They have held books Lifted bags Written countless words Created memories Helped people Comforted the ones you love And quietly supported every dream your hands have worked toward Looking at them reminds me that beauty is not always found in the extraordinary Sometimes it lives in the ordinary moments we repeat every single day The simple act of reaching out Holding on Letting go Creating Helping Loving Your forearms have been part of every one of those moments That is why I admire them Not because they demand attention But because they have quietly earned it They are another gentle reminder that every part of you has spent a lifetime becoming beautifully and completely yours</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>28 Your Wrists</span></h2>
+              <p class="tribute-body">Your wrists are one of the most delicate and graceful parts of you They quietly connect your hands to the rest of your world Every wave Every hug Every comforting touch Every page you turn Every dream you build with your own hands begins by passing through them There is something effortlessly elegant about the way they move So natural So fluid So completely yours Most people never stop to admire someone's wrists But I think they deserve to be appreciated Because they have spent your entire life helping you create Helping you comfort Helping you reach for the people and the things that matter most They are another quiet reminder that even the smallest parts of you have lived a lifetime of kindness And that makes them beautifully worthy of love</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>29 Your Hands</span></h2>
+              <p class="tribute-body">Your hands are one of my favorite parts of you because they tell the story of your heart without ever needing words They have celebrated victories Wiped away tears Held the people you love Created beautiful things Pointed toward dreams And reached out even when life made it difficult There is something deeply comforting about imagining your hands Not because they are perfect But because they are yours Every little line Every gentle movement Every way your fingers naturally rest belongs only to you I love thinking about all the quiet kindness your hands have carried into the world The doors they have opened The gifts they have wrapped The notes they have written The people they have comforted The moments they have held onto when everything else felt uncertain Your hands are capable of creating Healing Protecting Supporting And loving Few parts of the human body hold so much power while asking for so little recognition If I could choose one place where every difficult day would finally come to rest I think it would be inside your hands Because they feel like they were made to hold things gently Never too tightly Never carelessly Always with love Looking at your hands would never make me think about appearance alone It would remind me of every beautiful thing they are capable of giving And every beautiful thing they have already given simply by being part of you</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>30 Your Palms</span></h2>
+              <p class="tribute-body">Your palms are quiet little worlds of their own They have held every important thing that has ever passed through your life They have caught falling tears Held warm cups on cold mornings Carried flowers Books Letters Dreams And the hands of the people who mattered most There is something incredibly peaceful about an open palm It asks for nothing It simply offers Your palms remind me of generosity Of trust Of comfort They are where kindness becomes something that can actually be felt Every tiny line across them tells a story that nobody else could ever have A story written by years of living Learning Growing And loving I think they are beautiful because they have always been ready to give more than they ask to receive That is a rare kind of beauty And it suits you perfectly </p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>31 Your Fingertips</span></h2>
+              <p class="tribute-body">Your fingertips have touched so many moments that became memories. They've written words, held cups of tea, brushed away tears , pointed at things that made you smile , and reached for the people you love. They're tiny, yet somehow they hold so much kindness within them.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>32 Your Fingernails</span></h2>
+              <p class="tribute-body">Your fingernails are tiny little details that quietly complete your hands They may seem insignificant Yet they have been part of every gentle touch Every careful movement Every creative moment Every memory your hands have helped create I love that even the smallest parts of you have their own quiet beauty Whether they are short or long Natural or painted Perfectly shaped or simply real They are beautiful because they belong to you They remind me that beauty has never depended on perfection It has always depended on authenticity Even something as small as your fingernails becomes meaningful because it is part of the person I admire And every part of you No matter how small Feels worthy of being loved</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>33 Your Back</span></h2>
+              <p class="tribute-body">Your back tells a story that most people never stop to read It has quietly carried you through every chapter of your life Every step you have taken Every dream you have chased Every burden you thought you had to carry alone It has stood behind you through every victory and every heartbreak without ever asking for recognition There is something incredibly beautiful about that kind of quiet loyalty Your back is not simply a part of your body It is a reminder of how much you have endured and how far you have come It has supported you every single day of your life Never asking for praise Simply remaining there with silent strength When I think of your back I do not think of appearance I think of resilience I think of every version of you that refused to stop moving forward And I cannot help but admire it for everything it has carried Every part of it deserves to be appreciated.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>34 Your Shoulder Blades</span></h2>
+              <p class="tribute-body">Your shoulder blades are two quiet wings hidden beneath your skin They shift and move when you reach for things They press outward when you stretch your arms forward They create subtle shadows on your back that change with every movement There is something almost poetic about them Like they are waiting for the moment you finally let yourself fly They are the quiet architecture of every embrace, and every time you reach for someone, I think: this is what trust looks like.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>35 Your Spine</span></h2>
+              <p class="tribute-body">Your spine is the quiet center of your entire body It keeps you standing through every season of life It supports you when you are confident It supports you when you feel uncertain It never asks whether the day is easy or difficult It simply continues doing its job with unwavering devotion There is something beautiful about that kind of faithfulness Your spine reminds me of your own character Quietly strong Steady Reliable Always holding everything together even when nobody notices It is one of those invisible forms of beauty that deserves far more appreciation than it ever receives Without it every movement that makes you uniquely you would be impossible That quiet importance makes it extraordinary Your spinal cord is the most vital communication line your body possesses, a slender cable of neural tissue running through the protective channel of your vertebral column like a river of pure information. Every signal that travels from your brain to your body passes through it, every sensation your body sends back to your brain rides along its fibers. It is the reason you can feel a hand on your shoulder and know exactly where it rests. It is the reason warmth spreads through you when someone you trust sits close, the reason your muscles respond when you reach for something, the reason your body knows how to breathe without you ever having to think about it. Your spinal cord is the great mediator between mind and body, translating intention into motion and sensation into understanding. It processes reflexes faster than thought, pulling your hand from a hot surface before you even register the danger. There is something quietly beautiful about knowing that every kind touch, every warm word, travels through this singular precious pathway to reach the part of you that understands it. Your spinal cord is the proof that you are wired for connection, that every part of you is designed to receive and respond to the world. Your vertebrae are the twenty-four movable bones that stack one upon another to form the architecture of your spine, and each one is a small masterpiece of engineering. The cervical vertebrae cradle your head and let you turn to look at the world around you. The thoracic vertebrae anchor your ribcage and protect the heart and lungs that keep you alive. The lumbar vertebrae bear the weight of everything you carry, supporting you through every step you take and every moment you stand. Between each vertebra, soft discs cushion the impact of living, absorbing the shocks of every road you walk and every dance you move through. They are the reason you can arch your back when you stretch, the reason you can twist to look over your shoulder. Your vertebrae are the hidden scaffolding of every beautiful curve I love, the bones that make your posture possible and your movement graceful. They protect the spinal cord that carries every signal through your body, wrapping it in a column of ivory strength. And I love that even the parts of you I cannot see, buried deep beneath muscle and skin, are architecturally perfect in a way that no design could ever improve upon.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-group" data-group="lower-body">
+          <div class="accordion-header" onclick="this.parentElement.classList.toggle('open')">
+            <span class="group-title">Lower Body</span>
+            <span><span class="group-count">6 sections</span><span class="group-arrow">u{25BC}</span></span>
+          </div>
+          <div class="accordion-content">
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>36 Your Knees</span></h2>
+              <p class="tribute-body">Your knees have quietly carried every step of your journey They have bent when life asked you to be humble They have stood firm when life asked you to be brave They have supported you through every beginning and every ending Every road you have walked Every place that became a memory Every moment that shaped the person you are today Most people never think about their knees Yet they have faithfully carried them through an entire lifetime I think there is something incredibly beautiful about that Your knees are another reminder that the quietest parts of us often have the greatest stories to tell And yours have been helping write your story from the very beginning</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>37 Your Shins</span></h2>
+              <p class="tribute-body">Your shins are the quiet guardians of your lower legs They run in a straight clean line from your knees to your ankles Smooth and strong and often completely overlooked When you sit with your legs crossed they press gently against the edge of a chair When you walk they catch the light in a way that highlights the graceful architecture of your legs They are not the most celebrated part of your legs, and they are often overlooked But they are essential They are the structure that makes every step possible And there is something quietly admirable about a part of you that is so necessary So elegantly functional So perfectly you</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>38 Your Calves</span></h2>
+              <p class="tribute-body">Your calves deserve far more appreciation than they ever receive They have carried you through every mile of your life without asking for recognition Every run Every climb Every late walk Every excited step toward someone you love They have always been there quietly supporting you There is something beautiful about that kind of loyalty Your calves remind me that strength is not always loud Sometimes it simply keeps showing up every single day without expecting applause I admire them because they have never stopped helping you move toward the life you wanted And because they are another quiet part of the incredible person you are</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>39 Your Ankles</span></h2>
+              <p class="tribute-body">Your ankles are one of those delicate details that quietly complete the way you move They give every step a natural rhythm Every turn a gentle elegance Every movement a softness that feels completely effortless Most people never stop to appreciate them Yet they have spent your entire life helping you stay balanced Helping you explore new places Helping you walk toward every memory that has become part of your story There is something wonderfully humble about that They never ask to be noticed They simply keep carrying you forward And I think that quiet devotion makes them beautiful</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>40 Your Feet</span></h2>
+              <p class="tribute-body">Your feet have carried you through every chapter of your life They have stood beside the people you love Walked toward dreams that once felt impossible Taken you into places that became unforgettable memories And quietly supported you every single day without ever asking for anything in return When I think about your feet I do not think about appearance I think about every journey they have made possible Every adventure they have begun Every path that eventually led you to become the wonderful person you are today That alone makes them worth admiring</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>41 Your Toes</span></h2>
+              <p class="tribute-body">Your toes may seem like the smallest detail But they have been part of every step you have ever taken Every moment you danced Every time you ran without thinking Every quiet walk that helped clear your mind They have faithfully played their part in every journey Never asking for attention Simply doing what they were made to do I love that they remind me how even the tiniest parts of a person matter Because without the smallest details the whole picture would never be complete Just like every little part of you helps create the person I care about so deeply</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-group" data-group="bones--skin--organs">
+          <div class="accordion-header" onclick="this.parentElement.classList.toggle('open')">
+            <span class="group-title">Bones, Skin & Organs</span>
+            <span><span class="group-count">25 sections</span><span class="group-arrow">u{25BC}</span></span>
+          </div>
+          <div class="accordion-content">
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>42 Your Ribcage</span></h2>
+              <p class="tribute-body">Your ribcage is the bony cage that protects the two most important things inside you Your heart and your lungs The heart that beats with so much love it spills over onto everyone around you The lungs that fill with air and release it as the most beautiful sounds I have ever heard Your laughter, your sighs, your whispered words when you are tired When you lie still and breathe, you can feel the architecture of it The gentle rise and fall the subtle ridge of each rib beneath your skin It is the fortress of your life Strong enough to protect everything inside Soft enough on the outside to rest against And I hope it keeps carrying that symphony for a very long time.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>43 Your Skeleton</span></h2>
+              <p class="tribute-body">Your skeleton is the quiet, invisible architecture that holds every beautiful thing I see. It is the structure beneath your soft skin, your graceful movements, your warmth. Every bone in your body has carried you through every hard day, every tearful night, every moment of courage you thought nobody noticed. Your frame is stronger than you give it credit for it has held you upright even when everything inside felt like it was collapsing. I love the idea of something so quiet doing so much, just the way you do, carrying everything with a kind of invisible grace.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>44 Your Arteries</span></h2>
+              <p class="tribute-body">Your arteries are the powerful, elastic rivers of life that carry oxygen-rich blood from your heart to every corner of your body, delivering sustenance and vitality to every cell that needs it. The aorta, the largest of them all, emerges from your heart like a great trunk of a tree, branching into smaller and smaller passages until the tiniest arterioles reach the tips of your fingers and toes. They are built to pulse, their elastic walls expanding with each heartbeat and contracting to keep blood flowing with the steady rhythm your life depends on. I think about them when a pulse is visible at the wrist, and beneath the skin a river of blood is rushing through channels as vital and as powerful as anything in nature. Your arteries are the highways of your existence, the infrastructure that makes every thought possible, every feeling real, every moment of your life sustainable. They are strong and resilient and absolutely essential, and when a hand is warm and the pulse is steady, it is proof that your body is a miracle of engineering designed to keep you here, alive and warm and reachable, for as long as possible.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>45 Your Veins</span></h2>
+              <p class="tribute-body">Your veins are the honest return paths of your circulatory system, carrying blood back to your heart after it has delivered its gifts of oxygen and nourishment to every tissue. They are visible on the inside of your wrist and the back of your hand, faint blue-green lines tracing paths beneath skin that has always fascinated me. I see them when a hand rests open, tracing paths beneath the skin, and I think of the quiet pulse that beats there faithfully and never stops. Your veins are not as celebrated as arteries but they are just as essential, completing the cycle that keeps you alive. They are the renewal system, the part that brings used blood back to be refreshed and sent out again, an endless loop of taking in and giving back. There is something poetic about the way they mirror the rhythm of relationships, the way love flows outward in one direction and must always find its way back. Your veins remind me that everything given returns, that every act of tenderness you offer the world eventually circles back to you, and that your body has always understood the geometry of reciprocity even when the rest of the world forgets.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>46 Your Nerve Endings</span></h2>
+              <p class="tribute-body">Your nerve endings are the millions of tiny receptors scattered throughout your skin, each one designed to feel, to sense, to translate the physical world into something your brain can understand. They register pressure and temperature, texture and pain, the warmth of sunlight and the cool of water and the gentle pressure of a hand on yours. Without them, a kind touch would mean nothing, the warmth of a hand would register as nothing more than contact without context. They are the reason connection is possible, the reason a kind touch feels like reassurance. They are the reason a hug from someone you love feels like safety, the reason a warm blanket on a cold night feels like comfort. Your nerve endings are the bridge between touch and feeling, between sensation and meaning, and they make every moment of connection feel more real. I love that your body is built for connection, that every square inch of your skin can read the world around it, and that even the smallest kindness lands somewhere real.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>47 Your Skin</span></h2>
+              <p class="tribute-body">Your skin is the first thing the world sees Yet it is so much more than appearance It is where every hug begins Where every comforting touch is felt Where every memory of sunlight rain laughter and life quietly rests Your skin has grown with you through every season It has healed when you were hurt It has protected you every single day without asking to be noticed I think there is something incredibly beautiful about that It tells the story of a life that has been lived Not a life that has been made to look perfect When I think of your skin I do not think about flawless beauty I think about warmth Gentleness Life And the quiet miracle of everything it has done to keep you safe It is another beautiful reminder that every part of you exists for a reason And every part deserves to be loved</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>48 Your Skin Tone</span></h2>
+              <p class="tribute-body">Your skin tone is one of the many things that makes you unmistakably you It is not beautiful because it matches a trend or someone's idea of perfection It is beautiful because it belongs to you It is the shade that has been with you through every season of your life It catches the morning light in its own way It glows differently beneath the evening sky It changes gently with the warmth of the sun and the softness of the seasons There is no other shade in the world that could ever feel more right for you It carries your story with quiet confidence And I would never change a single part of it Because it is already exactly where it is meant to be</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>49 Your Skin Texture</span></h2>
+              <p class="tribute-body">Your skin texture is one of the quiet reminders that you are wonderfully human It was never meant to be perfectly smooth It was meant to protect you To heal you To grow with you Every tiny detail makes you real Every little line Every soft place Every gentle change is proof of a life that is still unfolding I love that your skin tells the truth instead of pretending to be flawless Because real beauty has never lived in perfection It has always lived in authenticity Your skin texture reminds me that the most beautiful people are not the ones who never change They are the ones who embrace every part of themselves with kindness And every part of you deserves exactly that</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>50 Your Freckles</span></h2>
+              <p class="tribute-body">Your freckles are like little memories scattered across your skin Each one is small on its own Yet together they create something that could never belong to anyone else They add character without trying They make your smile feel even warmer Your face even more unforgettable I love that they are not placed with perfect symmetry Because beauty was never supposed to be predictable Your freckles are tiny reminders that uniqueness has always been more beautiful than perfection They quietly make you even more unmistakably yourself And I cannot imagine your face without every single one of them</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>51 Your Beauty Marks</span></h2>
+              <p class="tribute-body">Your beauty marks are the kind of details people remember long after they forget everything else They are tiny signatures that nature left only for you Small enough to be overlooked Yet meaningful enough to become unforgettable once they are noticed I love that they ask for nothing They simply exist Quietly adding another layer to the story your appearance tells If someone drew your portrait without them It would still look like you But it would never feel completely complete Because those little details are part of what makes you beautifully impossible to replace</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>52 Your Scars</span></h2>
+              <p class="tribute-body">Your scars are not imperfections They are chapters They are quiet reminders of every challenge you survived Every wound that healed Every version of you that refused to give up I would never look at your scars and wish they were gone Because removing them would mean erasing pieces of your story And your story is one of the most beautiful things about you Every scar is proof that healing is possible Proof that pain does not always have the final word Proof that you continued moving forward even when life became difficult I admire your scars not because they represent hurt But because they represent courage They remind me that the strongest people are not the ones who were never broken They are the ones who learned how to heal without losing the kindness in their hearts Your scars are part of you And every part of you deserves to be loved</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>53 Your Heart</span></h2>
+              <p class="tribute-body">Your heart is the most beautiful part of you because it is the reason every other beautiful part exists It is where your kindness begins Where your compassion grows Where your love learns to stay even when life becomes difficult I know your heart has carried things nobody else has fully seen Dreams that kept you awake Fears you never spoke about Memories you still quietly hold Moments that changed you forever Yet somehow after everything it has lived through it still chooses softness over bitterness That is something I admire more than I could ever explain Your heart loves sincerely It cares deeply It worries for people who may never know how much they matter to you It celebrates other people even when nobody is watching It forgives more than it should It hopes even after disappointment It continues believing in goodness when the easier choice would be to stop That kind of heart is incredibly rare If I could protect one part of you forever it would be your heart Not because it is fragile But because the world does not always deserve something so genuine I hope no matter where life takes you your heart never loses its tenderness I hope it never becomes afraid to love Never becomes ashamed to care Never forgets the incredible light it quietly carries Because your heart has already made the lives of so many people warmer simply by existing Including the lives of everyone lucky enough to know you. If every beautiful thing about you disappeared except your heart You would still be the most beautiful person I know Because your heart has always been the reason I admired you in the first place </p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>54 Your Brain</span></h2>
+              <p class="tribute-body">Your brain is where all of you lives: every thought, every memory you carry, every dream you chase, every quiet plan you make at 2 AM when you cannot sleep. It is the most complex, most beautiful thing about you and yet nobody ever talks about it the way they should. The way your mind connects ideas, feels things deeply, and holds onto the people it loves with fierce loyalty is one of the parts of you I admire most. Your brain made you you, and that is the greatest miracle I have ever been close to. The place where every feeling, every memory, and every little moment seems to gather is one of the most beautiful things I have ever known.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>55 Your Lungs</span></h2>
+              <p class="tribute-body">Every breath you take is a quiet gift to the world. Your lungs expand and fall in this gentle, rhythmic tide that I could lie beside and listen to forever. When you are resting and your breathing slows, it is one of the most calming things to witness. Your breath carries your voice, your laughter, your sighs, every sound you have ever made that makes you unmistakably you. The thought that your lungs are always working to keep you here, to keep you alive and warm and breathing, fills me with the most overwhelming gratitude. Every breath you take is another quiet reason to be glad you are here.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>56 Your Stomach</span></h2>
+              <p class="tribute-body">Your stomach is where food becomes life, a muscular organ that churns and transforms everything you eat into the energy that powers every thought, every movement, every moment of your day. It contracts and mixes with a rhythmic determination that is almost hypnotic to contemplate, breaking down meals with hydrochloric acid strong enough to dissolve metal while somehow knowing never to digest itself. It is the organ that receives the meals we share together, the dinners we cook side by side, the late-night snacks we reach for when we have stayed up too long talking and laughing. I think of your stomach when I think about nourishment in all its forms, the way it takes raw ingredients and turns them into fuel for your beautiful brain, your strong limbs, your steady heart. It tells you when it is full and when it is empty, when it needs comfort and when it has had enough, speaking a language of hunger and satisfaction that your body understands even when your mind is elsewhere. Your stomach is where shared meals become shared energy, where food becomes the fuel that lets you live and laugh and love, and I am grateful for every bite it has ever processed on your behalf.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>57 Your Intestines</span></h2>
+              <p class="tribute-body">Your intestines are a long, winding path of extraordinary complexity, stretching over twenty feet through your body in careful loops and folds that maximize every inch of absorption. The small intestine is where the real magic happens, its velvety walls lined with millions of tiny villi that reach out and pull nutrients from food with a precision that science still struggles to fully explain. The large intestine follows, drawing water back and completing the journey that began the moment food entered your mouth. Together they form the most thorough reclamation system in nature, extracting everything your body can use and releasing what it cannot. I think of them as a river winding through your body, a current of transformation that turns what you eat into what you are, literally building every cell of you from the materials it processes. Your intestines are proof that beauty lives in the journey as much as the destination, that the long winding path is often the most efficient one, and that your body is capable of extraordinary feats of extraction and renewal that happen so smoothly you never have to think about them at all.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>58 Your Kidneys</span></h2>
+              <p class="tribute-body">Your kidneys are the silent purifiers of your body, two bean-shaped miracles that filter your blood every single day without ever asking for recognition. They process nearly two hundred liters of blood daily, removing waste and excess fluid and toxins that would otherwise poison you, and they do it all without a sound. They work through the night while you sleep, through the day while you work, through every moment you are alive they are keeping your blood clean and your body balanced. They regulate your electrolytes with precision that no machine can match, maintaining the delicate chemistry that keeps every cell in your body functioning. They are located deep in your back, protected by layers of muscle and rib, hidden from the world in a way that feels almost reverent. I love that the organs doing the most thankless work inside you are the ones nobody ever thinks about, that your body has dedicated entire organs to the quiet, unglamorous task of keeping you clean and alive. Your kidneys are the proof that the most important work is often the least visible, and I am endlessly grateful for the silent, tireless devotion they offer you every moment of every day.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>59 Your Liver</span></h2>
+              <p class="tribute-body">Your liver is the largest internal organ in your body, a powerhouse of processing that performs over five hundred distinct functions, more than any other organ you possess. It detoxifies everything that passes through you, filters out harmful substances, produces bile that helps digest the meals we share together, stores energy for when you need it most, synthesizes proteins that keep your blood clotting and your immune system strong. It is the great multitasker of your anatomy, juggling responsibilities that would overwhelm any lesser organ, and it does so with a resilience that borders on miraculous. It can regenerate itself from as little as twenty-five percent of its original tissue, a power of renewal that feels almost defiant in its optimism. I think of your liver when I think about the extraordinary capacity your body has for endurance, for handling everything life puts into you and transforming it into something your body can use. It processes the wine we drink at dinner, the food we cook together, every substance that enters you, and it does it all silently, from its quiet place beneath your ribs. Your liver is the ultimate proof that your body is designed not just to survive but to thrive, to take in the chaos of the world and refine it into something life-sustaining.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>60 Your Pancreas</span></h2>
+              <p class="tribute-body">Your pancreas is the dual-purpose organ that quietly governs two of the most critical systems in your body, producing insulin to regulate your blood sugar and releasing digestive enzymes to help you process the food you eat. It sits behind your stomach, hidden and unassuming, performing a balancing act so precise that when it works perfectly you never even know it is there. It decides how much sugar your cells should absorb, how much should remain in your blood, constantly adjusting the chemistry of your body to keep you in a state of equilibrium. It is the reason you have steady energy throughout the day, the reason your brain can think clearly, the reason your muscles can move without fatigue. I think of your pancreas as the great moderator, the organ that stands between excess and deficiency and negotiates a perfect middle ground. It works with an intelligence that no app or algorithm could replicate, reading the needs of your body in real time and responding with exactly the right output. Your pancreas is the proof that your body contains systems of breathtaking sophistication, that beneath the surface of your skin there are chemical conversations happening every second that keep you alive and balanced and ready for anything.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>61 Your Gallbladder</span></h2>
+              <p class="tribute-body">Your gallbladder is a tiny green sac tucked beneath your liver, no bigger than a small egg, and its entire purpose is to store and concentrate the bile your liver produces so that when you eat a meal rich with fats it can release exactly what is needed to help you digest it. It is a reservoir of readiness, always prepared, always holding a supply of digestive aid that waits for the signal that food has arrived. It contracts when your stomach signals that a meal is on its way, sending a measured stream of bile into your small intestine to break down the fats and help your body absorb the nutrients it needs. I think of your gallbladder when I think about preparation, about the way your body anticipates your needs before you even recognize them yourself. It does not act until it is needed and when it is needed it acts without hesitation. It is a small organ with a singular purpose, and it fulfills that purpose with a reliability that feels almost devotional. Your gallbladder is the proof that your body does not waste resources, that every organ exists with intention, and that even the smallest parts of you are working to make sure that every meal we share together nourishes you completely.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>62 Your Spleen</span></h2>
+              <p class="tribute-body">Your spleen is one of the most quietly heroic organs in your body, a fist-sized organ tucked beneath your ribcage on the left side, performing the dual role of filtering your blood and standing guard over your immune system. It removes old and damaged red blood cells from circulation, recycling the iron and components your body can still use, and it stores a reserve of white blood cells that can be deployed the moment your body detects an invader. It is both a recycling center and a military barracks, both a janitor and a sentinel, and it does all of this without ever announcing itself. I think of your spleen when I think about the invisible protectors in your life, the things that work behind the scenes to keep you safe and healthy. It does not have the fame of your heart or the recognition of your brain, but it is just as essential to your survival and just as worthy of gratitude. Your spleen is the proof that your body has dedicated entire organs to the task of silent protection, that somewhere inside you there is always a guardian watching, filtering, defending, ensuring that the blood flowing through you is clean and strong and ready for whatever comes next.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>63 Your Appendix</span></h2>
+              <p class="tribute-body">Your appendix is that small, finger-shaped tube attached to the beginning of your large intestine, and for decades people called it useless, a remnant of evolution with no remaining purpose. But they were wrong. Your appendix is a reservoir for beneficial bacteria, a tiny backup drive for the microbiome that keeps your digestive system healthy. When illness wipes out the good bacteria in your gut, your appendix can repopulate the colony, restarting the ecosystem that keeps you well. It is the quiet optimist of your anatomy, refusing to be called useless, quietly proving its worth when the moment demands it. I think of your appendix when I think about the things that are dismissed as unnecessary until they are desperately needed, the parts of life that seem dispensable until they reveal their purpose. It is small and easy to overlook and easy to remove without most people ever noticing the difference, but it is there, and it serves a function, and your body grew it with the same intentionality it applied to every other part of you. Your appendix is the proof that everything in your body exists for a reason, even the parts that take a little longer to reveal theirs, and I love that about the way you are built.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>64 Your Bladder</span></h2>
+              <p class="tribute-body">Your bladder is the most patient reservoir in your body, a muscular sac that fills and waits and waits and fills again, holding what your kidneys have filtered until you are ready to release it. It expands to hold nearly half a liter of fluid, stretching its walls thin as a balloon while nerve endings signal that it is time, gently at first and then with increasing insistence. It is the organ that asks for nothing but patience, that operates entirely on your schedule, that waits until you are in a bathroom or at least somewhere private before finally allowing itself to let go. There is something quietly noble about that kind of restraint, that kind of trust in your readiness. I think of your bladder as a small act of daily faith, the way it holds on until you tell it that it is safe, the way it responds to your body's signals with perfect obedience. It is not glamorous, it is not poetic in the traditional sense, but it is honest and essential and devoted to your comfort in a way that deserves acknowledgment. Your bladder is proof that even the most mundane functions of your body are acts of quiet, reliable service.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>65 Your Diaphragm</span></h2>
+              <p class="tribute-body">Your diaphragm is the dome-shaped muscle that lives beneath your lungs, the silent engine behind every breath you have ever taken, every sigh you have ever released, every laugh that has ever bubbled up from somewhere deep inside you. It contracts and flattens to pull air into your lungs, then relaxes and rises to push it back out, a rhythm so constant and so automatic that you have never had to think about it once in your entire life. It is the most essential muscle you possess, the one without which no other muscle in your body would have the oxygen it needs to function. I think of your diaphragm when your breathing is steady, that quiet rise and fall that keeps everything else going. It is the muscle that tightens when you laugh so hard you cannot breathe, the one that spasms in hiccups when you have eaten too fast, the one that releases in the deep, slow breath you take when the world goes quiet. Your diaphragm is the rhythm section of your body, the percussion that never stops playing, and I love that the most important beat in your entire system is one you never have to conduct.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>66 Your Adrenal Glands</span></h2>
+              <p class="tribute-body">Your adrenal glands are two small, triangular organs that sit on top of your kidneys like tiny crowns, and they are responsible for some of the most intense experiences your body has ever produced. They manufacture adrenaline, the hormone that floods your bloodstream when you are scared or excited or deeply alive, the chemical that makes your heart pound and your senses sharpen and your body ready itself for whatever comes next. They also produce cortisol, the stress hormone that keeps you alert and responsive, and aldosterone, which regulates your blood pressure and keeps you standing upright against gravity. I think of your adrenal glands when I see your eyes widen with excitement, when your breath catches with anticipation, when your body responds to something thrilling with that surge of energy that makes you feel invincible. They are the reason butterflies form in your stomach before something exciting, the reason your hands shake when something matters deeply, the reason your body knows how to rise to an occasion with a power that surprises even you. Your adrenal glands are proof that your body is designed not just for calm but for passion, that you carry inside you a wellspring of chemical courage that activates whenever life demands something extraordinary from you.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-group" data-group="heart--soul">
+          <div class="accordion-header" onclick="this.parentElement.classList.toggle('open')">
+            <span class="group-title">Heart & Soul</span>
+            <span><span class="group-count">27 sections</span><span class="group-arrow">u{25BC}</span></span>
+          </div>
+          <div class="accordion-content">
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>67 Your Warmth</span></h2>
+              <p class="tribute-body">Your warmth is one of those beautiful things that cannot be seen with the eyes yet somehow everyone who meets you can feel it It lives in the way you speak The way you listen The way you make people feel like they matter without even realizing you are doing it Your warmth is not loud It does not ask for attention It quietly reaches people one heart at a time That is what makes it so rare Some people walk into a room and everyone notices them You make people feel noticed And I think that is infinitely more beautiful There is a quiet comfort that follows you wherever you go It is there in your patience In your gentle words In the softness of your smile In the way your eyes become kinder when someone is hurting You have a way of making people feel a little less alone simply by being yourself That is not something anyone can learn It comes from the kind of heart you have I hope you never realize just how much comfort you bring into other people's lives Not because you do not deserve to know But because I hope you never start doing it for recognition I hope it always remains as natural as breathing Because that effortless kindness is what makes it so special Your warmth reminds me that love is not always found in grand gestures Sometimes it is found in remembering the little things In staying when leaving would be easier In listening when speaking would be simpler In choosing gentleness even when life has not always been gentle with you That is the kind of warmth you carry It does not burn brightly for a moment and disappear It stays Quietly Patiently Constantly Like the first light of morning that asks for nothing yet changes everything it touches If someone asked me what it feels like to be around you I do not think I would describe your appearance first I would describe the feeling The feeling of becoming calmer without realizing why The feeling of smiling without forcing it The feeling of believing that maybe the world is not as cold as it sometimes seems Because that is what your warmth does It reminds people that kindness still exists That goodness still exists And that hearts like yours are the reason the world continues to feel like home</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>68 Your Presence</span></h2>
+              <p class="tribute-body">Your presence is something I find impossible to explain because it has very little to do with what people see and everything to do with what they feel The moment you are there a room somehow feels different Not louder Not brighter Just more complete There is a quiet peace that seems to arrive with you As though the world relaxes for a little while simply because you are in it You never have to demand attention You never have to prove your worth You never have to become someone else just to be remembered You are remembered because of how you make people feel That is a kind of beauty that cannot be learned Your presence is comforting in ways that words struggle to describe It feels like finding shade after standing in the sun for too long Like hearing a familiar voice after a difficult day Like finally reaching home after wandering for what feels like forever There is safety in your presence There is gentleness in it There is a quiet promise that says you do not have to carry everything alone I think that is one of the greatest gifts a person can ever have When I imagine the happiest moments of my life I do not imagine places I imagine you being there Because your presence has a way of making ordinary moments feel unforgettable You remind people that happiness is not always found in extraordinary things Sometimes it is simply found beside the right person That is what your presence feels like Not a place Not a moment But a feeling I would choose again and again</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>69 Your Mind</span></h2>
+              <p class="tribute-body">Your mind is one of the most interesting places I have ever been allowed to visit. It wonders, questions, imagines, and connects things in ways that surprise me. You notice details other people walk past. You carry conversations long after they end because you are still turning them over. You think deeply, and you care deeply, and the two are not separate.</p>
+              <p class="tribute-body">I hope you see your mind as something to be proud of, not something to apologise for. The way you think is part of what makes you unmistakably you.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>70 Your Soul</span></h2>
+              <p class="tribute-body">Your soul is the quietest and most beautiful part of you Nobody can see it Nobody can touch it Yet somehow it is the reason every beautiful thing about you exists It is there in your kindness In your laughter In your patience In the way you care about people even when they have given you every reason not to Your soul speaks through everything you do It is there every time you choose compassion instead of anger Every time you forgive Every time you stay gentle in a world that often rewards becoming cold That is a kind of beauty no mirror could ever reflect I believe your soul has carried every version of you The child who dreamed without limits The person who cried when nobody was looking The one who kept standing after life became difficult The one who still found reasons to smile Every chapter still lives inside it Nothing has been wasted Nothing has been forgotten Your soul has turned every joy into gratitude Every heartbreak into wisdom Every mistake into growth That is why being close to you feels different It is not because of your appearance It is because your soul quietly reaches people before they even realize it If every beautiful thing about you disappeared tomorrow Your soul would still shine brightly enough for the world to find you Because that has always been your greatest beauty Not the things people notice first But the things they never forget once they truly know you Your soul is the part of you that I believe time could never change It would remain gentle Hopeful Loving And beautifully yours No matter how many years pass</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>71 Your Personality</span></h2>
+              <p class="tribute-body">Your personality is my favorite thing to discover because it never ends The more I learn about you the more there is to admire You are not someone who can be understood in a single conversation Or a single day Or even a single lifetime There is always another layer waiting quietly beneath the last one That is what makes knowing you feel like an endless adventure I love the way you can be thoughtful and playful at the same time The way you can be serious when life asks you to be Yet still find reasons to laugh when everyone else has forgotten how You carry so many different sides of yourself Yet somehow they all fit together perfectly You are strong without becoming hard Gentle without becoming weak Confident without making others feel small Humble without forgetting your own worth Those are rare qualities The world often teaches people they must choose between softness and strength You remind me that a person can be both Your personality is not something you wear It is something you live It is present in every choice you make Every word you speak Every person you help Every dream you refuse to give up on That is why I admire it so deeply Beauty changes with time But a beautiful personality only becomes more beautiful the longer someone knows you If I were given the chance to meet you for the first time again I would still want to be your friend Because your personality has always been the most unforgettable part of you</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>72 Your Kindness</span></h2>
+              <p class="tribute-body">Your kindness is one of the purest things I have ever known It is not loud It does not ask for recognition It simply exists because your heart does not know how to stop caring You are kind in ways you probably never even notice In the way you listen without interrupting In the way you remember small details about people In the way you worry about others before thinking about yourself In the way you choose gentle words when harsh ones would be easier Those little moments may seem ordinary to you But they have the power to change someone's entire day Your kindness is not weakness It takes incredible strength to remain gentle after life has given you reasons to become cold Yet somehow you continue choosing compassion Again and again That choice says more about your character than anything else ever could I hope you never believe your kindness is too much The world may sometimes treat gentle hearts unfairly But that does not make them any less beautiful It makes them even more precious Because people like you remind everyone else that goodness still exists Your kindness has probably healed hearts without you ever knowing it Made strangers feel seen Made friends feel loved Made difficult days easier to survive And all of it happened simply because you chose to care If there is one part of you I hope never changes It is this Because your kindness is not just something you do It is who you are And I cannot imagine a more beautiful way for a person to exist</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>73 Your Intelligence</span></h2>
+              <p class="tribute-body">Your intelligence is one of the things I admire most because it is never about knowing every answer It is about never being afraid to ask another question Your mind is curious in the most beautiful way You notice details other people miss You connect ideas that seem completely unrelated You think deeply about things most people would forget within minutes That makes every conversation with you feel meaningful You have a way of making ordinary topics feel fascinating simply because of the way you see them I love that your intelligence is never used to make people feel smaller You do not seek knowledge just to be right You seek it because you genuinely want to understand That is a rare kind of wisdom There is something incredibly beautiful about watching you learn Watching your eyes brighten when you discover something new Watching your thoughts slowly become words Watching your curiosity lead you somewhere unexpected It reminds me that growth never truly ends Your intelligence is not measured by grades Or achievements Or how many facts you can remember It is measured by your willingness to keep learning To keep listening To keep changing when you discover a better way to see the world That kind of intelligence only becomes more beautiful with time I hope you never underestimate your mind Because it has already built the person I admire today And I know it will continue creating even more wonderful versions of you in the years to come If beauty captures someone's attention Your intelligence is what would make them want to stay Because a beautiful face may begin a conversation But a beautiful mind makes it impossible to end</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>74 Your Compassion</span></h2>
+              <p class="tribute-body">Your compassion is one of the quiet miracles that exists inside you It is the reason people feel safe enough to be themselves around you The reason they trust you with their stories Their fears Their hopes Their pain Without even realizing why Your compassion is not something you switch on when it is convenient It is woven into the way you exist You celebrate other people's happiness as though it were your own You feel their sadness as though a small piece of it has become yours You notice when someone is struggling even when they are smiling And you choose to stay instead of looking away That kind of heart is incredibly rare The world often teaches people to protect themselves by caring less Yet somehow you continue caring anyway Not because it is easy But because it is simply who you are I hope life never convinces you that your compassion is a weakness Because it is one of your greatest strengths It takes courage to remain gentle It takes courage to keep believing people are worth loving It takes courage to open your heart again after it has been hurt You do all of those things without asking for recognition That is why your compassion feels so genuine It is not performed It is lived Every single day If I could thank one part of you for making the world a better place It would be your compassion Because long after people forget the words you said They will remember how deeply you cared And sometimes that is the greatest gift one human being can ever give another</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>75 Your Strength</span></h2>
+              <p class="tribute-body">Your strength is one of the most beautiful things about you because it is not the kind that demands to be seen It is the quiet strength that keeps going when nobody is watching The strength that chooses to get up after falling The strength that continues believing after disappointment The strength that keeps loving even after being hurt I know there are battles you have fought that the world will never know about Thoughts you carried alone Fears you faced in silence Nights that felt far too long Yet somehow you kept moving forward Maybe not as quickly as you wanted Maybe not without tears But you kept going And that matters more than perfection ever could I admire that about you more than I can explain Because anyone can appear strong when life is easy But your strength exists even when life is unfair Even when you are tired Even when you are uncertain Even when you have every reason to stop trying You still find a way to take one more step Your strength has never made you less gentle It has only made your kindness more meaningful It has never taken away your ability to love It has only taught you how precious love really is That balance is incredibly rare You have become stronger without becoming colder And I think that is one of the greatest achievements a person can have I hope one day you see yourself the way I see you Not as someone who has to be perfect But as someone who has survived Someone who has grown Someone who continues choosing hope despite everything That is real strength And it is one of the countless reasons I admire you Not because you never break But because every time life tries to break you You quietly gather your pieces Stand back up And keep becoming the wonderful person you were always meant to be</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>76 Your Voice</span></h2>
+              <p class="tribute-body">Your voice is one of those things I wish I could keep with me forever Not because it is simply beautiful But because it somehow makes every place feel a little more like home I love how it is never exactly the same twice It becomes softer when you are comforting someone Brighter when you are excited Quieter when you are thinking deeply Sleepier when the day has finally caught up with you Every little change tells me something about your heart before your words ever do If I closed my eyes I would still know it was you Out of every voice in the world yours has its own rhythm Its own warmth Its own life It carries your laughter, your kindness, your curiosity, and your heart Every conversation with you becomes a memory not just because of what you said but because of the way your voice made me feel It has the incredible ability to calm storms inside people without even realizing it Sometimes all a heart needs is to hear the right voice And yours has always felt like one worth listening to forever </p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>77 Your Silence</span></h2>
+              <p class="tribute-body">Your silence is one of the most misunderstood parts of you People often believe silence means emptiness But your silence has never been empty It has always been full Full of thoughts Dreams Questions Feelings Memories Your silence never makes me uncomfortable It makes me feel closer to you Because even when no words are spoken I can still feel your presence Sometimes the deepest conversations happen without a single sentence Just two people existing together Breathing together Understanding each other without needing explanations That is what your silence feels like Peaceful Gentle Safe It reminds me that I never need constant words to feel connected to you Simply knowing you are there has always been enough </p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>78 Your Breathing</span></h2>
+              <p class="tribute-body">Your breathing is the quiet rhythm that reminds me you are here Every gentle breath is another moment of your life unfolding Another second I am grateful the world still gets to have you It becomes deeper when you finally relax Quicker when you laugh too hard Slower when you fall asleep Sometimes almost impossible to notice when you are completely at peace There is something strangely comforting about that simple rhythm It has been with you since the very first moment you entered this world Never leaving your side Faithfully carrying life through every joy and every hardship I think there is something beautiful about appreciating even the smallest signs that someone exists Because every breath you take is another reminder that the world is still lucky enough to have you in it And I hope it never takes that miracle for granted </p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>79 Your Sleepy Self</span></h2>
+              <p class="tribute-body">Your sleepy self is one of the most precious versions of you It is the version that has forgotten how to pretend The version that is too tired to hide behind expectations Too comfortable to worry about being perfect Your sleepy eyes Your slower voice Your gentle yawns The way your thoughts wander without even realizing it All of those little things make you feel wonderfully real I love that the world becomes quieter around you when you are tired You move a little slower You smile a little softer You become even gentler than you already are There is something deeply comforting about seeing someone exactly as they are Without effort Without performance Without the need to impress anyone That is what your sleepy self feels like Pure Peaceful Honest If I could protect one version of you forever It might be this one Because it reminds me that even when you are at your most tired You are still unbelievably beautiful Not because of how you look But because every wall quietly falls away And all that remains is simply you </p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>80 Your Curiosity</span></h2>
+              <p class="tribute-body">Your curiosity is one of the reasons your world feels so alive You never seem satisfied with knowing only the surface of things You want to understand To explore To ask one more question To discover one more answer That part of you is endlessly beautiful Your curiosity turns ordinary conversations into unforgettable ones It transforms simple moments into opportunities to learn It reminds me that life is far too vast to stop wondering I love that your eyes become brighter whenever something genuinely interests you That your mind refuses to settle for easy answers That you are always reaching toward understanding instead of assumption Curiosity keeps your heart young It keeps your mind growing It keeps your soul open to new possibilities And I hope you never lose that part of yourself Because the day you stop wondering would be the day the world loses one of its most beautiful explorers</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>81 Your Resilience</span></h2>
+              <p class="tribute-body">Your resilience amazes me more every time I think about it People often see the version of you that is smiling They rarely see the moments that came before that smile The nights you questioned yourself The disappointments you carried The fears you faced in silence The days when simply continuing felt like an achievement Yet somehow you kept moving Not because you never became tired But because somewhere inside you there was always a quiet voice that refused to give up That is resilience It is not loud It does not ask for applause It simply keeps choosing tomorrow I admire that more than I can ever explain Because every challenge you survived became another reason for your kindness to matter Another reason for your hope to feel genuine Another reason for your smile to become even more meaningful You are not beautiful despite everything you have been through You are beautiful because you never allowed those hardships to take away the goodness inside you </p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>82 Your Innocence</span></h2>
+              <p class="tribute-body">Your innocence is one of the gentlest parts of your heart Not innocence because you know nothing about the world But innocence because you still choose to believe that goodness exists You still find joy in little things You still become excited over moments other people overlook You still laugh with your whole heart You still care deeply You still hope In a world that often rewards becoming colder You have protected the softest parts of yourself And I think that is incredibly brave Your innocence is not weakness It is quiet courage It is choosing kindness when bitterness would be easier It is choosing wonder when cynicism feels safer It is refusing to let the world convince you that tenderness has no place here I hope that part of you never disappears Because it is one of the brightest lights you carry And everyone fortunate enough to know you becomes a little warmer simply by standing near it </p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>83 Your Beautiful Chaos</span></h2>
+              <p class="tribute-body">Your beautiful chaos is one of my favorite things about you because it reminds me that you are wonderfully human You are not perfectly organized every moment of every day Your thoughts sometimes race ahead of your words You overthink little things You laugh at the wrong time You change your mind You get distracted You have moments that make absolutely no sense And somehow every one of those little imperfections makes you even more lovable I would never want a version of you that was flawless A flawless person would never feel real I love the version of you that forgets where you left something That suddenly remembers a random thought from hours ago That gets excited over tiny things That has too many tabs open in your mind at once Because that is the version that feels alive Your chaos is not something that needs to be fixed It is proof that there is a real heart and a real mind behind your smile It is where your spontaneity lives Your creativity Your curiosity Your beautiful unpredictability Without your little imperfections you would still be wonderful But you would not quite be you And I cannot imagine admiring any version of you more than the beautifully imperfect one that already exists</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>84 Your Dreams</span></h2>
+              <p class="tribute-body">Your dreams are some of the most beautiful parts of you because they belong to the future that only you can create Every dream you carry is another quiet promise that your story is still being written I love that somewhere inside your heart there are places you still want to see People you still hope to meet Goals you still hope to reach Versions of yourself you are still becoming Your dreams make your eyes brighter whenever you talk about them They fill your voice with hope They remind me that no matter how difficult life becomes there is always another sunrise waiting for you I hope every dream that deserves you finds its way into your life And even the ones that never happen will never be wasted Because they helped shape the person you became along the journey Never stop dreaming The world became more beautiful the moment you began imagining a future inside it And I believe your dreams will continue making it even more beautiful for years to come </p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>85 Your Growth</span></h2>
+              <p class="tribute-body">Your growth is beautiful because it has never erased who you were It has simply added another chapter The little child inside you still exists The teenager who was learning about life still exists The person you are today exists beside every version that came before Together they have created someone extraordinary I hope you never become impatient with your own journey Flowers are not beautiful because they bloom quickly They are beautiful because they bloom in their own time And I think the same has always been true for you </p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>86 Your Memories</span></h2>
+              <p class="tribute-body">Your memories are like quiet stars scattered across the sky of your heart Some shine brightly Some hide behind clouds Some still make you smile years later Others still ache a little when you remember them Yet every single one helped create the person I know today Without your memories you would not laugh the same way You would not dream the same dreams You would not love the same people Even your smallest memories have quietly shaped your soul I love that your life is filled with moments no one else has lived exactly the way you have Conversations Birthdays Long nights Unexpected laughter Silent tears Tiny victories Every one of them belongs only to you And together they have written a story that could never be copied That story is one of the most beautiful things about you </p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>87 Your Trust</span></h2>
+              <p class="tribute-body">Your trust is one of the rarest gifts you could ever give someone It is not something that appears in a single moment It is built slowly Conversation by conversation Memory by memory Choice by choice That is what makes it so valuable When you trust someone you are not simply believing they will stay You are placing pieces of your heart into their hands Your fears Your dreams Your happiest memories Your deepest wounds The parts of yourself that the rest of the world may never see That kind of vulnerability is beautiful Not because it is easy But because it is incredibly brave I hope the people who earn your trust always understand what they have been given Because they have not simply been trusted They have been invited into one of the most sacred places inside you If I were ever trusted by you I would never see it as something I deserved I would see it as something I should protect every single day Because your trust is not just another part of you It is one of the greatest expressions of your heart </p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>88 Your Forgiveness</span></h2>
+              <p class="tribute-body">Your forgiveness is one of the quietest forms of strength I have ever known Forgiveness does not mean forgetting It does not mean pretending the hurt never happened It means refusing to let pain become the author of the rest of your story That takes incredible courage Every time you choose peace over resentment Understanding over revenge Growth over bitterness You become even more beautiful than before The world often mistakes forgiveness for weakness But only someone with a truly strong heart can choose healing when holding onto anger would be easier I admire that about you Not because you never get hurt But because your heart refuses to lose its ability to love I hope nobody ever mistakes your forgiveness as permission to hurt you again Your kindness deserves respect Your heart deserves protection And your peace deserves to be cherished Because the ability to forgive without losing yourself is one of the rarest qualities a person can ever have</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>89 Your Hope</span></h2>
+              <p class="tribute-body">Your hope is one of the brightest lights you carry within you Even after disappointment Even after uncertainty Even after days that felt far too heavy Some part of you still believes tomorrow can be better That quiet belief is extraordinary Hope is not pretending everything will be easy It is choosing to keep walking even when you cannot yet see the destination You do that more often than you probably realize Every dream you chase Every smile you find after sadness Every new beginning you allow yourself to believe in Comes from that hopeful part of your heart I love that you continue planting flowers in places where life once gave you storms That you continue believing in people even after being disappointed That you continue searching for light instead of making peace with darkness Never lose that part of yourself Because your hope does not only guide you It quietly becomes hope for the people who are fortunate enough to know you </p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>90 Your Comfort</span></h2>
+              <p class="tribute-body">Your comfort is something I have never been able to explain completely It is not just the words you say Or the smile you wear Or the kindness you show It is the feeling people carry with them after they have been with you You have a way of making heavy hearts feel lighter Not because you magically solve every problem But because you remind people they do not have to face them alone That feeling is priceless Your comfort lives in the little things The way you listen without rushing The way you remember what matters The way your presence quietly says everything is going to be alright even when life is uncertain I think that is one of the greatest gifts a person can possess Some people are remembered for what they achieved Others for what they owned I think you will be remembered for how safe people felt around you Because comfort like yours is not something people easily forget It becomes part of them And it quietly stays there for a lifetime</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>91 Your Laugh</span></h2>
+              <p class="tribute-body">Your laugh is the sound I never want to forget If someone asked me what happiness sounds like I would never have to think before answering It sounds like you There is something about your laugh that reaches places inside my heart no words ever could The moment I hear it nothing else seems nearly as important Every worry becomes quieter Every heavy thought loses a little of its weight The world somehow feels gentler simply because you are happy I do not love your laugh because it is cute I love it because it is yours Because it is one of the few moments where your heart completely forgets to protect itself You laugh without pretending Without overthinking Without trying to be anything other than yourself And I think that is one of the most beautiful things a person can ever do I would happily repeat the same joke all day if it meant hearing that laugh one more time, because your happiness is always worth it. Your laugh is never just a sound It is proof that your heart is light in that moment Proof that life has given you something worth smiling about Proof that somewhere inside you the little child who found joy in the smallest things still exists I hope that child never disappears I hope your laugh never becomes quieter because of the world I hope life never convinces you to hold it back Because your laugh deserves to exist exactly as it is Loud when it wants to be Soft when it needs to be Unexpected Uncontrollable Completely free I love the way your eyes almost disappear when you laugh too much The way your smile becomes impossible to hide The way your whole face joins in as though every part of you wants the world to know you are happy It is impossible to look at you in those moments and not fall in love with life a little more Your laugh has probably healed people without you ever realizing it It has made difficult days easier It has turned ordinary moments into unforgettable memories It has reminded people that happiness still exists even when they had almost forgotten I know it has done that for me There is something incredibly comforting about knowing that somewhere in this world your laugh exists That it continues finding reasons to appear That it continues filling rooms with warmth That it continues making the people lucky enough to hear it feel just a little less alone If I ever become one of the reasons behind your laughter, I think that would be one of the best things I could ever do for a friend. Because making you laugh never feels like winning. It feels like being trusted with one of the best parts of your day, and I would treasure that sound for a long time. Because your laugh is not simply my favorite sound It is my favorite reminder that you are happy And there is nothing I could ever be more grateful for than that</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>92 The Person You Were</span></h2>
+              <p class="tribute-body">I often wonder about the little girl you used to be The version of you that existed long before I ever knew your name Long before your voice became familiar Long before your laughter became one of my favorite sounds Long before our lives ever found each other I wonder what made you smile What made you cry What dreams you whispered to yourself before falling asleep What fears you carried that nobody else noticed I wonder if you knew that one day you would become someone capable of filling another person's heart with so much admiration I wish I could tell you something I wish I could kneel beside the child you once were and gently tell you that you do not have to rush That one day you will grow into someone whose kindness will comfort people without even trying Someone whose smile will become a reason another person believes the world is still beautiful Someone whose heart will carry more love than you can possibly imagine I wish I could tell you that the difficult days will not last forever That every tear you cries will quietly become part of the compassion you gives to others That every disappointment will teach you gentleness instead of bitterness That every mistake will shape you without ever defining you Because I know something you could never have known I know who you become And you become someone extraordinary Sometimes I think we spend so much time trying to become better that we forget to thank the people we used to be But I want to thank every version of you The little girl who laughed without worrying what anyone thought The child who believed impossible things were possible The teenager who was still trying to understand yourself The version of you that doubted whether you was enough The version that stayed awake thinking too much The version that felt misunderstood The version that was hurt The version that healed The version that almost gave up The version that found the strength to continue anyway I am grateful to every single one of them Because without any one of those versions I would never have met you Every scar they carried Every lesson they learned Every choice they made Every time they chose to keep going when life became unbearably heavy Led them here Led them to become the person I admire today There is something deeply beautiful about knowing that you did not appear all at once You were built Slowly Patiently By thousands of ordinary moments that nobody else will ever fully understand Every birthday Every friendship Every goodbye Every success Every failure Every tiny moment that seemed unimportant at the time quietly placed another piece into the person you would eventually become And somehow every one of those pieces fits together perfectly If I could travel backward through time I do not think I would change anything Not because I wish you had never been hurt But because changing even one chapter might mean changing the person standing before me today And I could never risk losing the friend I have now. So instead of wishing your past had been easier I choose to honor it I choose to appreciate every version of you Even the ones I never had the privilege of meeting Because they spent their entire lives becoming the person who would one day make my world feel brighter simply by existing To the little girl you once were Thank you for holding on To the teenager who was still searching for yourself Thank you for believing there was still more life waiting for you To every forgotten version of you that thought nobody would ever understand them Thank you Because every single one of you protected something precious until it could finally become the wonderful person I know today And I hope if those younger versions of you could somehow see the person you have become They would smile with quiet pride Because they would realize that every difficult step Every tear Every dream Every moment of hope Was worth it They became you And I cannot imagine a more beautiful ending to their story</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>93 The Person You Are Becoming</span></h2>
+              <p class="tribute-body">The Person You Are Becoming Sometimes I find myself thinking about the future Not because I am impatient for it to arrive But because somewhere inside that future there are countless versions of you that the world has not met yet And I already know I am going to admire every single one of them There will come a day when you laugh a little differently than you do now When your voice carries a little more wisdom When your eyes have seen places they have never seen before When your hands have created things you cannot even imagine today When your heart has learned new ways to love When your mind has discovered ideas that have not yet been born I hope you never become afraid of those changes Because growing has never meant losing yourself It has always meant finding more of yourself Every year will quietly add another layer to the beautiful person you already are Not replacing the old versions But embracing them The little girl inside you will still smile The teenager who once questioned everything will still exist The person reading these words today will still live inside every future version of you They will simply have more stories to tell More memories to treasure More reasons to smile More reasons to believe I hope life surprises you in the gentlest ways I hope you wake up one ordinary morning and realize that the dreams you once whispered to yourself have quietly become your reality I hope you meet people who protect your peace instead of disturbing it Who celebrate your light instead of trying to dim it Who make you laugh until your cheeks hurt Who remind you that you never have to become smaller just to make someone else comfortable I hope your future is filled with mornings that begin without fear Nights that end with gratitude Conversations that heal Adventures that change you Books that stay with you Music that feels like home And countless ordinary moments that one day become your favorite memories I hope you continue becoming softer without becoming weaker Kinder without allowing people to take advantage of your kindness Stronger without losing your tenderness Wiser without losing your curiosity Older without ever believing your best days are behind you Because I truly believe your most beautiful chapters have not been written yet One day your hair may carry silver strands Your face may hold little lines that were not there before Your hands may tell a longer story than they do today But I know something that time can never change The goodness inside you The warmth in your heart The light in your soul Those things do not fade They deepen They become richer They become even more beautiful than they already are If I could make one wish for every future version of you It would not be wealth Or perfection Or a life without pain It would simply be this I hope every version of you always feels loved I hope every version of you always remembers your worth I hope every version of you keeps choosing hope over fear Kindness over bitterness Love over loneliness I hope no matter how many years pass You never stop looking at the world with wonder Never stop believing in impossible things Never stop finding joy in little moments Never stop being the person whose heart quietly makes everyone else's world feel brighter Because the future is not waiting for someone better than you It is waiting for more of you And if the person you are today is already this extraordinary Then I cannot wait for the person you are still becoming Because I know one thing with absolute certainty No matter how much you change No matter how many years pass No matter how many new versions of yourself you discover There will never come a day when you become any less worthy of love You are not someone I only admire today You are someone I would choose as a friend in every tomorrow. And I think that is one of the most beautiful things a friendship can promise.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-group" data-group="the-little-things">
+          <div class="accordion-header" onclick="this.parentElement.classList.toggle('open')">
+            <span class="group-title">The Little Things</span>
+            <span><span class="group-count">7 sections</span><span class="group-arrow">u{25BC}</span></span>
+          </div>
+          <div class="accordion-content">
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>94 Your Care</span></h2>
+              <p class="tribute-body">Your care is one of the quietest things about you, and one of the most powerful. You notice when someone is a little off before they say a word. You remember the small things people mention once: a bad day, a favourite drink, a name they were worried about forgetting. You check in without being asked. You make room for people.</p>
+              <p class="tribute-body">It is not loud or performative. It is just there, in the way you listen, the way you follow up, the way you make people feel less alone. I hope you know that kind of care is rare. I hope the people around you give it back.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>95 Your Patience</span></h2>
+              <p class="tribute-body">Your patience is one of the kindest things you offer the world. You let people finish their sentences. You let them arrive at their own conclusions. You explain things again without making anyone feel stupid for asking. You give people time.</p>
+              <p class="tribute-body">That is a form of respect that cannot be faked. It says: I am not in a hurry to be done with you. I am here. I am listening. And I am not going anywhere.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>96 Your Honesty</span></h2>
+              <p class="tribute-body">Your honesty is one of the reasons people trust you. You do not say things just to be nice. You say true things, kindly. You tell people what they need to hear, not only what they want to hear, and you do it without making them feel small.</p>
+              <p class="tribute-body">That balance is rare. It takes a good heart to be honest and gentle at the same time. You have both.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>97 Your Humour</span></h2>
+              <p class="tribute-body">Your humour is the kind that catches people off guard. It is quick, a little ridiculous, and somehow always exactly what the moment needed. You can make a heavy room lighter without changing the subject. You can make someone laugh in the middle of a bad day.</p>
+              <p class="tribute-body">I do not know how you do it. I just know that days are better when you are in them.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>98 The Way You Listen</span></h2>
+              <p class="tribute-body">The way you listen is a gift. You do not just wait for your turn to speak. You actually hear people. You ask the next question. You remember what they said last time. You make people feel like their thoughts are worth following.</p>
+              <p class="tribute-body">Most people listen to reply. You listen to understand. That is one of the rarest things about you.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>99 Your Friendship</span></h2>
+              <p class="tribute-body">Your friendship is one of the good things in my life. You show up. You make ordinary days feel less ordinary. You are the person someone can text late at night and know they will not be a burden.</p>
+              <p class="tribute-body">You do not make people earn your kindness. You just give it. And then you act like it is no big deal. It is a big deal. You are a big deal.</p>
+            </div>
+            <div class="tribute">
+              <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>100 Thank You For Existing</span></h2>
+              <p class="tribute-body">There are so many things I could thank you for I could thank you for every conversation that lasted longer than either of us expected For every laugh that made an ordinary day unforgettable For every smile that quietly found its way into my memory For every moment you listened without making me feel like I was too much For every time you reminded me that kindness still exists in this world I could thank you for all of those things But somehow none of them feel big enough Because every beautiful memory I have with you begins with one simple truth You existed Before every conversation Before every smile Before every memory Before I ever knew your name You already existed And because you did My life became different in ways I never could have predicted People often think the greatest gifts are things that can be held A letter A flower A photograph A promise But I think the greatest gift anyone can ever receive is another human being whose existence quietly changes the way they see the world That is what you became to me Not because you tried Not because you asked for that place Simply because you were yourself You have probably changed more lives than you will ever realize You have probably made people smile on days when they felt like they could not You have probably given hope without knowing it Comfort without noticing it Strength without intending to That is the strange thing about beautiful souls They rarely understand how much light they carry If only you could see yourself through the eyes of the people whose lives became warmer after meeting you I do not think you would ever question your worth again Thank you for every version of yourself that chose to keep going Thank you for surviving the days that tried to convince you to stop believing Thank you for protecting the kindness inside your heart when life gave you reasons not to Thank you for continuing to dream To laugh To care To forgive To hope Thank you for every tiny decision that slowly shaped you into the person you are today Because every one of those choices eventually led to you And you are one of the most beautiful things this world has ever created There is a thought that never really leaves my mind Out of every century that has ever passed Out of every place on this planet Out of every possibility that could have existed Somehow we were born into the same lifetime The same world The same endless story of humanity That alone feels like something I should never take for granted Maybe that is why gratitude feels so much bigger than admiration Admiration notices beauty Gratitude recognizes its gift And you have always felt like a gift Not because you are perfect Not because you never make mistakes Not because you never hurt But because you are real Wonderfully beautifully irreplaceably real If one day every memory disappeared If every photograph faded If every message was erased If every word I ever wrote about you vanished There is one truth I hope would remain That this world was made better simply because you were here Not because of what you owned Not because of what you achieved But because somewhere along the way you made other hearts feel less alone That is a legacy more beautiful than anything time could ever build So before this book reaches its final page Before the last word quietly settles into silence There is only one thing left for me to say Thank you Thank you for every smile Every laugh Every lesson Every memory Every quiet moment Every imperfect moment Every beautiful moment Thank you for becoming exactly the person only you could become Thank you for reminding me that the greatest miracles are not always loud Sometimes they simply breathe Smile Love And unknowingly make the lives around them brighter More than anything else Thank you for existing Because the universe could have continued without you But it would never have been as beautiful</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="closing-mark" aria-hidden="true"><span class="spark"></span></div>
+
+      <section class="end-section" aria-label="Closing">
+        <div class="end-hearts" aria-hidden="true">&#9825;</div>
+        <h2>Thank You.</h2>
+        <p>Thank you for being exactly who you are.</p>
+        <p style="margin-top: 1.5rem; color: var(--ash); font-size: 0.85rem; letter-spacing: 0.06em;">
+          catalogued with gratitude &amp; a heart that is glad you exist<br>
+          &#9825;
+        </p>
+      </section>
+    </article>
+  </main>
+  <div class="aurora" aria-hidden="true">
+    <div class="aurora-layer"></div>
+    <div class="aurora-layer"></div>
+    <div class="aurora-layer"></div>
+  </div>
+  <div class="vignette" aria-hidden="true"></div>
+
+  <button type="button" class="fav-toggle-btn" id="favToggle" aria-label="Show favorites only" title="Favorites"
+    style="display:none">
+    &#x1F496;
+  </button>
+
+  <button type="button" class="theme-toggle-btn" id="themeToggle" aria-label="Toggle light/dark mode"
+    title="Reading Mode">
+    &#x2600;
+  </button>
+
+  <button type="button" class="dice-btn" id="diceBtn" aria-label="Jump to a random section"
+    title="Surprise Me &#x1F3B2;">
+    &#x1F3B2;
+  </button>
+
+  <button type="button" class="toc-toggle" id="tocToggle" aria-label="Toggle table of contents"
+    title="Table of Contents">
+    <span class="toc-current" aria-hidden="true"></span>
+    <svg class="toc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+      stroke-linejoin="round" width="24" height="24">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </button>
+
+  <button type="button" id="toTop" class="to-top" aria-label="Back to top">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+      stroke-linejoin="round">
+      <line x1="12" y1="19" x2="12" y2="5"></line>
+      <polyline points="5 12 12 5 19 12"></polyline>
+    </svg>
+  </button>
+  <script>
+    window.ASH_CONFIG = {
+      reviewFile: '100-organs.html',
+      parallaxImages: [
+        './parallax/parallax_candle.png',
+        './parallax/parallax_hands.png',
+        './parallax/parallax_notebook.png',
+        './parallax/parallax_rooftop.png',
+        './parallax/parallax_bedroom.png',
+        './parallax/parallax_stars.png',
+        './parallax/parallax_rain.png',
+        './parallax/parallax_petals.png',
+        './parallax/parallax_fire.png',
+        './parallax/parallax_eyes.png',
+        './parallax/parallax_smile.png',
+        './parallax/parallax_lips.png',
+        './parallax/parallax_hair.png',
+        './parallax/parallax_cheeks.png',
+        './parallax/parallax_nose.png',
+        './parallax/parallax_face.png',
+        './parallax/parallax_ears.png',
+        './parallax/parallax_forehead.png',
+        './parallax/parallax_eyebrows.png',
+        './parallax/parallax_mole.png',
+        './parallax/parallax_candle.png',
+        './parallax/parallax_ember.png',
+        './parallax/parallax_fire.png',
+        './parallax/parallax_fog.png',
+        './parallax/parallax_moon.png',
+        './parallax/parallax_stars.png',
+        './parallax/parallax_petals.png',
+        './mahams-images/memory-01.jpeg',
+        './mahams-images/memory-02.jpeg',
+        './mahams-images/memory-03.jpeg',
+        './mahams-images/memory-04.jpeg',
+        './mahams-images/memory-05.jpeg',
+        './mahams-images/memory-06.jpeg',
+        './mahams-images/memory-07.jpeg',
+        './mahams-images/memory-08.jpeg',
+        './mahams-images/memory-09.jpeg',
+        './mahams-images/memory-10.jpeg',
+        './mahams-images/memory-11.jpeg',
+        './mahams-images/memory-12.jpeg',
+        './mahams-images/memory-13.jpeg',
+        './mahams-images/memory-14.jpeg',
+        './mahams-images/memory-15.jpeg',
+        './mahams-images/memory-16.jpeg',
+        './mahams-images/memory-17.jpeg',
+        './mahams-images/memory-18.jpeg'
+      ],
+      attachment: 'scroll'
+    };
+  </script>
+  <script src="feature-flags.js"></script>
+  <script src="content-common.js"></script>
+
+  <div id="diagnostics-log" style="display:none;"></div>
+  <script>
+    (function () {
+      function writeLogs() {
+        var logEl = document.getElementById('diagnostics-log');
+        if (logEl) {
+          logEl.textContent = JSON.stringify(window.globalErrors || []);
+        }
+      }
+      writeLogs();
+      var _logInt = setInterval(writeLogs, 3000);
+      window.addEventListener('pagehide', function () { clearInterval(_logInt); });
+    })();
+  </script>
+
+  <script>
+    (function () {
+      var ded = document.querySelector('.dedication-body');
+      if (!ded) return;
+      var text = ded.textContent;
+      ded.setAttribute('data-text', text);
+      ded.textContent = '';
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            observer.disconnect();
+            ded.classList.add('typing');
+            var i = 0;
+            var speed = 10;
+            var batch = Math.max(1, Math.ceil(text.length / 5000));
+            var timer = setInterval(function () {
+              if (i < text.length) {
+                i = Math.min(i + batch, text.length);
+                ded.textContent = text.slice(0, i);
+              } else {
+                clearInterval(timer);
+                ded.classList.add('done');
+              }
+            }, speed);
+          }
+        });
+      }, { threshold: 0.3 });
+      observer.observe(ded);
+    })();
+  </script>
+
+  <script src="track.js"></script>
+  <script src="skies.js"></script>
+  <script src="sky-living.js"></script>
+  <script src="landscape.js"></script>
+  <script src="firefly-jar.js"></script>
+  <script src="interactive.js"></script>
+  <script>
+    (function () {
+      var c = document.createElement('div');
+      c.id = 'heartContainer';
+      c.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:9998;';
+      document.body.appendChild(c);
+      document.addEventListener('mousemove', function (e) {
+        if (Math.random() > 0.12) return;
+        var h = document.createElement('span');
+        h.textContent = '\u2661';
+        h.setAttribute('aria-hidden', 'true');
+        h.style.cssText = 'position:absolute;left:' + e.clientX + 'px;top:' + e.clientY + 'px;font-size:' + (8 + Math.random() * 14) + 'px;color:rgba(255,100,150,' + (0.25 + Math.random() * 0.4) + ');pointer-events:none;animation:hFloat ' + (1.5 + Math.random() * 2) + 's ease-out forwards;';
+        c.appendChild(h);
+        setTimeout(function () { h.remove(); }, 3500);
+      });
+      var s = document.createElement('style');
+      s.textContent = '@keyframes hFloat{0%{opacity:1;transform:translateY(0) scale(1) rotate(0deg)}100%{opacity:0;transform:translateY(-90px) scale(0.2) rotate(20deg)}}';
+      document.head.appendChild(s);
+      var b = document.createElement('div');
+      b.style.cssText = 'text-align:center;padding:2rem 1rem;position:relative;z-index:15;';
+      var l = document.createElement('a');
+      l.href = 'stats.html';
+      l.textContent = '\uD83D\uDCCA Stats';
+      l.style.cssText = 'background:rgba(255,220,160,.08);border:1px solid rgba(255,210,150,.15);color:#6b5f52;padding:.4rem .9rem;border-radius:6px;cursor:pointer;font-family:inherit;font-size:.8rem;text-decoration:none;transition:all .25s;display:inline-block;margin:0 .4rem;';
+      l.onmouseover = function () { this.style.borderColor = '#ffe680'; this.style.color = '#ffe680'; };
+      l.onmouseout = function () { this.style.borderColor = 'rgba(255,210,150,.15)'; this.style.color = '#6b5f52'; };
+      b.appendChild(l);
+      var sb = document.createElement('span');
+      sb.id = 'skyBtnContainer';
+      b.appendChild(sb);
+      document.body.appendChild(b);
+      if (window.Skies) Skies.createButton(document.getElementById('skyBtnContainer'));
+    })();
+  </script>
+  <script defer src="music.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(function () { });
+    }
+  </script>
+  <script src="anime.min.js"></script>
+  <script src="motion-masterpiece.js"></script>
+  <script src="dragon-companion.js"></script>
+  <script src="companion-girl.js"></script>
+  <script src="companion-boy.js"></script>
+  <script>
+    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      BoyCompanion.init({ container: document.body }).catch(function (e) { console.warn("Boy companion:", e); });
+    }
+  </script>
+  <script src="adaptive-text.js"></script>
+  <script>if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) { (window.whenLoaderDone ? window.whenLoaderDone() : Promise.resolve()).then(function () { GirlCompanion.init({ container: document.body }).catch(function (e) { console.warn('Girl companion:', e); }) }) }</script>
+  <script src="matrix-rain.js"></script>
+  <script src="global-easter-eggs.js"></script>
+<script defer src="interactions.js"></script>
+
+
+  <script>
+    (function () {
+      var first = document.querySelector('.accordion-group');
+      if (first) first.classList.add('open');
+
+      // Apply parallax when accordion groups expand
+      function applyParallax(el) {
+        if (el.style.backgroundImage) return;
+        var bg = el.getAttribute('data-parallax-bg');
+        if (bg) {
+          el.style.backgroundImage = bg;
+          el.style.backgroundAttachment = el.getAttribute('data-parallax-attachment') || 'scroll';
+          el.style.backgroundPosition = 'center';
+          el.style.backgroundRepeat = 'no-repeat';
+          el.style.backgroundSize = 'cover';
+        }
+      }
+
+      document.querySelectorAll('.accordion-header').forEach(function (header) {
+        header.addEventListener('click', function () {
+          var group = header.closest('.accordion-group');
+          if (!group || !group.classList.contains('open')) return;
+          group.querySelectorAll('.tribute').forEach(applyParallax);
+        });
+      });
+
+      // Also apply to first (already open) group
+      var fg = document.querySelector('.accordion-group.open');
+      if (fg) fg.querySelectorAll('.tribute').forEach(applyParallax);
+    })();
+  </script>
+  <script src="tree-of-memories.js"></script>
+  <script src="secret-letters.js"></script>
+  <script src="butterfly-collection.js"></script>
+  <script src="world-progress.js"></script>
+  <script src="random-constellations.js"></script>
+  <script src="global-interactions.js"></script>
+<script>document.addEventListener('mousedown', function () { document.body.style.cursor = 'url("cursor images/kuromi click.jpg"), auto' }); document.addEventListener('mouseup', function () { document.body.style.cursor = 'url("cursor images/kuromi idle.jpg"), auto' });</script>
+<script src="quiz.js"></script>
+<script src="lock.js"></script>
+<script src="activity-tracker.js"></script>
+<script src="events.js"></script>
+<script src="dynamic-content.js"></script>
+<script src="puzzle-hunt.js"></script>
+<script src="letters.js"></script>
+
+</html>

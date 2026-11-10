@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maham's Birthday Artifacts</title>
+<!-- Optional fonts. Every font stack has a fallback, so this <link> can be dropped safely. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+
+<!--
+  =====================================================================
+  MAHAM BIRTHDAY ARTIFACTS - integration notes
+  =====================================================================
+  * Every class/ID is prefixed `maham-bday-`. Nothing styles body/button/etc.
+  * All CSS is scoped under `.maham-bday-root` (theme tokens live there).
+  * Each artifact = one HTML block + one CSS block + one init function.
+    Look for the banners:  [A] Countdown ... [L] Final Surprise.
+  * To extract one artifact: copy its HTML block, its CSS block, the
+    shared CSS ("SHARED") and shared JS ("SHARED JS": config + Fx engine),
+    and its `initX` function. Wrap in an element with class
+    `maham-bday-root`.
+  * Default content lives in birthday-defaults.js; admin edits load from config/birthday.
+  * Public API: window.MahamBirthday.init(rootElement?) - safe to call
+    again; it skips artifacts that are already initialised.
+  * Full-screen layers (confetti canvas, lightbox, final surprise) are
+    appended to <body> and carry the `maham-bday-root` class so tokens apply.
+-->
+
+<style>
+/* ===================== Living Sky Background Layer ===================== */
+#skyOverlay, #skyLivingCanvas {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: -1 !important;
+  pointer-events: none !important;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #140d1f;
+}
+
+.maham-bday-root {
+  position: relative !important;
+  z-index: 1 !important;
+  background: transparent !important;
+}
+
+.maham-bday-artifact {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: rgba(255, 255, 255, 0.90) !important;
+  box-shadow: 0 18px 50px -20px rgba(69, 40, 77, 0.4), 0 2px 10px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* ===================== SHARED: tokens + base ===================== */
+.maham-bday-root{
+  --mb-pink:#f7b6d2; --mb-pink-deep:#e8689f; --mb-lav:#cdb9f2; --mb-lav-deep:#8d6fd1;
+  --mb-cream:#fff6ea; --mb-peach:#ffc8a6; --mb-gold:#d6a23c; --mb-ink:#45284d; --mb-ink-soft:#7a5c80;
+  --mb-card:#ffffffcc; --mb-radius:22px;
+  --mb-display:"Fraunces",Georgia,"Times New Roman",serif;
+  --mb-hand:"Caveat","Segoe Script","Bradley Hand",cursive;
+  --mb-ui:"Nunito",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-family:var(--mb-ui); color:var(--mb-ink); line-height:1.5;
+  background:linear-gradient(160deg,var(--mb-cream),#ffeaf3 55%,#efe6ff);
+  padding:clamp(16px,4vw,48px); display:grid; gap:clamp(28px,5vw,56px);
+}
+.maham-bday-root *,.maham-bday-root *::before,.maham-bday-root *::after{box-sizing:border-box}
+.maham-bday-artifact{position:relative;max-width:960px;width:100%;margin:0 auto;padding:clamp(20px,4vw,40px);
+  border-radius:var(--mb-radius);background:var(--mb-card);box-shadow:0 18px 50px -24px #8d6fd166;overflow:hidden}
+.maham-bday-title{font-family:var(--mb-display);font-weight:700;font-size:clamp(1.5rem,4vw,2.2rem);margin:0 0 .15em}
+.maham-bday-sub{font-family:var(--mb-hand);font-size:1.4rem;color:var(--mb-ink-soft);margin:0 0 1.2rem}
+.maham-bday-btn{font:700 1rem var(--mb-ui);color:#fff;border:0;border-radius:999px;padding:.7em 1.4em;cursor:pointer;
+  background:linear-gradient(135deg,var(--mb-pink-deep),var(--mb-lav-deep));box-shadow:0 8px 20px -8px var(--mb-pink-deep);
+  transition:transform .15s,box-shadow .15s}
+.maham-bday-btn:hover{transform:translateY(-2px)}
+.maham-bday-btn:active{transform:scale(.97)}
+.maham-bday-btn--ghost{background:#fff;color:var(--mb-ink);box-shadow:inset 0 0 0 2px var(--mb-lav)}
+.maham-bday-root :focus-visible{outline:3px solid var(--mb-gold);outline-offset:3px}
+.maham-bday-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:center}
+.maham-bday-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.maham-bday-fx-full{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:9999}
+
+/* ===================== [A] COUNTDOWN ===================== */
+.maham-bday-countdown-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(8px,2vw,18px);margin:1rem 0}
+.maham-bday-countdown-unit{text-align:center;padding:1rem .4rem;border-radius:18px;
+  background:linear-gradient(160deg,#fff,var(--mb-lav) 220%);box-shadow:inset 0 0 0 2px #fff,0 6px 16px -10px var(--mb-lav-deep)}
+.maham-bday-countdown-num{display:block;font-family:var(--mb-display);font-weight:700;font-size:clamp(1.8rem,7vw,3.4rem);font-variant-numeric:tabular-nums}
+.maham-bday-countdown-label{font-family:var(--mb-hand);font-size:1.25rem;color:var(--mb-ink-soft)}
+.maham-bday-countdown-note{text-align:center;font-family:var(--mb-hand);font-size:1.5rem;min-height:1.6em;margin:0}
+
+/* ===================== [B] CAKE ===================== */
+.maham-bday-cake-stage{display:grid;place-items:center;padding-top:60px}
+.maham-bday-cake{position:relative;width:240px;height:210px}
+.maham-bday-cake-layer{position:absolute;left:50%;transform:translateX(-50%);border-radius:14px 14px 10px 10px;
+  background-image:radial-gradient(circle at 10px 0,#fff 9px,transparent 10px);background-size:26px 20px;background-repeat:repeat-x}
+.maham-bday-cake-layer--1{bottom:0;width:240px;height:84px;background-color:var(--mb-pink)}
+.maham-bday-cake-layer--2{bottom:84px;width:176px;height:64px;background-color:var(--mb-lav)}
+.maham-bday-cake-layer--3{bottom:148px;width:112px;height:54px;background-color:var(--mb-peach)}
+.maham-bday-cake-plate{position:absolute;bottom:-12px;left:50%;transform:translateX(-50%);width:280px;height:14px;border-radius:50%;background:linear-gradient(var(--mb-gold),#f2d58e)}
+.maham-bday-candles{position:absolute;left:50%;bottom:202px;transform:translateX(-50%);display:flex;gap:14px}
+.maham-bday-candle{all:unset;position:relative;width:12px;height:44px;border-radius:4px;cursor:pointer;
+  background:repeating-linear-gradient(135deg,#fff 0 6px,var(--mb-pink-deep) 6px 12px)}
+.maham-bday-candle:focus-visible{outline:3px solid var(--mb-gold);outline-offset:6px}
+.maham-bday-flame{position:absolute;left:50%;top:-24px;width:14px;height:24px;margin-left:-7px;border-radius:50% 50% 50% 50%/65% 65% 35% 35%;
+  background:radial-gradient(ellipse at 50% 75%,#fff7c2,#ffc83c 55%,#ff8a3c);box-shadow:0 0 18px 6px #ffc83c88;
+  transform-origin:50% 100%;animation:maham-bday-flicker .5s ease-in-out infinite alternate;transition:transform .3s,opacity .3s}
+.maham-bday-candle.maham-bday-is-out .maham-bday-flame{transform:scale(0);opacity:0;animation:none}
+.maham-bday-candle.maham-bday-is-out::after{content:"";position:absolute;left:50%;top:-8px;width:6px;height:18px;margin-left:-3px;border-radius:50%;
+  background:#b9a9c4aa;filter:blur(3px);animation:maham-bday-smoke 1.6s ease-out forwards}
+@keyframes maham-bday-flicker{from{transform:scale(1,1) rotate(-3deg)}to{transform:scale(.92,1.1) rotate(3deg)}}
+@keyframes maham-bday-smoke{from{opacity:.9;transform:translateY(0)}to{opacity:0;transform:translateY(-46px) scaleX(2)}}
+.maham-bday-wish{font-family:var(--mb-hand);font-size:clamp(1.6rem,5vw,2.4rem);text-align:center;margin:1.2rem 0 0;min-height:2.4em;opacity:0;transform:translateY(8px);transition:.6s}
+.maham-bday-wish.maham-bday-is-shown{opacity:1;transform:none}
+
+/* ===================== [C] BALLOONS ===================== */
+.maham-bday-balloon-stage{position:relative;height:340px;border-radius:18px;background:linear-gradient(#e9e0ff,#fff3e6);overflow:hidden}
+.maham-bday-balloon{all:unset;position:absolute;bottom:-20px;width:64px;height:78px;cursor:pointer;
+  border-radius:50% 50% 48% 48%/58% 58% 42% 42%;background:radial-gradient(circle at 32% 28%,#fff9,transparent 36%),var(--mb-b);
+  animation:maham-bday-bob var(--mb-d) ease-in-out infinite alternate}
+.maham-bday-balloon::after{content:"";position:absolute;left:50%;top:100%;width:2px;height:70px;background:#45284d55;transform-origin:top}
+.maham-bday-balloon:focus-visible{outline:3px solid var(--mb-gold);outline-offset:4px}
+@keyframes maham-bday-bob{from{transform:translate(-14px,0) rotate(-4deg)}to{transform:translate(14px,-36px) rotate(4deg)}}
+.maham-bday-bit{position:absolute;width:8px;height:8px;border-radius:50%;pointer-events:none}
+
+/* ===================== [D] CONFETTI (button only; canvas is shared Fx) ===================== */
+.maham-bday-center{text-align:center}
+
+/* ===================== [E] GIFTS ===================== */
+.maham-bday-gifts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px}
+.maham-bday-gift{all:unset;cursor:pointer;display:grid;justify-items:center;gap:10px;text-align:center;padding:10px;border-radius:18px}
+.maham-bday-gift:focus-visible{outline:3px solid var(--mb-gold)}
+.maham-bday-gift-box{position:relative;width:120px;height:110px;margin-top:34px}
+.maham-bday-gift-body{position:absolute;inset:26px 0 0;border-radius:6px 6px 10px 10px;background:var(--mb-c)}
+.maham-bday-gift-body::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:20px;margin-left:-10px;background:var(--mb-r)}
+.maham-bday-gift-lid{position:absolute;left:-8px;right:-8px;top:0;height:30px;border-radius:8px;background:var(--mb-c);filter:brightness(1.07);
+  transform-origin:left bottom;transition:transform .6s cubic-bezier(.3,1.4,.5,1)}
+.maham-bday-gift-lid::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:20px;margin-left:-10px;background:var(--mb-r)}
+.maham-bday-gift-lid::after{content:"";position:absolute;left:50%;top:-16px;width:34px;height:20px;margin-left:-17px;border:6px solid var(--mb-r);border-radius:50% 50% 0 0}
+.maham-bday-gift.maham-bday-is-open .maham-bday-gift-lid{transform:translate(-14px,-34px) rotate(-38deg)}
+.maham-bday-gift-msg{font-family:var(--mb-hand);font-size:1.45rem;line-height:1.2;max-height:0;opacity:0;overflow:hidden;transition:.5s}
+.maham-bday-gift.maham-bday-is-open .maham-bday-gift-msg{max-height:9em;opacity:1}
+.maham-bday-gift-hint{font-size:.9rem;color:var(--mb-ink-soft)}
+
+/* ===================== [F] WISHES ===================== */
+.maham-bday-wishes{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:18px}
+.maham-bday-wishcard{all:unset;cursor:pointer;position:relative;min-height:170px;perspective:800px;border-radius:18px}
+.maham-bday-wishcard:focus-visible{outline:3px solid var(--mb-gold);outline-offset:4px}
+.maham-bday-wishcard-inner{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .7s}
+.maham-bday-wishcard[aria-pressed="true"] .maham-bday-wishcard-inner{transform:rotateY(180deg)}
+.maham-bday-wishface{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:16px;border-radius:18px;backface-visibility:hidden;background:var(--mb-bg)}
+.maham-bday-wishface--front{font-family:var(--mb-display);font-weight:700;font-size:1.25rem}
+.maham-bday-wishface--back{transform:rotateY(180deg);font-family:var(--mb-hand);font-size:1.45rem;line-height:1.25;background:#fff;box-shadow:inset 0 0 0 3px var(--mb-bg)}
+
+/* ===================== [G] POLAROIDS ===================== */
+.maham-bday-polaroids{display:flex;flex-wrap:wrap;gap:26px;justify-content:center;padding:10px}
+.maham-bday-polaroid{margin:0;width:190px;padding:10px 10px 14px;background:#fff;box-shadow:0 10px 24px -12px #45284d88;
+  transform:rotate(var(--mb-rot));transition:transform .25s}
+.maham-bday-polaroid:hover,.maham-bday-polaroid:focus-within{transform:rotate(0) scale(1.06);z-index:2}
+.maham-bday-polaroid-btn{all:unset;display:block;cursor:zoom-in;width:100%}
+.maham-bday-polaroid-btn:focus-visible{outline:3px solid var(--mb-gold)}
+.maham-bday-polaroid-img{display:block;width:100%;aspect-ratio:1;object-fit:cover;background:var(--mb-lav)}
+.maham-bday-polaroid-cap{font-family:var(--mb-hand);font-size:1.4rem;text-align:center;margin-top:8px;min-height:1.4em}
+.maham-bday-lightbox{position:fixed;inset:0;z-index:9980;display:none;place-items:center;background:#2b1530dd;padding:20px}
+.maham-bday-lightbox.maham-bday-is-open{display:grid}
+.maham-bday-lightbox-card{background:#fff;padding:14px 14px 20px;max-width:min(92vw,560px);transform:rotate(-1.5deg)}
+.maham-bday-lightbox-img{display:block;width:100%;max-height:68vh;object-fit:contain}
+.maham-bday-lightbox-cap{font-family:var(--mb-hand);font-size:1.8rem;text-align:center;margin:10px 0 0}
+
+/* ===================== [H] FIREWORKS ===================== */
+.maham-bday-sky{position:relative;height:320px;border-radius:18px;background:linear-gradient(#2a1840,#5a2f6e 70%,#8e4a78);overflow:hidden}
+.maham-bday-sky-canvas{position:absolute;inset:0;width:100%;height:100%}
+
+/* ===================== [I] LETTER ===================== */
+.maham-bday-envelope-wrap{display:grid;justify-items:center;gap:18px}
+.maham-bday-envelope{all:unset;position:relative;width:min(320px,86%);height:210px;cursor:pointer;margin-top:20px}
+.maham-bday-envelope:focus-visible{outline:3px solid var(--mb-gold);outline-offset:6px}
+.maham-bday-env-back,.maham-bday-env-front{position:absolute;inset:0;border-radius:10px;background:var(--mb-peach)}
+.maham-bday-env-front{background:linear-gradient(to top right,transparent 49.5%,#ffb98f 50%) left/50% 100% no-repeat,linear-gradient(to top left,transparent 49.5%,#ffb98f 50%) right/50% 100% no-repeat,
+  linear-gradient(#ffd8bd,#ffd8bd) bottom/100% 56% no-repeat;z-index:3;pointer-events:none}
+.maham-bday-env-flap{position:absolute;left:0;right:0;top:0;height:60%;background:#f5a77c;clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:top;transition:transform .6s,z-index 0s .3s;z-index:4}
+.maham-bday-env-seal{position:absolute;left:50%;top:52%;width:34px;height:34px;margin:-17px;border-radius:50%;background:var(--mb-pink-deep);z-index:5;box-shadow:0 2px 6px #0004;transition:opacity .3s}
+.maham-bday-paper{position:absolute;left:6%;right:6%;top:8%;height:84%;background:#fffdf7;border-radius:6px;z-index:2;padding:14px;overflow:hidden;
+  transition:transform .8s .5s,height .8s .5s;font-family:var(--mb-hand);font-size:1.25rem}
+.maham-bday-envelope.maham-bday-is-open .maham-bday-env-flap{transform:rotateX(180deg);z-index:1}
+.maham-bday-envelope.maham-bday-is-open .maham-bday-env-seal{opacity:0}
+.maham-bday-envelope.maham-bday-is-open .maham-bday-paper{transform:translateY(-120px);height:150%;z-index:6}
+.maham-bday-envelope.maham-bday-is-open{margin-bottom:200px}
+.maham-bday-letter-text{white-space:pre-wrap;margin:0;line-height:1.3}
+
+/* ===================== [J] MUSIC ===================== */
+.maham-bday-player{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center;max-width:460px;margin:0 auto;padding:16px;border-radius:20px;background:#fff;box-shadow:0 10px 26px -16px var(--mb-lav-deep)}
+.maham-bday-disc{width:64px;height:64px;border-radius:50%;background:conic-gradient(var(--mb-pink),var(--mb-lav),var(--mb-peach),var(--mb-pink));position:relative}
+.maham-bday-disc::after{content:"";position:absolute;inset:40%;border-radius:50%;background:#fff}
+.maham-bday-player.maham-bday-is-playing .maham-bday-disc{animation:maham-bday-spin 4s linear infinite}
+@keyframes maham-bday-spin{to{transform:rotate(360deg)}}
+.maham-bday-player-title{font-family:var(--mb-display);font-weight:700;margin:0}
+.maham-bday-player-ctl{grid-column:1/-1;display:flex;gap:12px;align-items:center}
+.maham-bday-progress{flex:1;accent-color:var(--mb-pink-deep)}
+.maham-bday-time{font-size:.85rem;color:var(--mb-ink-soft);font-variant-numeric:tabular-nums}
+
+/* ===================== [K] QUIZ ===================== */
+.maham-bday-quiz-q{font-family:var(--mb-display);font-weight:700;font-size:1.3rem;margin:.4rem 0 1rem}
+.maham-bday-quiz-opts{display:grid;gap:10px}
+.maham-bday-quiz-opt{font:700 1rem var(--mb-ui);text-align:left;padding:.8em 1em;border-radius:14px;border:2px solid var(--mb-lav);background:#fff;color:var(--mb-ink);cursor:pointer}
+.maham-bday-quiz-opt:hover:not(:disabled){background:#f6efff}
+.maham-bday-quiz-opt.maham-bday-right{background:#d9f7e3;border-color:#52b788}
+.maham-bday-quiz-opt.maham-bday-wrong{background:#ffe0e3;border-color:#e5707e}
+.maham-bday-quiz-score{font-family:var(--mb-display);font-size:1.6rem;text-align:center}
+
+/* ===================== [L] FINAL SURPRISE ===================== */
+.maham-bday-final{position:fixed;inset:0;z-index:9990;display:none;place-items:center;text-align:center;padding:24px;overflow:auto;
+  background:radial-gradient(circle at 50% 40%,#ffe3f0,#d8c6ff 60%,#8d6fd1)}
+.maham-bday-final.maham-bday-is-open{display:grid;animation:maham-bday-fade .8s}
+.maham-bday-final-hello{font-family:var(--mb-hand);font-size:clamp(1.8rem,6vw,3rem);margin:0}
+.maham-bday-final-name{font-family:var(--mb-display);font-weight:700;font-size:clamp(3rem,16vw,9rem);line-height:1;margin:.1em 0;color:#fff;text-shadow:0 6px 0 var(--mb-pink-deep),0 0 40px #fff8}
+.maham-bday-final-name span{display:inline-block;opacity:0;transform:translateY(40px) scale(.6);animation:maham-bday-pop .7s cubic-bezier(.3,1.5,.5,1) forwards}
+.maham-bday-final-msg{font-family:var(--mb-hand);font-size:clamp(1.4rem,4vw,2.2rem);max-width:640px;margin:0 auto 1.4rem;opacity:0;animation:maham-bday-fade 1s 1.8s forwards}
+.maham-bday-final-close{opacity:0;animation:maham-bday-fade 1s 2.4s forwards}
+@keyframes maham-bday-pop{to{opacity:1;transform:none}}
+@keyframes maham-bday-fade{from{opacity:0}to{opacity:1}}
+
+/* ===================== SHARED: responsive + reduced motion ===================== */
+@media (max-width:520px){
+  .maham-bday-cake{transform:scale(.85)}
+  .maham-bday-player{grid-template-columns:1fr;justify-items:center;text-align:center}
+}
+@media (prefers-reduced-motion:reduce){
+  .maham-bday-root *,.maham-bday-root *::before,.maham-bday-root *::after,
+  .maham-bday-final,.maham-bday-final *{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;transition-delay:0s !important}
+  .maham-bday-flame{animation:none}
+}
+</style>
+</head>
+<body>
+
+<div class="maham-bday-root" id="maham-bday-root">
+
+  <section class="maham-bday-artifact maham-bday-center" id="maham-bday-hero" aria-labelledby="maham-bday-hero-h">
+    <p class="maham-bday-sub">A little world, made for you</p>
+    <h1 class="maham-bday-title" id="maham-bday-hero-h" style="font-size:clamp(2.2rem,7vw,4.2rem);line-height:1.05;">Happy Birthday, Maham</h1>
+    <p class="maham-bday-sub" style="margin-bottom:0">Open it slowly. There is no rush.</p>
+  </section>
+
+  <!-- ===================== [A] COUNTDOWN: HTML ===================== -->
+  <section class="maham-bday-artifact" id="maham-bday-countdown" aria-labelledby="maham-bday-countdown-h">
+    <h2 class="maham-bday-title" id="maham-bday-countdown-h">Countdown to Maham's birthday</h2>
+    <p class="maham-bday-sub">Counting down to the day.</p>
+    <div class="maham-bday-countdown-grid" role="timer" aria-label="Time left until the birthday">
+      <div class="maham-bday-countdown-unit"><span class="maham-bday-countdown-num" data-mb-unit="days">0</span><span class="maham-bday-countdown-label">days</span></div>
+      <div class="maham-bday-countdown-unit"><span class="maham-bday-countdown-num" data-mb-unit="hours">0</span><span class="maham-bday-countdown-label">hours</span></div>
+      <div class="maham-bday-countdown-unit"><span class="maham-bday-countdown-num" data-mb-unit="minutes">0</span><span class="maham-bday-countdown-label">minutes</span></div>
+      <div class="maham-bday-countdown-unit"><span class="maham-bday-countdown-num" data-mb-unit="seconds">0</span><span class="maham-bday-countdown-label">seconds</span></div>
+    </div>
+    <p class="maham-bday-countdown-note" data-mb-note></p>
+  </section>
+
+  <!-- ===================== [B] CAKE: HTML ===================== -->
+  <section class="maham-bday-artifact" id="maham-bday-cake" aria-labelledby="maham-bday-cake-h">
+    <h2 class="maham-bday-title" id="maham-bday-cake-h">Make a wish</h2>
+    <p class="maham-bday-sub">Tap a candle, or blow them all out at once.</p>
+    <div class="maham-bday-cake-stage">
+      <div class="maham-bday-cake">
+        <div class="maham-bday-candles" data-mb-candles></div>
+        <div class="maham-bday-cake-layer maham-bday-cake-layer--3"></div>
+        <div class="maham-bday-cake-layer maham-bday-cake-layer--2"></div>
+        <div class="maham-bday-cake-layer maham-bday-cake-layer--1"></div>
+        <div class="maham-bday-cake-plate"></div>
+      </div>
+    </div>
+    <p class="maham-bday-wish" data-mb-wish aria-live="polite"></p>
+    <div class="maham-bday-row">
+      <button type="button" class="maham-bday-btn" data-mb-blow>Blow out candles</button>
+      <button type="button" class="maham-bday-btn maham-bday-btn--ghost" data-mb-relight>Relight</button>
+    </div>
+  </section>
+
+  <!-- ===================== [C] BALLOONS: HTML ===================== -->
+  <section class="maham-bday-artifact" id="maham-bday-balloons" aria-labelledby="maham-bday-balloons-h">
+    <h2 class="maham-bday-title" id="maham-bday-balloons-h">Pop the balloons</h2>
+    <p class="maham-bday-sub">Every pop is a tiny party.</p>
+    <div class="maham-bday-balloon-stage" data-mb-stage></div>
+    <div class="maham-bday-row" style="margin-top:14px"><button type="button" class="maham-bday-btn" data-mb-refill>Refill balloons</button></div>
+  </section>
+
+  <!-- ===================== [D] CONFETTI: HTML ===================== -->
+  <section class="maham-bday-artifact maham-bday-center" id="maham-bday-confetti" aria-labelledby="maham-bday-confetti-h">
+    <h2 class="maham-bday-title" id="maham-bday-confetti-h">Confetti time</h2>
+    <p class="maham-bday-sub">One button. Whole screen.</p>
+    <button type="button" class="maham-bday-btn" data-mb-fire>Throw confetti</button>
+  </section>
+
+  <!-- ===================== [E] GIFTS: HTML ===================== -->
+  <section class="maham-bday-artifact" id="maham-bday-gifts" aria-labelledby="maham-bday-gifts-h">
+    <h2 class="maham-bday-title" id="maham-bday-gifts-h">Open your gifts</h2>
+    <p class="maham-bday-sub">Tap a box to unwrap it.</p>
+    <div class="maham-bday-gifts" data-mb-gifts></div>
+  </section>
+
+  <!-- ===================== [F] WISHES: HTML ===================== -->
+  <section class="maham-bday-artifact" id="maham-bday-wishes" aria-labelledby="maham-bday-wishes-h">
+    <h2 class="maham-bday-title" id="maham-bday-wishes-h">Birthday wishes</h2>
+    <p class="maham-bday-sub">Tap a card to read it.</p>
+    <div class="maham-bday-wishes" data-mb-wishes></div>
+  </section>
+
+  <!-- ===================== [G] POLAROIDS: HTML ===================== -->
+  <section class="maham-bday-artifact" id="maham-bday-polaroids" aria-labelledby="maham-bday-polaroids-h">
+    <h2 class="maham-bday-title" id="maham-bday-polaroids-h">Memory wall</h2>
+    <p class="maham-bday-sub">Tap a photo to hold on to it for a moment.</p>
+    <div class="maham-bday-polaroids" data-mb-polaroids></div>
+  </section>
+
+  <!-- ===================== [H] FIREWORKS: HTML ===================== -->
+  <section class="maham-bday-artifact" id="maham-bday-fireworks" aria-labelledby="maham-bday-fireworks-h">
+    <h2 class="maham-bday-title" id="maham-bday-fireworks-h">Fireworks</h2>
+    <p class="maham-bday-sub">Tap the sky, or launch a show.</p>
+    <div class="maham-bday-sky"><canvas class="maham-bday-sky-canvas" data-mb-canvas aria-label="Fireworks display" role="img"></canvas></div>
+    <div class="maham-bday-row" style="margin-top:14px"><button type="button" class="maham-bday-btn" data-mb-launch>Launch fireworks</button></div>
+  </section>
+
+  <!-- ===================== [I] LETTER: HTML ===================== -->
+  <section class="maham-bday-artifact" id="maham-bday-letter" aria-labelledby="maham-bday-letter-h">
+    <h2 class="maham-bday-title" id="maham-bday-letter-h">A letter for Maham</h2>
+    <p class="maham-bday-sub">Open the envelope.</p>
+    <div class="maham-bday-envelope-wrap">
+      <button type="button" class="maham-bday-envelope" data-mb-envelope aria-expanded="false" aria-label="Open the letter">
+        <span class="maham-bday-env-back"></span>
+        <span class="maham-bday-paper"><p class="maham-bday-letter-text" data-mb-letter></p></span>
+        <span class="maham-bday-env-flap"></span>
+        <span class="maham-bday-env-seal"></span>
+        <span class="maham-bday-env-front"></span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ===================== [J] MUSIC PLAYER: HTML ===================== -->
+  <section class="maham-bday-artifact" id="maham-bday-music" aria-labelledby="maham-bday-music-h">
+    <h2 class="maham-bday-title" id="maham-bday-music-h">A little birthday soundtrack</h2>
+    <p class="maham-bday-sub">A little something picked for you.</p>
+    <div class="maham-bday-player" data-mb-player>
+      <div class="maham-bday-disc" aria-hidden="true"></div>
+      <p class="maham-bday-player-title" data-mb-track>A little birthday soundtrack</p>
+      <div class="maham-bday-player-ctl">
+        <button type="button" class="maham-bday-btn" data-mb-play aria-label="Play">Play</button>
+        <input type="range" class="maham-bday-progress" data-mb-progress min="0" max="100" value="0" step="0.1" aria-label="Playback position">
+        <span class="maham-bday-time" data-mb-time>0:00</span>
+      </div>
+      <audio data-mb-audio preload="metadata"></audio>
+    </div>
+  </section>
+
+  <!-- ===================== [K] QUIZ: HTML ===================== -->
+  <section class="maham-bday-artifact" id="maham-bday-quiz" aria-labelledby="maham-bday-quiz-h">
+    <h2 class="maham-bday-title" id="maham-bday-quiz-h">A tiny birthday quiz</h2>
+    <p class="maham-bday-sub" data-mb-progress-text></p>
+    <div data-mb-quiz></div>
+  </section>
+
+  <!-- ===================== [L] FINAL SURPRISE: HTML (trigger; overlay is built in JS) ===================== -->
+  <section class="maham-bday-artifact maham-bday-center" id="maham-bday-surprise" aria-labelledby="maham-bday-surprise-h">
+    <h2 class="maham-bday-title" id="maham-bday-surprise-h">One last thing</h2>
+    <p class="maham-bday-sub">Ready?</p>
+    <button type="button" class="maham-bday-btn" data-mb-reveal>Reveal the surprise</button>
+  </section>
+
+  <!-- Navigation link to Dreambox Sanctuary -->
+  <div class="maham-bday-center" style="margin:3rem auto 2rem;display:flex;gap:14px;justify-content:center;align-items:center;flex-wrap:wrap;">
+    <a class="maham-bday-btn" href="/index.html" style="font-size:1.15rem;padding:.85em 2.4em;text-decoration:none;">
+      Enter Dreambox
+    </a>
+    <button type="button" class="maham-bday-btn maham-bday-btn--ghost" onclick="if(window.Skies) Skies.random();" style="font-size:1rem;padding:.75em 1.6em;cursor:pointer;">
+      Change the sky
+    </button>
+  </div>
+</div>
+
+<script src="birthday-defaults.js"></script>
+<script>
+/* Defaults live in birthday-defaults.js; admin overrides load from config/birthday. */
+(function () {
+  "use strict";
+
+  /* ---------- SHARED JS: helpers ---------- */
+  var CFG = window.MAHAM_BDAY_CONFIG;
+  var PALETTE = ["#f7b6d2", "#e8689f", "#cdb9f2", "#8d6fd1", "#ffc8a6", "#d6a23c", "#fff1c9"];
+  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  /** Create an element: el("div", "maham-bday-x", "text"). Text is set via textContent (no HTML injection). */
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+  function rand(a, b) { return a + Math.random() * (b - a); }
+  function pick(list) { return list[Math.floor(Math.random() * list.length)]; }
+  function q(root, sel) { return root.querySelector(sel); }
+
+  /** Inline SVG placeholder so the file needs no image assets. */
+  function placeholderImg(i) {
+    var c = [["#f7b6d2", "#cdb9f2"], ["#ffc8a6", "#f7b6d2"], ["#cdb9f2", "#ffe5d2"]][i % 3];
+    var svg = "<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>" +
+      "<stop offset='0' stop-color='" + c[0] + "'/><stop offset='1' stop-color='" + c[1] + "'/></linearGradient></defs>" +
+      "<rect width='400' height='400' fill='url(#g)'/><text x='200' y='215' font-size='26' text-anchor='middle' fill='#45284d' font-family='sans-serif'>Your photo here</text></svg>";
+    return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+  }
+
+  /** Create a body-level layer that still receives the scoped theme tokens. */
+  function bodyLayer(cls) {
+    var n = el("div", "maham-bday-root " + cls);
+    n.style.background = "none"; n.style.padding = "0";
+    document.body.appendChild(n);
+    return n;
+  }
+
+  /* ---------- SHARED JS: particle engine (confetti + fireworks) ----------
+     One rAF loop per canvas, which stops automatically when no particles remain. */
+  function createFx(canvas, trail) {
+    var ctx = canvas.getContext("2d"), parts = [], raf = 0, last = 0, w = 0, h = 0;
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+    function resize() {
+      var r = canvas.getBoundingClientRect();
+      w = r.width; h = r.height;
+      canvas.width = Math.max(1, w * dpr); canvas.height = Math.max(1, h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    function explode(x, y, color) {
+      var n = reduceMotion.matches ? 20 : 55;
+      for (var i = 0; i < n; i++) {
+        var a = (Math.PI * 2 * i) / n, s = rand(1.5, 5.5);
+        parts.push({ t: "spark", x: x, y: y, vx: Math.cos(a) * s, vy: Math.sin(a) * s, g: 0.06, life: rand(50, 80), max: 80, c: color || pick(PALETTE), s: rand(1.5, 3) });
+      }
+    }
+    function step(now) {
+      var dt = Math.min((now - last) / 16.7, 3); last = now;
+      ctx.globalCompositeOperation = "destination-out";
+      ctx.fillStyle = "rgba(0,0,0," + trail + ")";
+      ctx.fillRect(0, 0, w, h);
+      ctx.globalCompositeOperation = "source-over";
+      for (var i = parts.length - 1; i >= 0; i--) {
+        var p = parts[i];
+        p.x += p.vx * dt; p.y += p.vy * dt; p.vy += p.g * dt; p.life -= dt;
+        if (p.t === "rocket") {
+          if (p.vy > -1.2) { explode(p.x, p.y, p.c); parts.splice(i, 1); continue; }
+          ctx.fillStyle = p.c; ctx.fillRect(p.x, p.y, 2.5, 8);
+          continue;
+        }
+        if (p.life <= 0 || p.y > h + 20) { parts.splice(i, 1); continue; }
+        ctx.globalAlpha = Math.max(p.life / p.max, 0);
+        ctx.fillStyle = p.c;
+        if (p.t === "conf") {
+          p.rot += p.vr * dt; p.vx *= 0.995;
+          ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.fillRect(-p.s, -p.s / 2, p.s * 2, p.s); ctx.restore();
+        } else {
+          p.vx *= 0.985; p.vy *= 0.985;
+          ctx.beginPath(); ctx.arc(p.x, p.y, p.s, 0, 6.2832); ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+      }
+      if (parts.length) raf = requestAnimationFrame(step);
+      else { raf = 0; ctx.clearRect(0, 0, w, h); }
+    }
+    function start() { if (!raf) { last = performance.now(); raf = requestAnimationFrame(step); } }
+
+    resize();
+    window.addEventListener("resize", resize);
+    return {
+      confetti: function (count) {
+        resize();
+        var n = reduceMotion.matches ? 25 : (count || 140);
+        for (var i = 0; i < n; i++) {
+          parts.push({ t: "conf", x: rand(0, w), y: rand(-40, -5), vx: rand(-1.5, 1.5), vy: rand(2, 5), g: 0.05, rot: rand(0, 6), vr: rand(-0.2, 0.2), life: rand(120, 220), max: 220, c: pick(PALETTE), s: rand(3, 6) });
+        }
+        start();
+      },
+      rocket: function (x) {
+        resize();
+        parts.push({ t: "rocket", x: x == null ? rand(w * 0.15, w * 0.85) : x, y: h, vx: rand(-0.4, 0.4), vy: -rand(7, 10), g: 0.12, life: 999, max: 999, c: pick(PALETTE) });
+        start();
+      },
+      burst: function (x, y) { resize(); explode(x, y); start(); }
+    };
+  }
+
+  /** Lazily created full-screen canvas shared by confetti (D) and the final surprise (L). */
+  var fullFx = null;
+  function getFullFx() {
+    if (!fullFx) {
+      var c = document.createElement("canvas");
+      c.className = "maham-bday-fx-full"; c.setAttribute("aria-hidden", "true");
+      document.body.appendChild(c);
+      fullFx = createFx(c, 1); // trail 1 = fully clear each frame (crisp confetti)
+    }
+    return fullFx;
+  }
+
+  /* =====================================================================
+     [A] COUNTDOWN: JS
+     ===================================================================== */
+  function initCountdown(root) {
+    var note = q(root, "[data-mb-note]"), timer = 0;
+    var nums = {};
+    ["days", "hours", "minutes", "seconds"].forEach(function (u) { nums[u] = q(root, '[data-mb-unit="' + u + '"]'); });
+
+    /** Next occurrence of the birthday (today counts until the day ends). */
+    function target() {
+      var p = String(CFG.birthday || "").split("-").map(Number);
+      if (p.length !== 3 || p.some(isNaN)) return null;
+      var now = new Date(), t = new Date(now.getFullYear(), p[1] - 1, p[2]);
+      if (t.getTime() + 864e5 <= now.getTime()) t = new Date(now.getFullYear() + 1, p[1] - 1, p[2]);
+      return t;
+    }
+    function tick() {
+      var t = target();
+      if (!t) { note.textContent = "Birthday date is not set."; return; }
+      var now = new Date(), ms = t - now;
+      if (ms <= 0) {
+        Object.keys(nums).forEach(function (k) { nums[k].textContent = "0"; });
+        note.textContent = "Today is the day! Happy birthday, " + CFG.name + "!";
+        return;
+      }
+      note.textContent = "";
+      var s = Math.floor(ms / 1000);
+      nums.days.textContent = Math.floor(s / 86400);
+      nums.hours.textContent = String(Math.floor(s % 86400 / 3600)).padStart(2, "0");
+      nums.minutes.textContent = String(Math.floor(s % 3600 / 60)).padStart(2, "0");
+      nums.seconds.textContent = String(s % 60).padStart(2, "0");
+    }
+    tick(); timer = setInterval(tick, 1000);
+    return function destroy() { clearInterval(timer); };
+  }
+
+  /* =====================================================================
+     [B] CAKE: JS
+     ===================================================================== */
+  function initCake(root) {
+    var wrap = q(root, "[data-mb-candles]"), wish = q(root, "[data-mb-wish]"), candles = [];
+    wish.textContent = CFG.cakeWish;
+
+    function update() {
+      var allOut = candles.every(function (c) { return c.classList.contains("maham-bday-is-out"); });
+      wish.classList.toggle("maham-bday-is-shown", allOut);
+      if (allOut) getFullFx().confetti(70);
+    }
+    function snuff(c) { c.classList.add("maham-bday-is-out"); c.setAttribute("aria-label", "Candle (out)"); }
+    for (var i = 0; i < 5; i++) {
+      var c = el("button", "maham-bday-candle");
+      c.type = "button"; c.setAttribute("aria-label", "Blow out candle " + (i + 1));
+      c.appendChild(el("span", "maham-bday-flame"));
+      c.addEventListener("click", function () { snuff(this); update(); });
+      wrap.appendChild(c); candles.push(c);
+    }
+    q(root, "[data-mb-blow]").addEventListener("click", function () {
+      candles.forEach(function (c, i) { setTimeout(function () { snuff(c); if (i === candles.length - 1) update(); }, i * 160); });
+    });
+    q(root, "[data-mb-relight]").addEventListener("click", function () {
+      candles.forEach(function (c, i) { c.classList.remove("maham-bday-is-out"); c.setAttribute("aria-label", "Blow out candle " + (i + 1)); });
+      wish.classList.remove("maham-bday-is-shown");
+    });
+  }
+
+  /* =====================================================================
+     [C] BALLOONS: JS
+     ===================================================================== */
+  function initBalloons(root) {
+    var stage = q(root, "[data-mb-stage]");
+    var colors = ["#f7a1c4", "#b9a2ee", "#ffb88a", "#ffd86b", "#9fd8e8", "#e8689f"];
+
+    function pop(b) {
+      var s = stage.getBoundingClientRect(), r = b.getBoundingClientRect();
+      var cx = r.left - s.left + r.width / 2, cy = r.top - s.top + r.height / 2, col = b.style.getPropertyValue("--mb-b");
+      b.remove();
+      var n = reduceMotion.matches ? 4 : 12;
+      for (var i = 0; i < n; i++) {
+        var bit = el("span", "maham-bday-bit");
+        bit.style.cssText = "left:" + cx + "px;top:" + cy + "px;background:" + (i % 3 ? col : "#fff");
+        stage.appendChild(bit);
+        var a = Math.PI * 2 * i / n, d = rand(30, 70);
+        bit.animate([{ transform: "translate(0,0) scale(1)", opacity: 1 }, { transform: "translate(" + Math.cos(a) * d + "px," + Math.sin(a) * d + "px) scale(.2)", opacity: 0 }],
+          { duration: 600, easing: "ease-out" }).onfinish = function (e) { e.target.effect.target.remove(); };
+      }
+    }
+    function fill() {
+      stage.textContent = "";
+      colors.concat(colors.slice(0, 3)).forEach(function (c, i, all) {
+        var b = el("button", "maham-bday-balloon");
+        b.type = "button"; b.setAttribute("aria-label", "Pop balloon");
+        b.style.setProperty("--mb-b", c);
+        b.style.setProperty("--mb-d", rand(2.6, 4.4).toFixed(2) + "s");
+        b.style.left = (4 + (i / all.length) * 86) + "%";
+        b.style.bottom = rand(10, 90) + "px";
+        b.style.animationDelay = (-rand(0, 3)).toFixed(2) + "s";
+        b.addEventListener("click", function () { pop(b); });
+        stage.appendChild(b);
+      });
+    }
+    q(root, "[data-mb-refill]").addEventListener("click", fill);
+    fill();
+  }
+
+  /* =====================================================================
+     [D] CONFETTI: JS
+     ===================================================================== */
+  function initConfetti(root) {
+    q(root, "[data-mb-fire]").addEventListener("click", function () { getFullFx().confetti(160); });
+  }
+
+  /* =====================================================================
+     [E] GIFTS: JS
+     ===================================================================== */
+  function initGifts(root) {
+    var wrap = q(root, "[data-mb-gifts]");
+    CFG.gifts.forEach(function (g) {
+      var b = el("button", "maham-bday-gift");
+      b.type = "button"; b.setAttribute("aria-expanded", "false");
+      b.style.setProperty("--mb-c", g.color); b.style.setProperty("--mb-r", g.ribbon);
+      var box = el("div", "maham-bday-gift-box");
+      box.appendChild(el("div", "maham-bday-gift-body"));
+      box.appendChild(el("div", "maham-bday-gift-lid"));
+      b.appendChild(box);
+      b.appendChild(el("span", "maham-bday-gift-hint", g.label));
+      b.appendChild(el("span", "maham-bday-gift-msg", g.message));
+      b.addEventListener("click", function () {
+        var open = b.classList.toggle("maham-bday-is-open");
+        b.setAttribute("aria-expanded", String(open));
+      });
+      wrap.appendChild(b);
+    });
+  }
+
+  /* =====================================================================
+     [F] WISHES: JS
+     ===================================================================== */
+  function initWishes(root) {
+    var wrap = q(root, "[data-mb-wishes]");
+    CFG.wishes.forEach(function (w) {
+      var b = el("button", "maham-bday-wishcard");
+      b.type = "button"; b.setAttribute("aria-pressed", "false");
+      b.style.setProperty("--mb-bg", w.bg);
+      var inner = el("span", "maham-bday-wishcard-inner");
+      inner.appendChild(el("span", "maham-bday-wishface maham-bday-wishface--front", w.front));
+      inner.appendChild(el("span", "maham-bday-wishface maham-bday-wishface--back", w.back));
+      b.appendChild(inner);
+      b.addEventListener("click", function () { b.setAttribute("aria-pressed", String(b.getAttribute("aria-pressed") !== "true")); });
+      wrap.appendChild(b);
+    });
+  }
+
+  /* =====================================================================
+     [G] POLAROIDS: JS (lightbox is a body-level layer)
+     ===================================================================== */
+  function initPolaroids(root) {
+    var wrap = q(root, "[data-mb-polaroids]");
+    var box = bodyLayer("maham-bday-lightbox");
+    box.setAttribute("role", "dialog"); box.setAttribute("aria-modal", "true"); box.setAttribute("aria-label", "Enlarged photo");
+    var card = el("div", "maham-bday-lightbox-card"), big = el("img", "maham-bday-lightbox-img"), cap = el("p", "maham-bday-lightbox-cap");
+    big.alt = ""; card.append(big, cap); box.appendChild(card);
+    var opener = null;
+
+    function close() { box.classList.remove("maham-bday-is-open"); if (opener) opener.focus(); }
+    box.addEventListener("click", close);
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && box.classList.contains("maham-bday-is-open")) close(); });
+
+    CFG.polaroids.forEach(function (p, i) {
+      var fig = el("figure", "maham-bday-polaroid");
+      fig.style.setProperty("--mb-rot", rand(-6, 6).toFixed(1) + "deg");
+      var btn = el("button", "maham-bday-polaroid-btn"); btn.type = "button";
+      var img = el("img", "maham-bday-polaroid-img");
+      img.src = p.src || placeholderImg(i); img.alt = p.caption || "Memory photo"; img.loading = "lazy";
+      btn.appendChild(img);
+      var fc = el("figcaption", "maham-bday-polaroid-cap", p.caption);
+      btn.addEventListener("click", function () {
+        opener = btn; big.src = img.src; cap.textContent = fc.textContent;
+        box.classList.add("maham-bday-is-open"); card.setAttribute("tabindex", "-1"); card.focus();
+      });
+      fig.append(btn, fc); wrap.appendChild(fig);
+    });
+  }
+
+  /* =====================================================================
+     [H] FIREWORKS: JS
+     ===================================================================== */
+  function initFireworks(root) {
+    var canvas = q(root, "[data-mb-canvas]"), fx = createFx(canvas, 0.22);
+    canvas.addEventListener("pointerdown", function (e) {
+      var r = canvas.getBoundingClientRect(); fx.burst(e.clientX - r.left, e.clientY - r.top);
+    });
+    q(root, "[data-mb-launch]").addEventListener("click", function () {
+      var n = reduceMotion.matches ? 2 : 6;
+      for (var i = 0; i < n; i++) setTimeout(function () { fx.rocket(); }, i * 350);
+    });
+  }
+
+  /* =====================================================================
+     [I] LETTER: JS
+     ===================================================================== */
+  function initLetter(root) {
+    var env = q(root, "[data-mb-envelope]"), out = q(root, "[data-mb-letter]"), timer = 0;
+
+    function typeOut(text) {
+      clearInterval(timer); out.textContent = "";
+      if (reduceMotion.matches) { out.textContent = text; return; }
+      var i = 0;
+      timer = setInterval(function () {
+        out.textContent = text.slice(0, ++i);
+        if (i >= text.length) clearInterval(timer);
+      }, 35);
+    }
+    env.addEventListener("click", function () {
+      var open = env.classList.toggle("maham-bday-is-open");
+      env.setAttribute("aria-expanded", String(open));
+      env.setAttribute("aria-label", open ? "Close the letter" : "Open the letter");
+      if (open) setTimeout(function () { typeOut(CFG.letter); }, reduceMotion.matches ? 0 : 900);
+      else { clearInterval(timer); out.textContent = ""; }
+    });
+  }
+
+  /* =====================================================================
+     [J] MUSIC PLAYER: JS (source comes from the admin config)
+     ===================================================================== */
+  function initMusic(root) {
+    var box = q(root, "[data-mb-player]"), audio = q(root, "[data-mb-audio]"), play = q(root, "[data-mb-play]");
+    var bar = q(root, "[data-mb-progress]"), time = q(root, "[data-mb-time]"), title = q(root, "[data-mb-track]");
+    title.textContent = (CFG.audio && CFG.audio.title) || "A little birthday soundtrack";
+    if (CFG.audio && CFG.audio.src) audio.src = CFG.audio.src;
+    if (!audio.src) { play.disabled = true; play.textContent = "No track yet"; }
+
+    function fmt(s) { s = Math.floor(s || 0); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
+    function setPlaying(on) {
+      box.classList.toggle("maham-bday-is-playing", on);
+      play.textContent = on ? "Pause" : "Play"; play.setAttribute("aria-label", on ? "Pause" : "Play");
+    }
+    play.addEventListener("click", function () {
+      if (!audio.src) return;
+      if (audio.paused) audio.play().catch(function () { setPlaying(false); }); else audio.pause();
+    });
+    audio.addEventListener("play", function () { setPlaying(true); });
+    audio.addEventListener("pause", function () { setPlaying(false); });
+    audio.addEventListener("ended", function () { setPlaying(false); });
+    audio.addEventListener("timeupdate", function () {
+      if (audio.duration) bar.value = (audio.currentTime / audio.duration) * 100;
+      time.textContent = fmt(audio.currentTime) + " / " + fmt(audio.duration);
+    });
+    bar.addEventListener("input", function () { if (audio.duration) audio.currentTime = (bar.value / 100) * audio.duration; });
+  }
+
+  /* =====================================================================
+     [K] QUIZ: JS
+     ===================================================================== */
+  function initQuiz(root) {
+    var host = q(root, "[data-mb-quiz]"), prog = q(root, "[data-mb-progress-text]"), idx = 0, score = 0;
+
+    function render() {
+      host.textContent = "";
+      var item = CFG.quiz[idx];
+      if (!item) {
+        prog.textContent = "Quiz complete";
+        host.appendChild(el("p", "maham-bday-quiz-score", "You scored " + score + " out of " + CFG.quiz.length));
+        var again = el("button", "maham-bday-btn", "Play again"); again.type = "button";
+        again.addEventListener("click", function () { idx = 0; score = 0; render(); });
+        var row = el("div", "maham-bday-row"); row.appendChild(again); host.appendChild(row);
+        if (score === CFG.quiz.length) getFullFx().confetti(120);
+        return;
+      }
+      prog.textContent = "Question " + (idx + 1) + " of " + CFG.quiz.length;
+      host.appendChild(el("p", "maham-bday-quiz-q", item.q));
+      var opts = el("div", "maham-bday-quiz-opts"), btns = [];
+      item.options.forEach(function (text, i) {
+        var b = el("button", "maham-bday-quiz-opt", text); b.type = "button"; btns.push(b);
+        b.addEventListener("click", function () {
+          btns.forEach(function (x) { x.disabled = true; });
+          btns[item.answer].classList.add("maham-bday-right");
+          if (i === item.answer) score++; else b.classList.add("maham-bday-wrong");
+          setTimeout(function () { idx++; render(); }, 900);
+        });
+        opts.appendChild(b);
+      });
+      host.appendChild(opts);
+    }
+    render();
+  }
+
+  /* =====================================================================
+     [L] FINAL SURPRISE: JS (full-screen overlay built on demand)
+     ===================================================================== */
+  function initSurprise(root) {
+    var overlay = bodyLayer("maham-bday-final"), opener = null, timers = [];
+    overlay.setAttribute("role", "dialog"); overlay.setAttribute("aria-modal", "true"); overlay.setAttribute("aria-label", "Birthday surprise");
+
+    function close() {
+      overlay.classList.remove("maham-bday-is-open"); overlay.textContent = "";
+      timers.forEach(clearTimeout); timers = [];
+      if (opener) opener.focus();
+    }
+    function open() {
+      overlay.textContent = "";
+      var inner = el("div"), name = el("h2", "maham-bday-final-name");
+      inner.appendChild(el("p", "maham-bday-final-hello", CFG.final.hello));
+      name.setAttribute("aria-label", CFG.name);
+      CFG.name.split("").forEach(function (ch, i) {
+        var s = el("span", null, ch); s.setAttribute("aria-hidden", "true"); s.style.animationDelay = (0.4 + i * 0.15) + "s"; name.appendChild(s);
+      });
+      var enter = el("a", "maham-bday-btn", "Enter Dreambox");
+      enter.href = "/index.html";
+      var done = el("button", "maham-bday-btn maham-bday-btn--ghost maham-bday-final-close", "Close"); done.type = "button";
+      done.addEventListener("click", close);
+      var row = el("div", "maham-bday-row");
+      row.append(enter, done);
+      inner.append(name, el("p", "maham-bday-final-msg", CFG.final.message), row);
+      overlay.appendChild(inner);
+      overlay.classList.add("maham-bday-is-open");
+      enter.focus({ preventScroll: true });
+      var fx = getFullFx(), t = reduceMotion.matches ? 600 : 1200;
+      timers.push(setTimeout(function () { fx.confetti(180); }, t));
+      if (!reduceMotion.matches) timers.push(setTimeout(function () { fx.confetti(120); }, t + 2500));
+    }
+    q(root, "[data-mb-reveal]").addEventListener("click", function (e) { opener = e.currentTarget; open(); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && overlay.classList.contains("maham-bday-is-open")) close(); });
+  }
+
+  /* =====================================================================
+     BOOTSTRAP: initialise each artifact once. Missing blocks are skipped,
+     so integrators can keep only the artifacts they extracted.
+     ===================================================================== */
+  var REGISTRY = {
+    "maham-bday-countdown": initCountdown, "maham-bday-cake": initCake, "maham-bday-balloons": initBalloons,
+    "maham-bday-confetti": initConfetti, "maham-bday-gifts": initGifts, "maham-bday-wishes": initWishes,
+    "maham-bday-polaroids": initPolaroids, "maham-bday-fireworks": initFireworks, "maham-bday-letter": initLetter,
+    "maham-bday-music": initMusic, "maham-bday-quiz": initQuiz, "maham-bday-surprise": initSurprise
+  };
+  function init(scope) {
+    scope = scope || document;
+    Object.keys(REGISTRY).forEach(function (id) {
+      var node = scope.querySelector("#" + id);
+      if (!node || node.getAttribute("data-mb-ready")) return;
+      node.setAttribute("data-mb-ready", "1");
+      try { REGISTRY[id](node); } catch (err) { console.error("[maham-bday] " + id + " failed:", err); }
+    });
+  }
+  function mergeConfig(target, source) {
+    if (!source || typeof source !== "object") return target;
+    Object.keys(source).forEach(function (k) {
+      var v = source[k];
+      if (v && typeof v === "object" && !Array.isArray(v) && target[k] && typeof target[k] === "object" && !Array.isArray(target[k])) {
+        mergeConfig(target[k], v);
+      } else {
+        target[k] = v;
+      }
+    });
+    return target;
+  }
+  function boot() {
+    try {
+      if (window.FB && FB.get) {
+        FB.get("config", "birthday").then(function (data) {
+          if (data && data.config) mergeConfig(CFG, data.config);
+          if (data && data.audioFileBlob && CFG.audio) CFG.audio.src = URL.createObjectURL(data.audioFileBlob);
+          init();
+        }).catch(function () { init(); });
+      } else {
+        init();
+      }
+    } catch (e) { init(); }
+  }
+  window.MahamBirthday = { init: init, config: CFG };
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+  else boot();
+})();
+</script>
+
+<!-- Firebase + Living Sky Engine (Background) -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="fb-db.js"></script>
+<script src="feature-flags.js"></script>
+<script src="skies.js"></script>
+<script src="sky-living.js"></script>
+<script>
+  (function(){
+    if (window.Skies) {
+      if (!window.FeatureFlags || window.FeatureFlags.get('sky-auto-apply')) {
+        var idx = Skies.getCurrent();
+        if (idx >= 0 && Skies.SKIES[idx]) { Skies.apply(idx); }
+        else { Skies.apply(Skies.randomTimeAppropriate()); }
+      }
+    }
+  })();
+</script>
+</body>
+</html>
