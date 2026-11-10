@@ -1,9 +1,11 @@
-var CACHE = 'ash-v60'; // ponytail: bump version when adding/renaming cached files
+var CACHE = 'ash-v61'; // ponytail: bump version when adding/renaming cached files
 var urlsToCache = [
   '/',
   '/index.html',
   '/birthday.html',
   '/birthday-defaults.js',
+  '/birthday-tracker.js',
+  '/visits.html',
   '/mahams-images/memory-01.jpeg',
   '/mahams-images/memory-02.jpeg',
   '/mahams-images/memory-03.jpeg',
