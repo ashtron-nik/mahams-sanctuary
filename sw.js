@@ -1,4 +1,4 @@
-var CACHE = 'ash-v58'; // ponytail: bump version when adding/renaming cached files
+var CACHE = 'ash-v59'; // ponytail: bump version when adding/renaming cached files
 var urlsToCache = [
   '/',
   '/index.html',
@@ -22,6 +22,7 @@ var urlsToCache = [
   '/sky-generator.html',
   '/sky-generator-living.html',
   '/music.js',
+  '/songs/list.json',
   '/skies.js',
   '/sky-observatory.js',
   '/firefly-jar.js',
