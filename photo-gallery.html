@@ -136,10 +136,11 @@
       font-family: var(--font-display);
       font-size: 0.8rem;
       color: var(--parchment);
-      opacity: 0;
+      opacity: 1;
       transition: opacity 0.3s;
       pointer-events: none;
       z-index: 3;
+      text-shadow: 0 1px 4px rgba(0,0,0,.7);
     }
     .gallery-item:hover .item-label { opacity: 1; }
     .gallery-item .item-note {
@@ -413,7 +414,42 @@
   <script>
     (function () {
       var DEFAULT_MEDIA = [];
-      ];
+      (function () {
+        var i, n;
+        var photoText = [
+          'The first page of us.',
+          'A quiet kind of happy.',
+          'Henna, laughter, and you.',
+          'Walking into forever.',
+          'The way you look at me.',
+          'The safest place I know.',
+          'Eyes I could get lost in.',
+          'Every version of you.',
+          'A little chaos, a lot of love.',
+          'Always close.',
+          'My favorite kind of ordinary.',
+          'Softly, everything changes.',
+          'Every step with you.',
+          'Still my favorite view.',
+          'Some moments need no words.',
+          'Wherever you are.',
+          'Us, without trying.',
+          'A doorway to us.'
+        ];
+        var videoText = [
+          'A moment I keep replaying.',
+          'You, exactly as you are.',
+          'A little piece of us, moving.'
+        ];
+        for (i = 1; i <= 18; i++) {
+          n = (i < 10 ? '0' : '') + i;
+          DEFAULT_MEDIA.push({ type: 'image', label: photoText[i - 1], note: '', file: 'mahams-images/memory-' + n + '.jpeg', fileType: 'image/jpeg' });
+        }
+        for (i = 1; i <= 3; i++) {
+          n = (i < 10 ? '0' : '') + i;
+          DEFAULT_MEDIA.push({ type: 'video', label: videoText[i - 1], note: '', file: 'mahams-videos/video-' + n + '.mp4', fileType: 'video/mp4' });
+        }
+      })();
 
       var MEDIA = [];
       var grid = document.getElementById('galleryGrid');

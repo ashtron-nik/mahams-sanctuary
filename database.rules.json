@@ -9,11 +9,6 @@
     "project-events": { ".write": "auth != null && auth.uid === 'tNigpJD0iudxzcoP49DDmA4uDQK2'" },
     "project-texts": { ".write": "auth != null && auth.uid === 'tNigpJD0iudxzcoP49DDmA4uDQK2'" },
 
-    "turnOn": {
-      "steps": { ".write": "auth != null && auth.uid === 'tNigpJD0iudxzcoP49DDmA4uDQK2'" },
-      "sessions_data": { ".write": "auth != null" }
-    },
-
     "config": {
       "gallery": { ".write": "auth != null" },
       "features": { ".write": "auth != null" },

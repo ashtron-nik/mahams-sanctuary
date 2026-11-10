@@ -1,229 +1,155 @@
 (function () {
-  if (window.FeatureFlags && !window.FeatureFlags.get('quiz')) return;
+  if (window.FeatureFlags && !window.FeatureFlags.get('section-unlock')) return;
   var PAGE = document.body.dataset.page || '';
   var QUIZZES = getDefaultQuizzes();
   var USED_KEYS = {};
 
   function getDefaultQuizzes() {
     return [
-      // 100-organs section 0 — The Beginning
+      // 100-organs group 0 — The Beginning
       {
         id: '100-organs-the-beginning', page: '100-organs', sectionIdx: 0, title: 'The Beginning',
         questions: [
-          { question: 'What time was it when the author started writing Entry 1?', options: ['2:15 AM', '3:27 AM', '4:00 AM', '1:30 AM'], answer: 1 },
-          { question: 'What did the author send along with his message in Entry 1?', options: ['A photo', 'A cuddling voice note', 'A song', 'A poem'], answer: 1 },
-          { question: 'According to Entry 2, what does  spend too much time doing?', options: ['Working too hard', 'Searching for flaws in herself', 'Overthinking the future', 'Worrying about others'], answer: 1 },
-          { question: 'What color do \'s eyes become in the sun rays?', options: ['Green', 'Blue', 'Golden', 'Hazel'], answer: 2 },
-          { question: 'What does the author hope  stops trying to become?', options: ['More confident', 'Someone prettier', 'More successful', 'Perfect'], answer: 1 },
-          { question: 'How does the author describe the person  already is?', options: ['Beautiful', 'Talented', 'Enough', 'Strong'], answer: 2 },
-          { question: 'In Entry 4, what specific video of \'s face is mentioned?', options: ['The birthday video', 'The red night suit video', 'The morning selfie', 'The laugh video'], answer: 1 },
-          { question: 'What happens to \'s pupils when she sees the author?', options: ['They contract', 'They dilate', 'They change color', 'They water'], answer: 1 },
-          { question: 'What did  do after receiving the author\'s message in Entry 1?', options: ['She replied instantly', 'She smiled and fell asleep', 'She called him', 'She sent a photo'], answer: 1 },
-          { question: 'What does the author call these entries in Entry 1?', options: ['A collection of memories', 'One hundred little love letters', 'A diary of us', 'My thoughts about you'], answer: 1 }
+          { question: 'Why is the author writing these pages?', options: ['To remind her of her worth', 'To list her flaws', 'To tell a travel story', 'To pass the time'], answer: 0 },
+          { question: 'What does the author say these pages are not about?', options: ['Perfection', 'Gratitude', 'Kindness', 'Memories'], answer: 0 },
+          { question: 'What kind of speciality does the author say she carries?', options: ['One that cannot be copied or replaced', 'One that is easy to forget', 'One that belongs to everyone', 'One that fades with time'], answer: 0 },
+          { question: 'What does the author apologise for?', options: ['Adding to her stress', 'Being late', 'Forgetting her birthday', 'Not writing sooner'], answer: 0 },
+          { question: 'What does she have in the author\'s life and heart?', options: ['A special place', 'A temporary spot', 'A lot of questions', 'No place at all'], answer: 0 },
+          { question: 'What is the simple truth at the end of the opening?', options: ['The world is better because you exist', 'Everyone needs a fresh start', 'Beauty is temporary', 'Words are not enough'], answer: 0 }
         ]
       },
-      // 100-organs section 1 — Face & Expressions
+      // 100-organs group 1 — Face & Head
       {
-        id: '100-organs-face-expressions', page: '100-organs', sectionIdx: 1, title: 'Face & Expressions',
+        id: '100-organs-face-head', page: '100-organs', sectionIdx: 1, title: 'Face & Head',
         questions: [
-          { question: 'What does the left eyebrow do according to the text?', options: ['Furrows when angry', 'Lifts to reveal thoughts', 'Stays perfectly still', 'Twitches when nervous'], answer: 1 },
-          { question: 'What is the tear duct described as?', options: ['The window to the soul', 'The safety valve of a heart that feels everything', 'A tiny fountain of emotion', 'The source of all tears'], answer: 1 },
-          { question: 'What part of the ear is described as "delicate architecture" with a "tiny seashell"?', options: ['The earlobe', 'The cochlea/inner ear', 'The eardrum', 'The outer ear'], answer: 1 },
-          { question: 'What does the author want to do to \'s cheeks ()?', options: ['Kiss them gently', 'Bite them and hold them while asking questions', 'Caress them softly', 'Pinch them playfully'], answer: 1 },
-          { question: 'What happens to \'s lips when she is horny?', options: ['She pouts them', 'She bites them', 'She licks them', 'She smiles'], answer: 1 },
-          { question: 'How many types of smiles does the author describe?', options: ['One — genuine', 'Two — admired vs remembered', 'Three — polite, happy, joyful', 'Four — each unique'], answer: 1 },
-          { question: 'What are sinuses described as?', options: ['Empty spaces in the skull', 'Secret rooms designed for making you sound the way you do', 'Air filters for breathing', 'Bone cavities'], answer: 1 },
-          { question: 'What does  do with her teeth according to the text?', options: ['She shows them when smiling', 'She tries to hide them subconsciously', 'She grinds them at night', 'She bites her nails'], answer: 1 },
-          { question: 'What does the author say about eyelashes in Entry 14?', options: ['They are naturally curled', 'There is a specific reference to "the wallpaper pic" with lashes', 'They are long and dark', 'They frame her eyes perfectly'], answer: 1 },
-          { question: 'What does the tongue do first according to Entry 42?', options: ['Whispers secrets', 'Touches his when they kiss', 'Tastes food', 'Says "I love you"'], answer: 1 }
+          { question: 'What colour do her eyes seem to turn in the sun?', options: ['Green', 'Blue', 'Golden', 'Hazel'], answer: 2 },
+          { question: 'What happens to her pupils when she sees the author?', options: ['They contract', 'They dilate', 'They change colour', 'They water'], answer: 1 },
+          { question: 'What are tear ducts called?', options: ['The windows to the soul', 'The safety valve of a heart that feels everything', 'A tiny fountain', 'The source of all tears'], answer: 1 },
+          { question: 'What do her pupils do when something fills her with excitement?', options: ['They narrow', 'They grow wider', 'They change colour', 'They stay still'], answer: 1 },
+          { question: 'Where do her genuine smiles begin?', options: ['Her lips', 'The corners of her eyes', 'Her cheeks', 'Her dimples'], answer: 1 }
         ]
       },
-      // 100-organs section 2 — Upper Body
+      // 100-organs group 2 — Upper Body
       {
         id: '100-organs-upper-body', page: '100-organs', sectionIdx: 2, title: 'Upper Body',
         questions: [
-          { question: 'How is \'s jawline described?', options: ['Sharp and defined', 'Gently curved, not sharp', 'Square and strong', 'Soft and round'], answer: 1 },
-          { question: 'Where was the specific neck kiss mentioned?', options: ['In the park', 'In the electrical department', 'At her house', 'In a restaurant'], answer: 1 },
-          { question: 'What does the author imagine while thinking about her neck and showering?', options: ['Water drenching over her neck', 'Kissing her neck in the rain', 'Touching her neck while she sleeps', 'Watching her dry her hair'], answer: 0 },
-          { question: 'What are collarbones described as?', options: ['Elegant arches', 'Turn-on points', 'Delicate bones', 'Beautiful curves'], answer: 1 },
-          { question: 'What does the author say about elbows?', options: ['They are bony and sharp', 'They never ask to be noticed', 'They are cute', 'They are always bruised'], answer: 1 },
-          { question: 'Which part has the most tender skin with faint blue veins?', options: ['The neck', 'The inner wrist', 'The collarbone', 'The shoulder'], answer: 1 },
-          { question: 'What does hugging her feel like according to the shoulders entry?', options: ['Warm and safe', 'The noise of the world becomes quieter', 'Like coming home', 'Like flying'], answer: 1 },
-          { question: 'What is the nape of her neck associated with?', options: ['Kissing her there while she is far away', 'Touching it gently', 'Breathing on it', 'All of the above'], answer: 0 },
-          { question: 'What are her armpits described as?', options: ['Ticklish', 'The most honest version of her', 'Sensitive', 'Soft'], answer: 1 },
-          { question: 'What do her hands tell according to the hands entry?', options: ['Her age', 'The story of her heart', 'Her profession', 'Her habits'], answer: 1 }
+          { question: 'How is her jawline described?', options: ['Sharp and defined', 'Gently curved', 'Square and strong', 'Soft and round'], answer: 1 },
+          { question: 'What do her shoulders quietly carry?', options: ['Only her body', 'Hopes, worries, and quiet strength', 'Her bag', 'Nothing at all'], answer: 1 },
+          { question: 'What is special about her wrists?', options: ['They are bony', 'They are delicate and connect her hands to her world', 'They are always cold', 'They are strong'], answer: 1 },
+          { question: 'What do her hands tell without words?', options: ['Her age', 'The story of her heart', 'Her habits', 'Her secrets'], answer: 1 },
+          { question: 'What are her shoulder blades called?', options: ['Two quiet wings hidden beneath her skin', 'Sharp bones', 'A frame', 'A shield'], answer: 0 }
         ]
       },
-      // 100-organs section 3 — Torso & Core
+      // 100-organs group 3 — Lower Body
       {
-        id: '100-organs-torso-core', page: '100-organs', sectionIdx: 3, title: 'Torso & Core',
+        id: '100-organs-lower-body', page: '100-organs', sectionIdx: 3, title: 'Lower Body',
         questions: [
-          { question: 'What specific abdominal muscles are named?', options: ['Traps and lats', 'Rectus abdominis and obliques', 'Pectorals and deltoids', 'Glutes and hamstrings'], answer: 1 },
-          { question: 'What oil does the author mention for massages?', options: ['Olive oil', 'Coconut oil', 'Almond oil', 'Baby oil'], answer: 1 },
-          { question: 'What body part is described as the "most sacred part"?', options: ['The heart', 'The vagina', 'The breasts', 'The lips'], answer: 1 },
-          { question: 'Where is the specific mole mentioned?', options: ['On her cheek', 'On her breast that only the author knows about', 'On her back', 'On her shoulder'], answer: 1 },
-          { question: 'How is the belly button described?', options: ['A tiny scar', 'Part of the story of how every human begins', 'A cute little indent', 'The center of the body'], answer: 1 },
-          { question: 'What happens when she laughs that deep belly laugh?', options: ['She snorts', 'Her whole torso shakes', 'She cries', 'She claps her hands'], answer: 1 },
-          { question: 'What does the author want to do while kissing her waist?', options: ['Hold her tightly', 'Oil it up with coconut oil and massage', 'Trace circles on it', 'Lift her up'], answer: 1 },
-          { question: 'What does he say about her breasts?', options: ['They are beautiful', 'Absolute perfection — a specific pic turned him on', 'They are soft', 'He dreams about them'], answer: 1 },
-          { question: 'What happens to her nipples when she is turned on?', options: ['They become hard', 'They get sensitive and beautifully sore', 'They change color', 'They tingle'], answer: 1 },
-          { question: 'How does she react when he puts fingers inside her?', options: ['She moans', 'She gets wet and her body tightens around his fingers', 'She cries', 'She laughs'], answer: 1 }
+          { question: 'What have her knees done through every season of her journey?', options: ['Nothing important', 'Bent when life asked her to be humble and stood firm when it asked her to be brave', 'Only carried her', 'Only hurt'], answer: 1 },
+          { question: 'What are her shins called?', options: ['The quiet guardians of her lower legs', 'Her strongest bones', 'A straight line', 'The runners'], answer: 0 },
+          { question: 'What have her calves carried her through?', options: ['Only the gym', 'Every mile of her life without asking for recognition', 'One long journey', 'Nothing'], answer: 1 },
+          { question: 'What do her ankles give every step?', options: ['Speed', 'A natural rhythm', 'A click', 'Balance'], answer: 1 },
+          { question: 'Where have her feet carried her?', options: ['Nowhere far', 'Beside the people she loves and toward her dreams', 'Only home', 'Around in circles'], answer: 1 }
         ]
       },
-      // 100-organs section 4 — Skin, Skeleton & Organs
+      // 100-organs group 4 — Bones, Skin & Organs
       {
-        id: '100-organs-skin-skeleton-organs', page: '100-organs', sectionIdx: 4, title: 'Skin, Skeleton & Organs',
+        id: '100-organs-bones-skin-organs', page: '100-organs', sectionIdx: 4, title: 'Bones, Skin & Organs',
         questions: [
-          { question: 'What are pores described as?', options: ['Tiny holes in the skin', 'Millions of tiny openings like a secret map', 'Breathing points', 'Oil producers'], answer: 1 },
-          { question: 'What are the two types of sweat glands mentioned?', options: ['Wet and dry', 'Eccrine and apocrine', 'Hot and cold', 'Surface and deep'], answer: 1 },
-          { question: 'What are freckles compared to?', options: ['Little dots of sunshine', 'Little memories scattered across skin', 'Tiny stars', 'Kisses from the sun'], answer: 1 },
-          { question: 'What are scars described as?', options: ['Imperfections', 'Chapters — proof healing is possible', 'Marks of the past', 'Battle wounds'], answer: 1 },
-          { question: 'Where does the author hear happiness according to the laugh entry?', options: ['In her singing', 'In her laugh — "If someone asked me what happiness sounds like, it sounds like you"', 'In her voice', 'In her whisper'], answer: 1 },
-          { question: 'What are sebaceous glands described as?', options: ['Oil producers', 'Tiny oil factories attached to each hair follicle', 'Sweat producers', 'Skin cells'], answer: 1 },
-          { question: 'What do nerve endings do?', options: ['Send pain signals', 'Bridge between touch and feeling', 'Regulate temperature', 'Control movement'], answer: 1 },
-          { question: 'What does the author say about her skeleton?', options: ['It is fragile', 'Quiet invisible architecture that held her upright when everything was collapsing', 'It is strong', 'It is delicate'], answer: 1 },
-          { question: 'What is the ribcage described as?', options: ['A cage', 'A bony cage protecting heart and lungs — a fortress of her life', 'A shield', 'A frame'], answer: 1 },
-          { question: 'What causes her to blush?', options: ['Embarrassment', 'Something she cannot choose — appears before her words do', 'The cold', 'Compliments'], answer: 1 }
+          { question: 'What does her ribcage protect?', options: ['Her spine', 'Her heart and lungs', 'Her liver', 'Her stomach'], answer: 1 },
+          { question: 'What is her skeleton called?', options: ['Fragile', 'The quiet, invisible architecture that holds her upright', 'A cage', 'A shield'], answer: 1 },
+          { question: 'What do her arteries carry?', options: ['Air', 'Oxygen-rich blood from her heart', 'Water', 'Nutrients only'], answer: 1 },
+          { question: 'What are her freckles compared to?', options: ['Little stars', 'Little memories scattered across her skin', 'Dots of sunlight', 'Marks'], answer: 1 },
+          { question: 'What are her scars called?', options: ['Imperfections', 'Chapters — proof that healing is possible', 'Battle wounds', 'Marks of the past'], answer: 1 },
+          { question: 'Why is her heart the most beautiful part?', options: ['It beats fast', 'It is the reason every other beautiful part exists', 'It is strong', 'It is warm'], answer: 1 }
         ]
       },
-      // 100-organs section 5 — Soul & Emotions
+      // 100-organs group 5 — Heart & Soul
       {
-        id: '100-organs-soul-emotions', page: '100-organs', sectionIdx: 5, title: 'Soul & Emotions',
+        id: '100-organs-heart-soul', page: '100-organs', sectionIdx: 5, title: 'Heart & Soul',
         questions: [
-          { question: 'What is her warmth compared to?', options: ['A warm blanket', 'First light of morning — stays quietly, patiently, constantly', 'A cozy fire', 'The sun'], answer: 1 },
-          { question: 'What does her presence do to a room?', options: ['Makes it louder', 'Makes it more complete — not louder or brighter, just more', 'Makes it brighter', 'Makes it warmer'], answer: 1 },
-          { question: 'What has her heart carried?', options: ['Only joy', 'Dreams that kept her awake and fears she never spoke about', 'Only love', 'Everything'], answer: 1 },
-          { question: 'How does the author describe her mind?', options: ['Overactive and chaotic', 'The most beautiful place — endlessly fascinating because it is never still', 'Brilliant and sharp', 'Quiet and deep'], answer: 1 },
-          { question: 'What is the soul described as?', options: ['The essence of a person', 'The quietest and most beautiful part of her — why every beautiful thing exists', 'The eternal part of us', 'The spark of life'], answer: 1 },
-          { question: 'What does she notice that others walk past?', options: ['Beautiful scenery', 'Little things', 'People\'s feelings', 'Her own beauty'], answer: 1 },
-          { question: 'What does the author wish she could see about her own mind?', options: ['How brilliant it is', 'Not as something that overthinks but as something that loves understanding', 'How creative it is', 'How peaceful it can be'], answer: 1 },
-          { question: 'What choice does her heart still make despite everything?', options: ['To love', 'To choose softness over bitterness', 'To hope', 'To stay'], answer: 1 },
-          { question: 'What does finding shade after standing in the sun too long represent?', options: ['Her comfort', 'Her presence', 'Her love', 'Her peace'], answer: 1 },
-          { question: 'What does the soul speak through according to the text?', options: ['Words', 'Everything she does', 'Her eyes', 'Her touch'], answer: 1 }
+          { question: 'What does her warmth do without being seen?', options: ['Nothing', 'Everyone who meets her can feel it', 'It fades', 'It stays hidden'], answer: 1 },
+          { question: 'What does her presence do to a room?', options: ['Makes it louder', 'Makes it feel just more — not louder or brighter', 'Makes it brighter', 'Makes it warmer'], answer: 1 },
+          { question: 'What is her mind called?', options: ['Chaotic', 'One of the most interesting places the author has been allowed to visit', 'Quiet', 'Sharp'], answer: 1 },
+          { question: 'What is her soul called?', options: ['The eternal part', 'The quietest and most beautiful part', 'The spark of life', 'The essence'], answer: 1 },
+          { question: 'How is her kindness described?', options: ['Loud and obvious', 'Not loud, never asking for recognition', 'Quiet and shy', 'Rare'], answer: 1 },
+          { question: 'What does her laugh sound like?', options: ['Music', 'Happiness itself', 'Rain', 'Bells'], answer: 1 }
         ]
       },
-      // 100-organs section 6 — Intimacy & Desire
+      // 100-organs group 6 — The Little Things
       {
-        id: '100-organs-intimacy-desire', page: '100-organs', sectionIdx: 6, title: 'Intimacy & Desire',
+        id: '100-organs-little-things', page: '100-organs', sectionIdx: 6, title: 'The Little Things',
         questions: [
-          { question: 'How is foreplay described?', options: ['The beginning of sex', 'Its own universe — not a beginning', 'A prelude', 'Teasing'], answer: 1 },
-          { question: 'What are "the three dots" referring to in the sexting entry?', options: ['Three dots in a row', 'The three dots appearing and disappearing while she types back', 'A specific emoji', 'A code word'], answer: 1 },
-          { question: 'What body parts does he use for non-penetrative intimacy?', options: ['His lips and tongue', 'His fingers, mouth, and hands', 'His whole body', 'His voice and hands'], answer: 1 },
-          { question: 'Where are the pulse points mentioned?', options: ['On her neck', 'Feeling her heartbeat against his lips', 'On her wrists', 'On her chest'], answer: 1 },
-          { question: 'What happens to her body temperature when she is aroused?', options: ['It drops', 'It runs warmer — flush across chest, neck glows', 'It stays the same', 'It becomes cold'], answer: 1 },
-          { question: 'What does the inner thighs represent?', options: ['Sensitive skin', '"Where everything changes"', 'A ticklish spot', 'A turn-on point'], answer: 1 },
-          { question: 'What is behind her ears described as?', options: ['A ticklish spot', 'A "small devastating place"', 'A sensitive area', 'A secret spot'], answer: 1 },
-          { question: 'How does she say his name differently?', options: ['In different languages', 'Depending on what she needs — one version is "barely a whisper, breathless"', 'Loudly when excited', 'Softly when sleepy'], answer: 1 },
-          { question: 'What does he want to do during foreplay?', options: ['Rush to the end', 'Take her apart piece by piece, slow and deliberate', 'Be rough', 'Talk dirty'], answer: 1 },
-          { question: 'What does the lower belly area represent?', options: ['The most sensitive part', 'The soft curve below her navel — not shown to everyone', 'Where he rests his hand', 'The center of desire'], answer: 1 }
+          { question: 'What does her care notice before a word is said?', options: ['A mess', 'When someone is a little off', 'The weather', 'Her own needs'], answer: 1 },
+          { question: 'What does her patience let people do?', options: ['Leave', 'Finish their sentences', 'Win arguments', 'Stay quiet'], answer: 1 },
+          { question: 'How does she say true things?', options: ['Harshly', 'Kindly', 'Rarely', 'Loudly'], answer: 1 },
+          { question: 'What does her humour do to a heavy room?', options: ['Ignores it', 'Makes it lighter', 'Makes it quieter', 'Leaves it'], answer: 1 },
+          { question: 'What kind of person can you text late at night?', options: ['A night owl', 'Her — and know you will not be a burden', 'Anyone', 'No one'], answer: 1 }
         ]
       },
-      // 100-organs section 7 — Moments & Scenarios
+      // love section 0 — Who You Are
       {
-        id: '100-organs-moments-scenarios', page: '100-organs', sectionIdx: 7, title: 'Moments & Scenarios',
+        id: 'love-who-you-are', page: 'love', sectionIdx: 0, title: 'Who You Are',
         questions: [
-          { question: 'When does she ambush him according to Entry 195?', options: ['When he is sleeping', 'At the most ordinary times', 'When he is working', 'When he is sad'], answer: 1 },
-          { question: 'What would he do first if they were together right now?', options: ['Kiss her', 'Pull her close and press his lips to her forehead', 'Hold her hand', 'Say I love you'], answer: 1 },
-          { question: 'What would happen to his brain the first time he sees her?', options: ['It would race', 'It would go completely quiet', 'It would explode with thoughts', 'It would forget everything'], answer: 1 },
-          { question: 'What does he say about her scent?', options: ['It is pleasant', 'It is embedded in him — he could find her in a dark room', 'It reminds him of flowers', 'It is intoxicating'], answer: 1 },
-          { question: 'What does he imagine doing on a rooftop?', options: ['Dancing', 'Watching the sunset and looking at her instead of the sky', 'Talking', 'Singing'], answer: 1 },
-          { question: 'What happens after sex in the quiet moments?', options: ['They talk', 'Sacred silence — her breathing evening out', 'They fall asleep', 'They laugh'], answer: 1 },
-          { question: 'What is the weight of her in his arms described as?', options: ['Light and fragile', 'The specific irreplaceable weight of a person who trusts you to rest', 'Heavy and comforting', 'Perfect'], answer: 1 },
-          { question: 'What does he imagine doing on an abandoned mountain?', options: ['Camping', 'Making out under the moon — cold air makes her press against him', 'Hiking', 'Talking'], answer: 1 },
-          { question: 'What does she do in the first time she completely lets go?', options: ['Cries', 'Stops holding anything back — eyes closed', 'Moans loudly', 'Whispers his name'], answer: 1 },
-          { question: 'What scenario does he describe for making out on a mountain?', options: ['Late night, full moon, cold air making her press into him', 'Sunset, warm breeze', 'Sunrise after a long night', 'Rainy afternoon'], answer: 0 }
+          { question: 'What makes her gentleness a strength?', options: ['It makes her quiet', 'It tells people they can exhale', 'It hides her feelings', 'It keeps people at a distance'], answer: 1 },
+          { question: 'How does her honesty land?', options: ['Direct but never cruel', 'Blunt and dismissive', 'Rare and guarded', 'Soft and unclear'], answer: 0 },
+          { question: 'What is her strength described as?', options: ['Loud and performative', 'Quiet, steady, and real', 'Unbreakable and hard', 'Something she hides'], answer: 1 },
+          { question: 'What does her humility do?', options: ['Makes her seem unsure', 'Makes her approachable and sincere', 'Keeps her from growing', 'Makes her avoid attention'], answer: 1 },
+          { question: 'What is her kindness?', options: ['Performed for praise', 'Instinctive and generous', 'Reserved for a few', 'A way to be liked'], answer: 1 }
         ]
       },
-      // love section 0 — Body Details
+      // love section 1 — How You Carry Yourself
       {
-        id: 'love-body-details', page: 'love', sectionIdx: 0, title: 'Body Details',
+        id: 'love-how-you-carry-yourself', page: 'love', sectionIdx: 1, title: 'How You Carry Yourself',
         questions: [
-          { question: 'Where does he press his thumbs when the world has been too loud?', options: ['Her shoulders', 'Her temples', 'Her forehead', 'Her neck'], answer: 1 },
-          { question: 'Where are the places where her heartbeat becomes visible?', options: ['Chest and arms', 'Wrists, neck, and behind ears', 'Temples and chest', 'Palms and neck'], answer: 1 },
-          { question: 'What are her shoulder blades described as?', options: ['Two delicate bones', 'Two wings beneath her skin she never learned to use', 'The hinges of her back', 'Beautiful curves'], answer: 1 },
-          { question: 'What does the author say about her belly button?', options: ['It is cute', 'The first home she ever had', 'A tiny scar', 'The centre of her body'], answer: 1 },
-          { question: 'What does the author say about her footsteps?', options: ['They are light', 'He knows the sound of her approaching before he sees her', 'They are quick', 'They are heavy'], answer: 1 },
-          { question: 'What does the author say about her collarbone?', options: ['It is elegant — first place he wants to kiss when she is wearing something nice', 'It is delicate', 'It is sexy', 'It is sharp'], answer: 0 },
-          { question: 'What are her birthmarks described as?', options: ['Imperfections', 'Unique constellations scattered across skin that he has memorized', 'Little dots', 'Moles'], answer: 1 },
-          { question: 'Where does his hand find its natural resting place?', options: ['On her waist', 'In the curve that fits perfectly into his palm (the hollow he holds)', 'On her back', 'On her hip'], answer: 1 },
-          { question: 'What does her posture say when she is tired?', options: ['She slumps', 'Slightly curved', 'She lies down', 'She stretches'], answer: 1 },
-          { question: 'How does she move through a room?', options: ['Quietly', 'She does not enter a space so much as change it — people look up', 'Elegantly', 'Quickly'], answer: 1 }
+          { question: 'Her softness is described as...', options: ['Weakness', 'Tenderness and emotional intelligence', 'A mask', 'Something to fix'], answer: 1 },
+          { question: 'What does her playfulness show?', options: ['A lack of focus', 'Joy and a mind delighted by small things', 'A need for attention', 'An escape from reality'], answer: 1 },
+          { question: 'When life gets messy, she...', options: ['Falls apart completely', 'Anchors and keeps moving', 'Avoids everyone', 'Pretends nothing happened'], answer: 1 },
+          { question: 'What makes her wisdom easy to trust?', options: ['It is always loud', 'It arrives as calm, quiet clarity', 'It is never wrong', 'It is hidden'], answer: 1 },
+          { question: 'What did she keep while becoming resilient?', options: ['Her distance', 'Her tenderness', 'Her fear', 'Her silence'], answer: 1 }
         ]
       },
-      // love section 1 — Voice, Habits & Daily Life
+      // love section 2 — The Way You Love
       {
-        id: 'love-voice-habits', page: 'love', sectionIdx: 1, title: 'Voice, Habits & Daily Life',
+        id: 'love-the-way-you-love', page: 'love', sectionIdx: 2, title: 'The Way You Love',
         questions: [
-          { question: 'How is her morning voice described?', options: ['Soft and high', 'Raspy, warm, lower, slower, more honest', 'Quiet and gentle', 'Deep and sleepy'], answer: 1 },
-          { question: 'What does her real laugh make her do?', options: ['Clap her hands', 'Snort, double over, eyes water', 'Slap her knee', 'Cover her mouth'], answer: 1 },
-          { question: 'How does she wake up?', options: ['Abruptly with an alarm', 'Slow, soft, stretches like a cat', 'Immediately alert', 'Grumpy'], answer: 1 },
-          { question: 'What does she do when dancing when no one is watching?', options: ['Moves choreographed steps', 'Pure expression, not choreographed — in the kitchen, living room, car', 'Sways gently', 'Bops her head'], answer: 1 },
-          { question: 'What does she do with her hands when nervous?', options: ['Clasps them together', 'Fidgets with sleeves, twists hair, taps against thigh', 'Hides them in pockets', 'Wrings them'], answer: 1 },
-          { question: 'What does she do when she tidies?', options: ['Sweeps everything under the rug', 'Smooths, folds, arranges — fluffs pillows, aligns coasters', 'Puts things in boxes', 'Quickly picks up'], answer: 1 },
-          { question: 'How does she eat according to the comfort food entry?', options: ['Slowly and carefully', 'Sometimes savours every bite, sometimes devours', 'Always fast', 'Always politely'], answer: 1 },
-          { question: 'What does her sigh mean?', options: ['Only sadness', 'Relief, exhaustion, settling into peace', 'Boredom', 'Frustration'], answer: 1 },
-          { question: 'How does she drift to sleep?', options: ['Immediately', 'Fights sleep sometimes — curls into him or turns away', 'Takes hours', 'Watches videos first'], answer: 1 },
-          { question: 'What does her handwriting reveal?', options: ['Her mood', 'It is as unique as her fingerprint', 'Her education', 'Her personality'], answer: 1 }
+          { question: 'Her joy is...', options: ['Only loud', 'Real even when quiet', 'Something she hides', 'A performance'], answer: 1 },
+          { question: 'Compassion, for her, means...', options: ['Feeling sorry from afar', 'Meeting people without turning away', 'Fixing everyone', 'Staying neutral'], answer: 1 },
+          { question: 'Her care feels...', options: ['Performative', 'Practical, warm, and attentive', 'Distant', 'Conditional'], answer: 1 },
+          { question: 'Her independence is balanced by...', options: ['A fear of closeness', 'A deep capacity to love', 'A need to control', 'A wish to be alone'], answer: 1 },
+          { question: 'Her confidence is...', options: ['Arrogant', 'Self-possession without ego', 'Loud', 'Fragile'], answer: 1 }
         ]
       },
-      // love section 2 — Personality & Inner World
+      // love section 3 — How You Make People Feel
       {
-        id: 'love-personality-inner-world', page: 'love', sectionIdx: 2, title: 'Personality & Inner World',
+        id: 'love-how-you-make-people-feel', page: 'love', sectionIdx: 3, title: 'How You Make People Feel',
         questions: [
-          { question: 'What does the author say about her solitude?', options: ['She hates being alone', 'She is different alone — more herself, and he respects it', 'She gets lonely', 'She needs company'], answer: 1 },
-          { question: 'What does her inner child do?', options: ['Comes out when she is tired', 'Gets excited about small things, believes in magic, wants to be held when scared', 'Makes her playful', 'Makes her childish'], answer: 1 },
-          { question: 'How does he describe her intuition?', options: ['She is lucky', 'She knows things before being told — feels the mood of a room', 'She is psychic', 'She is observant'], answer: 1 },
-          { question: 'What is her anger described as?', options: ['Something to be afraid of', 'Her spirit refusing to stay silent — fire that rises when something is unfair', 'Dangerous', 'Scary'], answer: 1 },
-          { question: 'What does her joy look like?', options: ['Loud and energetic', 'When she forgets to guard herself — pure, contagious', 'Quiet and content', 'Bubbly'], answer: 1 },
-          { question: 'What is her loyalty described as?', options: ['Fierce', 'When she loves, she loves completely — does not keep one foot out the door', 'Unshakeable', 'Devoted'], answer: 1 },
-          { question: 'What does her humility mean?', options: ['She is shy', 'She does not need to be the centre of attention — has no idea how remarkable she is', 'She is modest', 'She downplays herself'], answer: 1 },
-          { question: 'How does she bend without breaking?', options: ['She is rigid', 'Soft enough to bend and strong enough to spring back', 'She breaks sometimes', 'She stands firm'], answer: 1 },
-          { question: 'What is her forgiveness described as?', options: ['Hard to earn', 'She finds a way to let go — does not hold grudges or keep score', 'Slow to give', 'Reluctant'], answer: 1 },
-          { question: 'What does her creative side show in?', options: ['Her art', 'How she decorates, writes, solves problems', 'Her cooking', 'Her style'], answer: 1 }
+          { question: 'Her grace shows up...', options: ['Only on good days', 'In calm under pressure and kindness in chaos', 'In perfect control', 'In silence'], answer: 1 },
+          { question: 'Her tenderness is given...', options: ['To everyone equally', 'To the people who matter most', 'Only when asked', 'Rarely'], answer: 1 },
+          { question: 'Her spark...', options: ['Makes life flat', 'Keeps ordinary days alive and colorful', 'Needs an audience', 'Fades quickly'], answer: 1 },
+          { question: 'What does her balance teach?', options: ['Always be strong', 'When to stand firm and when to soften', 'Never show emotion', 'Avoid conflict'], answer: 1 },
+          { question: 'Her open heart is...', options: ['Naive', 'Courageous in a world that hardens people', 'A weakness', 'Careless'], answer: 1 }
         ]
       },
-      // love section 3 — Relationships & World
+      // love section 4 — Why I Choose You
       {
-        id: 'love-relationships-world', page: 'love', sectionIdx: 3, title: 'Relationships & World',
+        id: 'love-why-i-choose-you', page: 'love', sectionIdx: 4, title: 'Why I Choose You',
         questions: [
-          { question: 'What is the weight of her trust described as?', options: ['A gift', 'The most precious thing she gives — she does not trust easily', 'A responsibility', 'An honour'], answer: 1 },
-          { question: 'How does she apologize?', options: ['Quickly and moves on', 'Does not apologize just to end conflict — explains perspective without excuses', 'Rarely', 'With gifts'], answer: 1 },
-          { question: 'What is her relationship with the mirror?', options: ['She loves her reflection', 'She focuses on flaws — the mirror lies to her', 'She avoids it', 'She checks it often'], answer: 1 },
-          { question: 'How does she introduce the author?', options: ['Casually', 'Tone shifts, face softens — introduces him as someone important', 'Quietly', 'Excitedly'], answer: 1 },
-          { question: 'What is her energy in a crowd?', options: ['Loud and social', 'More aware, more observant — reads the room, finds his eyes', 'Shy and quiet', 'Anxious'], answer: 1 },
-          { question: 'What does she do with the things she collects?', options: ['Displays them', 'Keeps pieces of him — ticket stubs, dried flowers, stones from beaches', 'Throws them away', 'Forgets about them'], answer: 1 },
-          { question: 'What is her relationship with music?', options: ['She likes it', 'A language, a time machine, a friend — he knows which songs make her dance/cry/sing', 'Just background noise', 'She sings along'], answer: 1 },
-          { question: 'What is her favorite season about?', options: ['The weather', 'The time of year that speaks to her soul — brings out a version of her only then', 'The holidays', 'The fashion'], answer: 1 },
-          { question: 'What does she do when she has had a long day?', options: ['Complains about it', 'The quiet unravel — bra off, smile relaxes, shoulders drop', 'Goes straight to bed', 'Takes a shower'], answer: 1 },
-          { question: 'What does she do with the stories she repeats?', options: ['Tells them to everyone', 'Memories she returns to — he listens every time even when he has heard it before', 'Forgets them', 'Writes them down'], answer: 1 }
+          { question: 'What does her quiet light do?', options: ['Needs announcing', 'Is impossible to miss', 'Fades in a crowd', 'Depends on praise'], answer: 1 },
+          { question: 'Why do people trust her?', options: ['She is loud', 'Her consistency, honesty, and care', 'She never disagrees', 'She keeps secrets'], answer: 1 },
+          { question: 'Where does her beauty begin?', options: ['In her appearance only', 'In her spirit, before anyone notices her face', 'In her confidence', 'In her style'], answer: 1 },
+          { question: 'What does her presence do?', options: ['Makes people tense', 'Makes people feel safer and more themselves', 'Makes people compete', 'Makes people quiet'], answer: 1 },
+          { question: 'What is the final quality?', options: ['The love I keep choosing, every single day', 'The way she works', 'The way she argues', 'The way she hides'], answer: 0 }
         ]
       },
-      // love section 4 — Our Story & Future
+      // page-level quiz for admin unlock
       {
-        id: 'love-our-story-future', page: 'love', sectionIdx: 4, title: 'Our Story & Future',
+        id: 'love-qualities', page: 'love', sectionIdx: -1, title: 'Qualities I Admire',
         questions: [
-          { question: 'What does he remember about the first time he saw her?', options: ['What she was wearing', 'The rest of the world dimmed — his soul knew hers long before his mind caught up', 'Where they were', 'The date'], answer: 1 },
-          { question: 'How does he describe the first kiss?', options: ['Perfect like a movie kiss', 'Not perfect in the way movie kisses are — better because it was real', 'Awkward but sweet', 'Magical'], answer: 1 },
-          { question: 'What does he say about their arguments?', options: ['They never argue', 'Raised voices, slammed doors, words they wish they could take back — but they always come back', 'They are calm', 'They take breaks'], answer: 1 },
-          { question: 'How does she say goodbye?', options: ['Quickly', 'Lingers — one more hug, one more kiss, turns back for one last look, waves once', 'Sadly', 'With a smile'], answer: 1 },
-          { question: 'What future does he see with her?', options: ['A big house and cars', 'Slow mornings with coffee, arguments about dishes that end in laughter, growing old together', 'Travel and adventure', 'A quiet life'], answer: 1 },
-          { question: 'How does she introduce him to others?', options: ['By his name', 'Tone shifts, face softens — the version of him she describes is someone he wants to become', 'Proudly', 'Casually'], answer: 1 },
-          { question: 'What does she do when she comes back after distance?', options: ['Apologizes', 'Every return reminds him their connection is stronger than space', 'Acts like nothing happened', 'Explains why'], answer: 1 },
-          { question: 'What is her favorite version of them?', options: ['When they travel', 'Communicating without fighting, laughing until they cannot breathe — it is her north star', 'When they first met', 'When they are intimate'], answer: 1 },
-          { question: 'What does he say about the home they will build?', options: ['It will be big', 'Not just a house — filled with shared memories, inside jokes, favorite things', 'It will be perfect', 'It will be cosy'], answer: 1 },
-          { question: 'What does he say about the version of him she brings out?', options: ['She made him better', 'Before her, he did not know he could be this soft, this patient — she just believed it was possible', 'She inspires him', 'She completes him'], answer: 1 }
-        ]
-      },
-      // fantasies — single story page (sectionIdx -1 = page-level quiz, appended at end)
-      {
-        id: 'fantasies-story', page: 'fantasies', sectionIdx: -1, title: 'Fantasies — The Story',
-        questions: [
-          { question: 'What is the hero title of this story?', options: ['ASH', '100 paragraphs', 'Love', 'Dreams'], answer: 0 },
-          { question: 'The dedication warns these pages are for whose eyes only?', options: ['Everyone\'s', '\'s — "For Your Eyes Only"', 'The author\'s', 'No one\'s'], answer: 1 },
-          { question: 'What happens when their skin finally meets, according to "The Fire & Our Skin"?', options: ['All the rules break down', 'The world disappears', 'They speak softly', 'Nothing changes'], answer: 0 },
-          { question: 'What does he say turns him on more than anything in the world?', options: ['Watching her undress — the slow way', 'Her laughter', 'Her voice', 'Her perfume'], answer: 0 },
-          { question: 'Where do these fantasies bloom, according to the dedication?', options: ['In the dark, quiet hours', 'In his diary', 'In dreams', 'In songs'], answer: 0 },
-          { question: 'What is this story "never meant to be"?', options: ['Forgotten', 'Shared', 'Finished', 'Written'], answer: 0 }
+          { question: 'How many qualities are on this page?', options: ['25', '50', '100', '10'], answer: 1 },
+          { question: 'How many groups hold them?', options: ['3', '5', '7', '10'], answer: 1 },
+          { question: 'What does the dedication call the collection?', options: ['A list of perfections', 'Fifty qualities, fifty reasons, one person', 'A secret letter', 'A story of the future'], answer: 1 },
+          { question: 'What is the page about?', options: ['Her daily habits', 'The qualities I admire', 'A travel plan', 'A private fantasy'], answer: 1 },
+          { question: 'What is the final tribute theme?', options: ['Choosing her love every day', 'A favorite song', 'A future house', 'A morning voice'], answer: 0 }
         ]
       },
       // photo-gallery — page-level quiz
@@ -268,13 +194,9 @@
     btn.onmouseover = function () { this.style.background = '#6fcf93'; this.style.color = '#181214'; };
     btn.onmouseout = function () { this.style.background = 'rgba(111,207,147,.08)'; this.style.color = '#6fcf93'; };
     btn.onclick = function () { openQuizModal(quiz); };
-    var requestBtn = content.querySelector('.section-request-btn');
-    if (requestBtn) content.insertBefore(btn, requestBtn);
-    else {
-      var lastTribute = content.querySelector('.tribute:last-of-type');
-      if (lastTribute) lastTribute.after(btn);
-      else content.appendChild(btn);
-    }
+    var lastTribute = content.querySelector('.tribute:last-of-type');
+    if (lastTribute) lastTribute.after(btn);
+    else content.appendChild(btn);
   };
 
   function addQuizButtons() {
@@ -292,13 +214,9 @@
       btn.onmouseover = function () { this.style.background = '#6fcf93'; this.style.color = '#181214'; };
       btn.onmouseout = function () { this.style.background = 'rgba(111,207,147,.08)'; this.style.color = '#6fcf93'; };
       btn.onclick = function () { openQuizModal(quiz); };
-      var requestBtn = content.querySelector('.section-request-btn');
-      if (requestBtn) content.insertBefore(btn, requestBtn);
-      else {
-        var lastTribute = content.querySelector('.tribute:last-of-type');
-        if (lastTribute) lastTribute.after(btn);
-        else content.appendChild(btn);
-      }
+      var lastTribute = content.querySelector('.tribute:last-of-type');
+      if (lastTribute) lastTribute.after(btn);
+      else content.appendChild(btn);
     });
     // Page-level quiz for pages without accordion sections (e.g. fantasies)
     if (!groups.length) {
@@ -395,10 +313,10 @@
     if (passed && quiz.page) {
       if (quiz.sectionIdx >= 0) {
         FB.get('sectionUnlock', quiz.page).then(function (d) {
-          var cur = d && typeof d.unlocked === 'number' ? d.unlocked : 0;
+          var cur = d && d.version === 'quiz' && typeof d.unlocked === 'number' ? d.unlocked : 0;
           var next = quiz.sectionIdx + 1;
           if (next > cur) {
-            return FB.put('sectionUnlock', { id: quiz.page, unlocked: next });
+            return FB.put('sectionUnlock', { id: quiz.page, unlocked: next, version: 'quiz' });
           }
         }).then(function () {
           toastShow('Section unlocked! Reloading...');

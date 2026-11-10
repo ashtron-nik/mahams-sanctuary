@@ -2,7 +2,7 @@
   "name": "Dreambox",
   "short_name": "Dreambox",
   "description": "A Story That Was Never Meant to Be Forgotten",
-  "start_url": "/index.html",
+  "start_url": "/birthday.html",
   "display": "standalone",
   "background_color": "#181214",
   "theme_color": "#ffe680",

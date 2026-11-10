@@ -5,6 +5,7 @@
   var songs = [];
   var sections = [];
   var galleryItems = [];
+  var bdayAudioBlob = null;
 
   /* ---- Firebase DB helpers ---- */
   function openDB() { return Promise.resolve(true); }
@@ -42,6 +43,107 @@
 
   async function saveGallery() {
     await dbPut('config', { key: 'gallery', items: galleryItems });
+  }
+
+  /* ---- Birthday landing page ---- */
+  function birthdayDefaults() {
+    return JSON.parse(JSON.stringify(window.MAHAM_BDAY_CONFIG || {}));
+  }
+
+  function readBirthdayJson() {
+    var text = document.getElementById('bdayConfigJson').value.trim();
+    if (!text) throw new Error('Config is empty');
+    var cfg = JSON.parse(text);
+    if (!cfg || typeof cfg !== 'object' || Array.isArray(cfg)) throw new Error('Config must be a JSON object');
+    return cfg;
+  }
+
+  function writeBirthdayJson(cfg) {
+    document.getElementById('bdayConfigJson').value = JSON.stringify(cfg, null, 2);
+  }
+
+  function setBirthdayStatus(msg) {
+    var el = document.getElementById('bdaySaveStatus');
+    if (el) el.textContent = msg;
+  }
+
+  function updateBirthdayAudioInfo() {
+    var info = document.getElementById('bdayAudioInfo');
+    if (!info) return;
+    if (bdayAudioBlob) {
+      info.textContent = 'Uploaded audio attached (' + Math.round(bdayAudioBlob.size / 1024) + ' KB).';
+      return;
+    }
+    var src = '';
+    try { var cfg = readBirthdayJson(); src = cfg.audio && cfg.audio.src ? cfg.audio.src : ''; } catch (e) {}
+    info.textContent = src ? 'Using audio URL from JSON.' : 'No music attached.';
+  }
+
+  function loadBirthdayConfig() {
+    if (!document.getElementById('bdayConfigJson')) return;
+    setBirthdayStatus('Loading...');
+    dbGet('config', 'birthday').then(function (data) {
+      bdayAudioBlob = (data && data.audioFileBlob) ? data.audioFileBlob : null;
+      writeBirthdayJson((data && data.config) ? data.config : birthdayDefaults());
+      updateBirthdayAudioInfo();
+      setBirthdayStatus(data && data.config ? 'Loaded from Firebase.' : 'No saved config; showing defaults.');
+    }).catch(function () {
+      bdayAudioBlob = null;
+      writeBirthdayJson(birthdayDefaults());
+      updateBirthdayAudioInfo();
+      setBirthdayStatus('Could not load; showing defaults.');
+    });
+  }
+
+  function saveBirthdayConfig() {
+    var cfg;
+    try { cfg = readBirthdayJson(); } catch (e) { setBirthdayStatus('Invalid JSON: ' + e.message); return; }
+    var rec = { id: 'birthday', config: cfg };
+    if (bdayAudioBlob) rec.audioFile = bdayAudioBlob;
+    setBirthdayStatus('Saving...');
+    dbPut('config', rec).then(function () {
+      setBirthdayStatus('Saved at ' + new Date().toLocaleTimeString());
+      toast('Birthday page saved.');
+    }).catch(function () {
+      setBirthdayStatus('Save failed.');
+    });
+  }
+
+  function initBirthdayAdmin() {
+    var file = document.getElementById('bdayAudioFile');
+    if (!file) return;
+    file.addEventListener('change', function () {
+      bdayAudioBlob = this.files[0] || bdayAudioBlob;
+      if (bdayAudioBlob) {
+        try {
+          var cfg = readBirthdayJson();
+          cfg.audio = cfg.audio || {};
+          cfg.audio.title = bdayAudioBlob.name.replace(/\.[^.]+$/, '');
+          writeBirthdayJson(cfg);
+        } catch (e) {}
+      }
+      updateBirthdayAudioInfo();
+    });
+    document.getElementById('bdayAudioClear').addEventListener('click', function () {
+      bdayAudioBlob = null;
+      updateBirthdayAudioInfo();
+    });
+    document.getElementById('bdaySaveBtn').addEventListener('click', saveBirthdayConfig);
+    document.getElementById('bdayReloadBtn').addEventListener('click', loadBirthdayConfig);
+    document.getElementById('bdayDefaultsBtn').addEventListener('click', function () {
+      bdayAudioBlob = null;
+      writeBirthdayJson(birthdayDefaults());
+      updateBirthdayAudioInfo();
+      setBirthdayStatus('Defaults loaded (not saved).');
+    });
+    document.getElementById('bdayFormatBtn').addEventListener('click', function () {
+      try {
+        writeBirthdayJson(readBirthdayJson());
+        setBirthdayStatus('JSON formatted.');
+      } catch (e) {
+        setBirthdayStatus('Invalid JSON: ' + e.message);
+      }
+    });
   }
 
   function renderGallery() {
@@ -475,7 +577,7 @@
           var reqId = this.dataset.reqId;
           FB.get('sectionRequests', reqId).then(function (r) {
             if (!r) return;
-            FB.put('sectionUnlock', { id: r.page, unlocked: r.groupIndex }).then(function () {
+            FB.put('sectionUnlock', { id: r.page, unlocked: r.groupIndex, version: 'quiz' }).then(function () {
               r.status = 'approved';
               FB.put('sectionRequests', r).then(function () {
                 toast('Section approved!');
@@ -2196,20 +2298,20 @@
     }
     if (section === 'love') {
       return [
-        { question: 'What time did we have one of our deepest conversations?', answer: '3 AM' },
-        { question: 'Where was I sitting during that conversation?', answer: 'On the floor' },
-        { question: 'Where were you?', answer: 'On the bed' },
-        { question: 'Who is every word on this website written for?', answer: 'You' },
-        { question: 'What feeling did I hope this website would give you?', answer: 'Home' }
+        { question: 'How many qualities are on this page?', answer: '50' },
+        { question: 'How many groups hold them?', answer: '5' },
+        { question: 'What is the final quality about?', answer: 'Choosing love every day' },
+        { question: 'Who is every quality written for?', answer: 'You' },
+        { question: 'What feeling should the page leave you with?', answer: 'Warmth' }
       ];
     }
     if (section === '100-organs') {
       return [
         { question: 'How many tributes are in this section?', answer: '100' },
         { question: 'Who is every tribute written for?', answer: 'You' },
-        { question: 'What is being catalogued in this section?', answer: 'Her body' },
-        { question: 'What body part is tribute #5 about?', answer: 'The Eyes' },
-        { question: 'What is the first thing I ever noticed about you?', answer: 'Your smile' }
+        { question: 'What is being catalogued in this section?', answer: 'Your beauty' },
+        { question: 'What is tribute #4 about?', answer: 'Your eyes' },
+        { question: 'What is the final tribute called?', answer: 'Thank you for existing' }
       ];
     }
     if (section === 'sky-observatory') {
@@ -2390,273 +2492,6 @@
     }).catch(function () {
       list.innerHTML = '<div class="empty-state"><div class="icon">&#x26A0;&#xFE0F;</div><p>Error loading dreams</p></div>';
     });
-  }
-
-  /* ---- Turn On ---- */
-  // The journey the game actually runs — the embedded file. Branch step counts and session stats read from here.
-  var turnOnSteps = (typeof getDefaultSteps === 'function') ? getDefaultSteps() : [];
-
-  function turnOnBranchOf(stepId) {
-    if (stepId < 100) return 2;
-    var starts = [1400, 1300, 1200, 1100, 1000, 900, 800, 700, 600, 500, 400];
-    for (var i = 0; i < starts.length; i++) {
-      if (stepId >= starts[i] && stepId < starts[i] + 100) return starts[i];
-    }
-    return null;
-  }
-  function turnOnBranchLabel(id) {
-    for (var i = 0; i < TURN_ON_BRANCHES.length; i++) {
-      if (TURN_ON_BRANCHES[i].id === id) return TURN_ON_BRANCHES[i].label;
-    }
-    return 'Entry & endings';
-  }
-  function turnOnBranchSymbol(steps, id) {
-    for (var i = 0; i < steps.length; i++) {
-      if (turnOnBranchOf(steps[i].id) === id && steps[i].symbol) return steps[i].symbol;
-    }
-    return '';
-  }
-
-  /* ---- Turn On Branch Toggles ---- */
-  var TURN_ON_BRANCHES = [
-    { id: 2, label: 'Fuck you — I want to be inside you' },
-    { id: 400, label: 'Masturbation — you do it to me, or you watch me' },
-    { id: 500, label: 'Fingering — I do it to you, or you do it to yourself' },
-    { id: 600, label: 'Foreplay — I tease you until you beg' },
-    { id: 800, label: 'Fingering drive — I talk you to pieces, my fingers inside you' },
-    { id: 700, label: 'Oral — my mouth on you, I taste every inch' },
-    { id: 900, label: 'Bath & Shower — I wash every inch of you' },
-    { id: 1000, label: 'Watching you undress — the slow way' },
-    { id: 1100, label: 'Rough — I take control' },
-    { id: 1200, label: 'Mirror — I watch us together' },
-    { id: 1300, label: '69 — both of us, at once' },
-    { id: 1400, label: 'Morning — I wake you up slow' },
-  ];
-  var branchToast;
-  var TURNON_KEY = 'db-turnon-branches';
-  function renderTurnOnBranches() {
-    var box = document.getElementById('turnOnBranches');
-    if (!box) return;
-    branchToast = document.getElementById('turnOnBranchesToast');
-    FB.get('config', 'turnOnSections').then(function (d) {
-      var disabled = (d && d.disabled) || [];
-      try { var local = JSON.parse(localStorage.getItem(TURNON_KEY)); if (local && local.disabled) disabled = local.disabled; } catch (e) {}
-      applyTurnOnDisabled(disabled);
-    }).catch(function () {
-      try { var local = JSON.parse(localStorage.getItem(TURNON_KEY)); if (local && local.disabled) applyTurnOnDisabled(local.disabled); } catch (e) {}
-    });
-  }
-  function applyTurnOnDisabled(disabled) {
-    var html = '';
-    TURN_ON_BRANCHES.forEach(function (b) {
-      var count = turnOnSteps.filter(function (s) { return turnOnBranchOf(s.id) === b.id; }).length;
-      var on = disabled.indexOf(b.id) === -1;
-      var symbol = turnOnBranchSymbol(turnOnSteps, b.id);
-      html += '<div style="display:flex;align-items:center;gap:.6rem;padding:.5rem .7rem;margin-bottom:.4rem;border:1px solid rgba(255,210,150,.08);border-radius:8px;background:rgba(255,220,160,.02);">' +
-        '<input type="checkbox" data-branch="' + b.id + '"' + (on ? ' checked' : '') + ' style="width:16px;height:16px;accent-color:#6fcf93;">' +
-        '<span style="font-size:.9rem;">' + esc(symbol) + '</span>' +
-        '<span style="flex:1;font-size:.82rem;color:var(--parchment-dim);">' + esc(b.label) + '</span>' +
-        '<span style="font-size:.7rem;color:var(--ash);">' + count + ' steps</span>' +
-        '<span style="font-size:.62rem;padding:1px 8px;border-radius:8px;' + (on ? 'background:rgba(111,207,147,.15);color:#6fcf93;' : 'background:rgba(232,93,58,.12);color:#e85d3a;') + '">' + (on ? 'ON' : 'OFF') + '</span>' +
-      '</div>';
-    });
-    var box = document.getElementById('turnOnBranches');
-    if (!box) return;
-    box.innerHTML = html;
-    box.querySelectorAll('input[type=checkbox]').forEach(function (cb) {
-      cb.addEventListener('change', saveTurnOnBranches);
-    });
-  }
-  function saveTurnOnBranches() {
-    var disabled = [];
-    TURN_ON_BRANCHES.forEach(function (b) {
-      var cb = document.querySelector('#turnOnBranches input[data-branch="' + b.id + '"]');
-      if (cb && !cb.checked) disabled.push(b.id);
-    });
-    if (disabled.length >= TURN_ON_BRANCHES.length) {
-      if (branchToast) branchToast.textContent = 'Cannot hide all branches — at least one must stay.';
-      renderTurnOnBranches();
-      return;
-    }
-    try { localStorage.setItem(TURNON_KEY, JSON.stringify({ disabled: disabled })); } catch (e) {}
-    FB.put('config', { id: 'turnOnSections', disabled: disabled }).then(function () {
-      if (branchToast) branchToast.textContent = 'Branch toggles saved.';
-    }).catch(function () {
-      if (branchToast) branchToast.textContent = 'Failed to save.';
-    });
-  }
-
-  /* ---- Turn On Journey Map (read-only) ---- */
-  function renderTurnOnMap() {
-    var box = document.getElementById('turnOnMap');
-    if (!box) return;
-    box.innerHTML =
-      '<input id="toMapSearch" placeholder="Search the journey (prompt, scene, option)... " style="width:100%;box-sizing:border-box;padding:.45rem .6rem;margin-bottom:.75rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-size:.8rem;outline:none;">' +
-      '<div id="toMapGroups"></div>';
-    document.getElementById('toMapSearch').addEventListener('input', function () {
-      renderTurnOnMapGroups(this.value);
-    });
-    renderTurnOnMapGroups('');
-  }
-
-  function turnOnNextLabel(next) {
-    if (next === -1) return '<span style="color:#e85d3a;">&#x2605; END</span>';
-    var br = turnOnBranchOf(next);
-    var lbl = br !== null ? turnOnBranchLabel(br) : 'step ' + next;
-    return esc(String(next)) + (br !== null ? ' (' + esc(lbl) + ')' : '');
-  }
-
-  function renderTurnOnMapGroups(q) {
-    var box = document.getElementById('toMapGroups');
-    if (!box) return;
-    q = (q || '').toLowerCase();
-    var html = '';
-    for (var gi = 0; gi < TURN_ON_BRANCHES.length; gi++) {
-      var gid = TURN_ON_BRANCHES[gi].id;
-      var steps = turnOnSteps.filter(function (s) { return turnOnBranchOf(s.id) === gid; });
-      if (q) {
-        steps = steps.filter(function (s) {
-          if (String(s.id).indexOf(q) >= 0) return true;
-          if ((s.prompt || '').toLowerCase().indexOf(q) >= 0) return true;
-          if ((s.scene || '').toLowerCase().indexOf(q) >= 0) return true;
-          return (s.options || []).some(function (o) {
-            return (o.text || '').toLowerCase().indexOf(q) >= 0 || (o.transition || '').toLowerCase().indexOf(q) >= 0;
-          });
-        });
-      }
-      var ends = {};
-      steps.forEach(function (s) {
-        s.options.forEach(function (o) { if (o.next === -1) ends[s.id] = 1; });
-      });
-      var symbol = turnOnBranchSymbol(turnOnSteps, gid);
-      var stepHtml = steps.map(function (s) {
-        var opts = (s.options || []).map(function (o, oi) {
-          var icon = ['&#x2776;','&#x2777;','&#x2778;','&#x2779;','&#x277A;'][oi] || ('#' + (oi + 1));
-          return '<div style="display:flex;gap:.5rem;padding:.22rem 0;border-bottom:1px solid rgba(255,210,150,.05);align-items:baseline;">' +
-            '<span style="color:#ff8fa3;font-size:.78rem;">' + icon + '</span>' +
-            '<span style="flex:1;font-size:.8rem;color:#d4c5b2;">' + esc(o.text) + '</span>' +
-            '<span style="font-size:.68rem;color:var(--ash);white-space:nowrap;">&#x2192; ' + turnOnNextLabel(o.next) + '</span>' +
-          '</div>' +
-          (o.transition ? '<div style="font-size:.72rem;color:#6b5f52;font-style:italic;padding:0 0 .3rem 1.6rem;">&#x2661; ' + esc(o.transition) + '</div>' : '');
-        }).join('');
-        return '<div class="to-map-step" style="margin-bottom:.35rem;border:1px solid rgba(255,210,150,.07);border-radius:6px;background:rgba(255,220,160,.015);">' +
-          '<div class="to-map-head" style="display:flex;gap:.6rem;align-items:center;padding:.4rem .6rem;cursor:pointer;flex-wrap:wrap;">' +
-            '<span style="font-family:\'Fraunces\',Georgia,serif;font-size:.78rem;color:var(--gold);">#' + s.id + '</span>' +
-            '<span style="font-size:.6rem;color:#6b5f52;text-transform:uppercase;letter-spacing:.05em;">Lv ' + (s.level + 1) + (s.mood ? ' &middot; ' + esc(s.mood) : '') + (s.symbol ? ' &middot; ' + esc(s.symbol) : '') + '</span>' +
-            '<span style="flex:1;font-size:.78rem;color:#d4c5b2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(s.prompt || '') + '</span>' +
-            '<span style="color:var(--ash);font-size:.68rem;">' + (s.options ? s.options.length : 0) + ' opts</span>' +
-            '<span style="color:var(--ash);font-size:.7rem;">&#9662;</span>' +
-          '</div>' +
-          '<div class="to-map-body" style="display:none;padding:.45rem .7rem;border-top:1px solid rgba(255,210,150,.06);">' +
-            (s.scene ? '<div style="font-size:.78rem;color:#c7b8a1;font-style:italic;margin-bottom:.5rem;border-left:2px solid rgba(232,93,58,.5);padding-left:.6rem;">' + esc(s.scene) + '</div>' : '') +
-            '<div style="font-size:.85rem;color:var(--parchment);margin-bottom:.4rem;">' + esc(s.prompt) + '</div>' +
-            opts +
-          '</div></div>';
-      }).join('');
-      html += '<div style="margin-bottom:1rem;border:1px solid rgba(255,210,150,.1);border-radius:10px;overflow:hidden;">' +
-        '<div class="to-map-group-head" style="display:flex;justify-content:space-between;align-items:center;gap:.6rem;padding:.55rem .9rem;background:rgba(255,220,160,.06);cursor:pointer;">' +
-          '<span style="font-family:\'Fraunces\',Georgia,serif;font-size:.85rem;color:var(--gold);">' + esc(symbol) + ' ' + esc(TURN_ON_BRANCHES[gi].label) + '</span>' +
-          '<span style="color:var(--ash);font-size:.72rem;">' + steps.length + ' steps &middot; ' + Object.keys(ends).length + ' endings</span>' +
-        '</div>' +
-        '<div class="to-map-group-body" style="padding:.6rem;">' +
-          (steps.length ? stepHtml : '<div style="color:#6b5f52;font-size:.72rem;text-align:center;padding:.4rem 0;">No matching steps.</div>') +
-        '</div>' +
-      '</div>';
-    }
-    box.innerHTML = html || '<div style="color:#6b5f52;font-size:.75rem;text-align:center;padding:1rem 0;">No matching steps.</div>';
-    box.querySelectorAll('.to-map-group-head').forEach(function (h) {
-      h.addEventListener('click', function () {
-        var b = h.nextElementSibling;
-        b.style.display = b.style.display === 'none' ? '' : 'none';
-      });
-    });
-    box.querySelectorAll('.to-map-head').forEach(function (h) {
-      h.addEventListener('click', function () {
-        var b = h.nextElementSibling;
-        b.style.display = b.style.display === 'none' ? 'block' : 'none';
-      });
-    });
-  }
-
-  /* ---- Turn On Sessions ---- */
-  function renderTurnOnSessions() {
-    var list = document.getElementById('turnOnSessionsList');
-    if (!list) return;
-    FB.get('turnOn', 'sessions_data').then(function (d) {
-      var items = (d && d.sessions) ? JSON.parse(JSON.stringify(d.sessions)) : [];
-      items.sort(function (a, b) { return (b.timestamp || 0) - (a.timestamp || 0); });
-      if (!items.length) {
-        list.innerHTML = '<div class="empty-state"><div class="icon">&#x2661;</div><p>No sessions yet.</p>' +
-          '<p style="font-size:.72rem;color:#6b5f52;margin-top:.4rem;">Sessions record when a playthrough ends on a browser without the admin passkey. Playthroughs on your own (admin) browser are skipped by design.</p></div>';
-        return;
-      }
-      var totalChoices = 0, branchCounts = {};
-      items.forEach(function (s) {
-        totalChoices += s.history ? s.history.length : 0;
-        var br = s.history && s.history.length ? turnOnBranchOf(s.history[0].stepId) : null;
-        if (br !== null) branchCounts[br] = (branchCounts[br] || 0) + 1;
-      });
-      var stat = function (val, label, color) {
-        return '<div style="flex:1;min-width:90px;padding:8px 12px;border-radius:8px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.08);text-align:center;">' +
-          '<div style="font-size:1.15rem;font-weight:bold;color:' + color + ';">' + val + '</div>' +
-          '<div style="font-size:.62rem;color:#6b5f52;text-transform:uppercase;letter-spacing:.05em;">' + label + '</div></div>';
-      };
-      var topBranch = Object.keys(branchCounts).sort(function (a, b) { return branchCounts[b] - branchCounts[a]; })[0];
-      var html =
-        '<div style="display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:.75rem;">' +
-          stat(items.length, 'Sessions', '#ffe680') +
-          stat(totalChoices, 'Total choices', '#7cc4ff') +
-          stat((totalChoices / items.length).toFixed(1), 'Avg choices', '#6fcf93') +
-          stat(esc(topBranch ? turnOnBranchLabel(parseInt(topBranch, 10)).split(' — ')[0] : '—'), 'Top branch', '#ff8fa3') +
-        '</div>';
-      items.forEach(function (s, i) {
-        var choices = s.history ? s.history.length : 0;
-        var label = s.label || 'Session ' + (i + 1);
-        var br = s.history && s.history.length ? turnOnBranchOf(s.history[0].stepId) : null;
-        var brLabel = br !== null ? turnOnBranchLabel(br).split(' — ')[0] : '—';
-        var date = s.timestamp ? new Date(s.timestamp).toLocaleString() : '';
-        var highestLevel = 0;
-        if (s.history) {
-          s.history.forEach(function (h) {
-            var st = null;
-            for (var si = 0; si < turnOnSteps.length; si++) { if (turnOnSteps[si].id === h.stepId) { st = turnOnSteps[si]; break; } }
-            if (st && st.level >= highestLevel) highestLevel = st.level + 1;
-          });
-        }
-        html += '<div class="to-card" style="border:1px solid rgba(255,210,150,.08);border-radius:10px;margin-bottom:.5rem;background:rgba(255,220,160,.02);">';
-        html += '<div class="to-card-head" style="display:flex;justify-content:space-between;align-items:center;gap:.6rem;padding:.55rem .8rem;cursor:pointer;">';
-        html += '<span style="font-family:\'Fraunces\',Georgia,serif;font-size:.85rem;color:var(--gold);">' + esc(label) + '</span>';
-        html += '<span style="font-size:.62rem;padding:1px 8px;border-radius:8px;background:rgba(255,210,150,.12);color:#d4c5b2;">' + esc(brLabel) + '</span>';
-        html += '<span style="color:var(--ash);font-size:.72rem;">' + choices + ' choices</span>';
-        html += '<span style="color:var(--ash);font-size:.72rem;">peak Lv ' + highestLevel + '</span>';
-        html += '<span style="flex:1;color:var(--ash);font-size:.72rem;text-align:right;">' + esc(date) + '</span>';
-        html += '<span style="color:var(--ash);font-size:.75rem;">&#9662;</span>';
-        html += '</div>';
-        html += '<div class="to-body" style="padding:.6rem .8rem;border-top:1px solid rgba(255,210,150,.06);display:none;">';
-        if (s.history) {
-          s.history.forEach(function (h, hi) {
-            html += '<div style="display:flex;gap:.5rem;padding:.22rem 0;border-bottom:1px solid rgba(255,210,150,.05);align-items:baseline;">';
-            html += '<span style="color:var(--ash);font-size:.68rem;min-width:22px;">' + (hi + 1) + '.</span>';
-            html += '<span style="flex:1;font-size:.8rem;color:var(--parchment);">' + esc(h.choice || '') + '</span>';
-            html += '<span style="color:var(--ash);font-size:.68rem;">&#8594; step ' + h.stepId + '</span>';
-            html += '</div>';
-          });
-        }
-        html += '</div></div>';
-      });
-      list.innerHTML = html;
-      list.querySelectorAll('.to-card-head').forEach(function (h) {
-        h.addEventListener('click', function () { this.closest('.to-card').classList.toggle('open'); });
-      });
-    }).catch(function () {
-      list.innerHTML = '<div class="empty-state"><div class="icon">&#x2661;</div><p>Could not load sessions.</p></div>';
-    });
-  }
-
-  function renderTurnOn() {
-    renderTurnOnBranches();
-    renderTurnOnMap();
-    renderTurnOnSessions();
   }
 
   /* ---- Secret Song ---- */
@@ -2863,6 +2698,7 @@
       FB.get('project-texts', 'list').then(function (data) { openStorylineModal(-1, [], data); }).catch(function () { openStorylineModal(-1, [], null); });
     });
     document.getElementById('galleryAddBtn').addEventListener('click', function () { openGalleryModal(-1); });
+    initBirthdayAdmin();
 
     // Gallery batch upload
     document.getElementById('galleryUploadBtn').addEventListener('click', function () {
@@ -2958,6 +2794,7 @@
         document.getElementById('tab' + this.dataset.tab.charAt(0).toUpperCase() + this.dataset.tab.slice(1)).classList.add('active');
         // Load tab-specific data
         if (this.dataset.tab === 'secret') loadSecretForm();
+        if (this.dataset.tab === 'birthday') loadBirthdayConfig();
         if (this.dataset.tab === 'gallery') renderGallery();
         if (this.dataset.tab === 'wishes') { loadWishes(); }
         if (this.dataset.tab === 'requests') renderRequests();
@@ -2975,7 +2812,6 @@
         if (this.dataset.tab === 'rare') renderRare();
         if (this.dataset.tab === 'achievements') renderAchievements();
         if (this.dataset.tab === 'dreams') renderDreams();
-        if (this.dataset.tab === 'turnon') { renderTurnOn(); }
         if (this.dataset.tab === 'activity') loadActivity();
         if (this.dataset.tab === 'interactions') renderInteractions();
         if (this.dataset.tab === 'project') { renderProjectPuzzles(); renderStoryline(); }

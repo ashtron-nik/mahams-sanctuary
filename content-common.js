@@ -594,24 +594,7 @@ console.error = function () {
         'Whisper',
         'Caress',
         'Heartbeat',
-        'Home',
-        'Bite My Lip',
-        'Hold My Waist',
-        'Skin on Skin',
-        'Taste You',
-        'Trace Your Body',
-        'Breathless Sighs',
-        'Sweet Shivers',
-        'Late Night Heat',
-        'Make Me Moan',
-        'Gentle Bites',
-        'Passionate Kisses',
-        'Under the Sheets',
-        'Losing Control',
-        'Your Warm Breath',
-        'Slow & Deep',
-        'Worship You',
-        'Tangled Together'
+        'Home'
       ];
       var active = 0;
       safeSetInterval(function () {
@@ -1171,7 +1154,7 @@ console.error = function () {
       }
 
       // --- Parallax backgrounds for ALL sections ---
-      // 20 original PNGs in pool; keyword map uses PNGs
+      // PNG pool + Maham's gallery photos; keyword map uses PNGs
       (function applyParallaxToAll() {
         var run = function () {
         if (window.FeatureFlags && !window.FeatureFlags.get('parallax')) return;
@@ -1255,7 +1238,7 @@ console.error = function () {
         // stored in localStorage as JSON array of data-URL strings
         var userImages = [];
         try {
-          var raw = localStorage.getItem('db-user-parallax');
+          var raw = localStorage.getItem('ash-user-parallax') || localStorage.getItem('db-user-parallax');
           if (raw) userImages = JSON.parse(raw);
         } catch (e) {}
         // pre-compute which sections get user images (deterministic, ~10 or 10%)

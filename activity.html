@@ -56,7 +56,7 @@
       function esc(str) { return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
       function friendlyPage(p) {
-        var map = { 'index': 'Home', 'love': 'Love', '100-organs': '100 Organs', 'fantasies': 'Fantasies', 'sky-observatory': 'Sky Observatory', 'photo-gallery': 'Photo Gallery', 'activity': 'Activity', 'dream': 'Dream Journal', 'make-her-sleep': 'Make Her Sleep', 'story': 'Our Story', 'stats': 'Stats', 'admin': 'Admin' };
+        var map = { 'index': 'Home', 'love': 'Love', '100-organs': '100 Organs', 'sky-observatory': 'Sky Observatory', 'photo-gallery': 'Photo Gallery', 'activity': 'Activity', 'dream': 'Dream Journal', 'birthday': 'Birthday', 'i-remember': 'I Remember', 'stats': 'Stats', 'admin': 'Admin' };
         return map[p] || p;
       }
 

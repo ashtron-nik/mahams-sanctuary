@@ -1,21 +1,24 @@
-var CACHE = 'ash-v48'; // ponytail: bump version when adding/renaming cached files
+var CACHE = 'ash-v57'; // ponytail: bump version when adding/renaming cached files
 var urlsToCache = [
   '/',
   '/index.html',
+  '/birthday.html',
+  '/birthday-defaults.js',
+  '/mahams-images/memory-01.jpeg',
+  '/mahams-images/memory-02.jpeg',
+  '/mahams-images/memory-03.jpeg',
+  '/mahams-images/memory-04.jpeg',
+  '/mahams-images/memory-05.jpeg',
+  '/mahams-images/memory-06.jpeg',
   '/100-organs.html',
   '/love.html',
-  '/fantasies.html',
   '/sky-observatory.html',
   '/photo-gallery.html',
   '/admin.html',
   '/admin.js',
-  '/turn-on-steps.js',
   '/stats.html',
-  '/the-making-of.html',
   '/404.html',
   '/dream.html',
-  '/make-her-sleep.html',
-  '/documentation.html',
   '/sky-generator.html',
   '/sky-generator-living.html',
   '/music.js',
@@ -58,15 +61,10 @@ var urlsToCache = [
   '/section-lock.js',
   '/lock.js',
   '/quiz.js',
-  '/story.html',
-  '/story-text.js',
   '/quiz.json',
-  '/for-tonight.html',
   '/i-remember.html',
   '/letter-that-writes-itself.html',
-  '/turnon-history.html',
   '/guide.html',
-  '/promises.html',
   '/timeline.html',
   '/install-prompt.js'
 ];
@@ -75,7 +73,7 @@ self.addEventListener('install', function (e) {
   e.waitUntil(
     caches.open(CACHE).then(function (cache) {
       return cache.addAll(urlsToCache);
-    })
+    }).then(function () { return self.skipWaiting(); })
   );
 });
 
@@ -107,7 +105,7 @@ self.addEventListener('activate', function (e) {
     caches.keys().then(function (keys) {
       return Promise.all(
         keys.filter(function (k) { return k !== CACHE; }).map(function (k) { return caches.delete(k); })
-      );
+      ).then(function () { return self.clients.claim(); });
     })
   );
 });

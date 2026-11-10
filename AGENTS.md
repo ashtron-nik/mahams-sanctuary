@@ -10,26 +10,25 @@ Data sync uses **Firebase Realtime Database** via `fb-db.js`. On `localhost` it 
 node serve.js
 # opens http://localhost:8478
 ```
-`serve.js` (14 lines) is a tiny static file server on port **8478**. No install step beyond `node`.
+`serve.js` is a tiny static file server on port **8478**. `/` serves `birthday.html`, the site's first page. No install step beyond `node`.
 
 ## Where everything lives
 
 ### Entry points (HTML)
 | File | Purpose |
 |------|---------|
-| `index.html` | Home / landing page, main section index |
+| `birthday.html` | First page / birthday landing; the Dreambox link opens `index.html` |
+| `index.html` | Dreambox home / main section hub |
 | `admin.html` | Admin dashboard (passkey: `dreambox`) |
-| `story.html` | Story chapters |
 | `dream.html` | Dream journal |
-| `love.html`, `make-her-sleep.html`, `i-remember.html`, `for-tonight.html`, `promises.html` | Poetic sections |
+| `love.html`, `i-remember.html`, `100-organs.html` | Poetic and tribute sections |
 | `photo-gallery.html` | Gallery |
 | `sky-observatory.html`, `sky-generator.html`, `sky-generator-living.html`, `sky-living.js`, `skies.js` | Sky engine |
 | `stats.html`, `world-progress.js` | Stats / world progress dashboard |
 | `timeline.html` | Timeline |
-| `turnon-history.html` | Turn-on history |
-| `guide.html`, `documentation.html`, `the-making-of.html` | Docs |
+| `guide.html` | Guide |
 | `quiz.js` + `quiz.json` | Quiz system |
-| `100-organs.html` | 100 poetic organs sections |
+| `100-organs.html` | 100 tributes across 7 accordion groups |
 | `404.html` | Not found |
 
 ### Core JS (load order matters)
@@ -48,6 +47,7 @@ node serve.js
 
 ### Assets
 - `boy-assets/`, `girl-assets/` — companion sprite atlases (`atlas.json`, `atlas.png`).
+- `mahams-images/`, `mahams-videos/` — Maham media used by `birthday.html`, `photo-gallery.html`, and the parallax pool.
 - `cursor images/` — custom cursor PNGs/JPGs.
 - `parallax/` — parallax layer PNGs.
 - `anime.min.js` — animation library vendored.
@@ -72,10 +72,10 @@ Features are toggled via `window.FeatureFlags`. Full list in `feature-flags.js:6
 ## Admin panel
 - URL: `admin.html`, passkey `dreambox`.
 - Manages: sections, gallery, songs, letters, dreams, timeline, quiz, settings, feature flags.
-- Writes to Firebase stores: `songs`, `sectionUnlock`, `rareLinks`, `project-*`, `turnOn`, `config/gallery`, `config/features`, `activity`, `interactions`, `wishes`, `letters`, `memories`, `dreams`, etc.
+- Writes to Firebase stores: `songs`, `sectionUnlock`, `rareLinks`, `project-*`, `config/gallery`, `config/features`, `activity`, `interactions`, `wishes`, `letters`, `memories`, `dreams`, etc.
 
 ## Data stores (Firebase `dreambox/` root)
-`songs`, `sectionUnlock`, `rareLinks`, `project-puzzles`, `project-events`, `project-texts`, `turnOn`, `config`, `activity`, `interactions`, `wishes`, `songRequests`, `userSongs`, `reviews`, `sectionRequests`, `letters`, `quizHistory`, `memories`, `selfLetters`, `dreams`, `lanterns`, `ourStoryAnswers`, `stats`, `userData`.
+`songs`, `sectionUnlock`, `rareLinks`, `project-puzzles`, `project-events`, `project-texts`, `config`, `activity`, `interactions`, `wishes`, `songRequests`, `userSongs`, `reviews`, `sectionRequests`, `letters`, `quizHistory`, `memories`, `selfLetters`, `dreams`, `lanterns`, `ourStoryAnswers`, `stats`, `userData`.
 
 `userData` holds per-user localStorage snapshot keys (see `fb-db.js:285`) synced every 30s / on `beforeunload`.
 
@@ -88,7 +88,7 @@ Features are toggled via `window.FeatureFlags`. Full list in `feature-flags.js:6
 - `&&` / `||` are fine in shell scripts; this repo's shell is PowerShell 5.1 — avoid `&&`/`||` when running git one-liners.
 
 ## Quick AI context summary
-- Start here: `index.html` + `style.css`.
+- Start here: `birthday.html` (first page); Dreambox hub is `index.html`.
 - Data layer: `fb-db.js` (global `FB`).
 - Feature toggles: `feature-flags.js` (global `window.FeatureFlags`).
 - Admin: `admin.html` (passkey `dreambox`).

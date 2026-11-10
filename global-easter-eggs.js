@@ -1,4 +1,4 @@
-/* ---- Secret door: type "ash" (exact lowercase) anywhere → for-tonight.html ---- */
+/* ---- Secret door: type "ash" (exact lowercase) anywhere → birthday.html ---- */
 var ASH_SECRET = (function () {
   var ASH = 'ash';
   var TIMEOUT = 1800;
@@ -44,10 +44,10 @@ if (typeof module !== 'undefined' && module.exports) module.exports = ASH_SECRET
     }
     overlay.innerHTML =
       '<style>@keyframes lwTwinkle{0%,100%{opacity:.1}50%{opacity:1}}</style>' + stars +
-      '<div style="position:relative;color:#ffe680;font-family:Georgia,serif;font-style:italic;font-size:1.25rem;letter-spacing:.15em;text-shadow:0 0 18px rgba(255,230,128,.35);">Something for tonight...</div>';
+      '<div style="position:relative;color:#ffe680;font-family:Georgia,serif;font-style:italic;font-size:1.25rem;letter-spacing:.15em;text-shadow:0 0 18px rgba(255,230,128,.35);">Something special for you...</div>';
     document.body.appendChild(overlay);
     requestAnimationFrame(function () { overlay.style.opacity = '1'; });
-    setTimeout(function () { window.location.href = 'for-tonight.html'; }, 1700);
+    setTimeout(function () { window.location.href = 'birthday.html'; }, 1700);
   }
 
   document.addEventListener('keydown', function (e) {
@@ -60,7 +60,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = ASH_SECRET
       if (ashState.fired) {
         ashState = ASH_SECRET.state();
         if (window.Interactions) window.Interactions.record('trigger', 'typed_ash');
-        if (window.location.href.indexOf('for-tonight.html') === -1) openSecretDoor();
+        if (window.location.href.indexOf('birthday.html') === -1) openSecretDoor();
       }
     }
 
@@ -76,7 +76,13 @@ if (typeof module !== 'undefined' && module.exports) module.exports = ASH_SECRET
     if (buf.indexOf('sleep') !== -1) {
       buf = '';
       if (window.Interactions) window.Interactions.record('trigger', 'typed_sleep');
-      if (window.location.href.indexOf('make-her-sleep.html') === -1) window.location.href = 'make-her-sleep.html';
+      if (window.location.href.indexOf('dream.html') === -1) window.location.href = 'dream.html';
+    }
+
+    if (buf.indexOf('birthday') !== -1 || buf.indexOf('bday') !== -1) {
+      buf = '';
+      if (window.Interactions) window.Interactions.record('trigger', 'typed_birthday');
+      if (window.location.href.indexOf('birthday.html') === -1) window.location.href = 'birthday.html';
     }
 
     if (buf.indexOf('remember') !== -1) {

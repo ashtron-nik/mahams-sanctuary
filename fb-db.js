@@ -231,12 +231,11 @@ var FB = (function () {
 
   function decodeBlobs(item) {
     for (var k in item) {
-      if (k.indexOf('_Base64') >= 0) {
-        var prefix = k.slice(0, -7);
-        var fieldName = prefix.replace(/^_/, '');
-        var typeKey = prefix + 'Type';
+      if (k.charAt(0) === '_' && k.slice(-6) === 'Base64') {
+        var baseName = k.slice(1, -6);
+        var typeKey = '_' + baseName + 'Type';
         try {
-          item[fieldName + 'Blob'] = base64ToBlob(item[k], item[typeKey]);
+          item[baseName + 'Blob'] = base64ToBlob(item[k], item[typeKey]);
         } catch(e) { /* ponytail: blob decode failure non-fatal */ }
         delete item[k];
         if (item[typeKey]) delete item[typeKey];
