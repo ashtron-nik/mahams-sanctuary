@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>Birthday Visits - Dreambox</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #181214; color: #ffebd2;
+      font-family: 'Lora', Georgia, serif; font-size: 15px; line-height: 1.6;
+      min-height: 100vh;
+    }
+    h1, h2 { font-family: 'Fraunces', Georgia, serif; font-weight: 500; color: #ffe680; }
+    a { color: #ffe680; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap { max-width: 700px; margin: 0 auto; padding: 3rem 1.5rem 4rem; }
+    h1 { font-size: 1.6rem; margin-bottom: .25rem; }
+    .sub { color: #6b5f52; font-size: .85rem; margin-bottom: 2rem; font-style: italic; }
+    .stat-card {
+      background: rgba(255,220,160,.04); border: 1px solid rgba(255,210,150,.1);
+      border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: .75rem;
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    }
+    .stat-card .label { font-size: .9rem; }
+    .stat-card .label .sub-label { font-size: .75rem; color: #6b5f52; display: block; }
+    .stat-card .count { font-family: 'Fraunces', Georgia, serif; font-size: 1.4rem; color: #ffe680; text-align: right; }
+    .total-row { background: rgba(255,230,128,.06); border-color: rgba(255,230,128,.15); }
+    .total-row .count { font-size: 1.7rem; }
+    .visit-list { margin-top: 2rem; border-top: 1px solid rgba(255,210,150,.1); }
+    .visit-row { padding: .9rem 0; border-bottom: 1px solid rgba(255,210,150,.08); }
+    .visit-row .when { color: #ffebd2; }
+    .visit-row .ago { color: #6b5f52; font-size: .8rem; font-style: italic; }
+    .visit-row .meta { color: #6b5f52; font-size: .75rem; margin-top: .2rem; }
+    .heart-divider { text-align: center; color: #e85d3a; font-size: 1.2rem; margin: 2rem 0; opacity: .4; }
+    .empty { text-align: center; color: #6b5f52; padding: 3rem 0; font-style: italic; }
+    .back { display: inline-block; margin-top: 2rem; color: #6b5f52; font-size: .85rem; }
+    .refresh {
+      display: block; margin: 1.5rem auto 0; padding: .5rem 1.2rem;
+      background: rgba(255,230,128,.06); border: 1px solid rgba(255,230,128,.2);
+      color: #ffe680; border-radius: 8px; cursor: pointer;
+      font-family: 'Fraunces', Georgia, serif; font-size: .8rem; font-style: italic;
+    }
+    .note { color: #6b5f52; font-size: .75rem; text-align: center; margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Birthday Visits</h1>
+    <div class="sub">Every non-admin open of the birthday page.</div>
+    <div id="app"><div class="empty">Loading...</div></div>
+    <div class="heart-divider">&#x2661;</div>
+    <a href="birthday.html" class="back">&#x2190; Back to birthday</a>
+    <button class="refresh" type="button" id="refreshBtn">Refresh</button>
+    <p class="note">Admin browsers and owner links are not recorded.</p>
+  </div>
+  <script>
+    (function () {
+      'use strict';
+      var DB = 'https://faxy-ash-default-rtdb.firebaseio.com/activity/birthday.json';
+      var app = document.getElementById('app');
+      var refresh = document.getElementById('refreshBtn');
+
+      function el(tag, cls, text) {
+        var n = document.createElement(tag);
+        if (cls) n.className = cls;
+        if (text != null) n.textContent = text;
+        return n;
+      }
+      function ts(v) {
+        if (v && typeof v.timestamp === 'number') return v.timestamp;
+        var t = v && v.date ? Date.parse(v.date) : 0;
+        return isNaN(t) ? 0 : t;
+      }
+      function fmt(t) {
+        return new Date(t).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' });
+      }
+      function ago(t) {
+        var s = Math.max(0, Math.floor((Date.now() - t) / 1000));
+        if (s < 60) return 'just now';
+        if (s < 3600) return Math.floor(s / 60) + ' min ago';
+        if (s < 86400) return Math.floor(s / 3600) + ' hr ago';
+        return Math.floor(s / 86400) + ' days ago';
+      }
+      function host(url) {
+        try { return new URL(url).hostname; } catch (e) { return ''; }
+      }
+      function device(ua) {
+        if (/iPhone|iPad|iPod/i.test(ua)) return 'iPhone/iPad';
+        if (/Android/i.test(ua)) return 'Android';
+        if (/Windows/i.test(ua)) return 'Windows';
+        if (/Mac OS X|Macintosh/i.test(ua)) return 'Mac';
+        if (/Linux/i.test(ua)) return 'Linux';
+        return 'Other';
+      }
+      function card(label, value, sub) {
+        var row = el('div', 'stat-card');
+        var left = el('div', 'label');
+        left.appendChild(el('span', null, label));
+        if (sub) left.appendChild(el('span', 'sub-label', sub));
+        row.appendChild(left);
+        row.appendChild(el('div', 'count', String(value)));
+        return row;
+      }
+      function render(data) {
+        app.textContent = '';
+        var list = data ? Object.keys(data).map(function (k) { return data[k]; }).filter(function (v) { return v && ts(v); }) : [];
+        list.sort(function (a, b) { return ts(b) - ts(a); });
+
+        if (!list.length) {
+          app.appendChild(el('div', 'empty', 'No visits recorded yet.'));
+          return;
+        }
+
+        var last = ts(list[0]);
+        var startOfToday = new Date(); startOfToday.setHours(0, 0, 0, 0);
+        var today = list.filter(function (v) { return ts(v) >= startOfToday.getTime(); }).length;
+
+        var summary = el('div');
+        summary.appendChild(card('Total opens', list.length));
+        summary.appendChild(card('Last opened', ago(last), fmt(last)));
+        summary.appendChild(card('Opened today', today ? today : 'Not yet', today ? 'Yes, she opened it today' : 'No visit today'));
+        app.appendChild(summary);
+
+        var rows = el('div', 'visit-list');
+        list.slice(0, 200).forEach(function (v) {
+          var t = ts(v);
+          var row = el('div', 'visit-row');
+          var left = el('div');
+          left.appendChild(el('div', 'when', fmt(t)));
+          left.appendChild(el('div', 'ago', ago(t)));
+          var bits = [];
+          if (v.screen) bits.push(v.screen);
+          if (v.ua) bits.push(device(v.ua));
+          if (v.referrer) {
+            var h = host(v.referrer);
+            if (h) bits.push('from ' + h);
+          }
+          if (bits.length) left.appendChild(el('div', 'meta', bits.join(' \u00b7 ')));
+          row.appendChild(left);
+          rows.appendChild(row);
+        });
+        app.appendChild(rows);
+        if (list.length > 200) app.appendChild(el('p', 'note', 'Showing the latest 200 of ' + list.length + ' opens.'));
+      }
+      function load() {
+        app.textContent = '';
+        app.appendChild(el('div', 'empty', 'Loading...'));
+        fetch(DB, { cache: 'no-store' }).then(function (res) {
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          return res.json();
+        }).then(render).catch(function () {
+          app.textContent = '';
+          app.appendChild(el('div', 'empty', 'Could not load visits. Check the connection and refresh.'));
+        });
+      }
+      refresh.addEventListener('click', load);
+      load();
+    })();
+  </script>
+</body>
+</html>
