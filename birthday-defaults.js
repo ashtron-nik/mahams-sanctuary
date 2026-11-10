@@ -23,7 +23,7 @@ window.MAHAM_BDAY_CONFIG = window.MAHAM_BDAY_CONFIG || {
     { src: "mahams-images/memory-06.jpeg", caption: "A reason to smile" }
   ],
   letter: "Dear Maham,\n\nI hope this year gives you more of the things that make you feel alive - good songs, long conversations, quiet mornings, and the kind of laughter that makes your cheeks hurt.\n\nThank you for being someone who makes ordinary days feel a little softer. I hope you know how much you're appreciated, today and every day.\n\nHappy birthday. May this year be gentle with you, and may you be gentle with yourself too.\n\n- always in your corner",
-  audio: { src: "", title: "A little birthday soundtrack" },
+  audio: { src: "songs/mixkit-hazy-after-hours-132.mp3", title: "Hazy After Hours" },
   quiz: [
     { q: "What does Maham deserve today?", options: ["A nap", "The whole world", "Both, obviously"], answer: 1 },
     { q: "What is the best way to celebrate?", options: ["All at once", "Slowly", "However you want"], answer: 2 },
